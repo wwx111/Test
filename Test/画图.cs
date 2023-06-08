@@ -76,7 +76,7 @@ namespace Test
         private void 画图_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            paintDays(g, 2020, 8, 30, 5, 80000);
+            paintDays(g, 2020, 8, 30, 2, 80000);
         }
 
         // 开始绘图的年、月、日、绘图天数、一年最大值 
@@ -120,15 +120,45 @@ namespace Test
             // 每种flag需要传来笔刷颜色，背景样式以及数据，数据用数组表示
             // 按理说这里的代码需要改动，需要调用解析文件的函数来获得具体的数据
 
+            int types = 5;
+            HatchStyle[] hatchStyles = new HatchStyle[types];
+            // 这里是随机生成的填充样式
+            for(int i = 0; i < types; i++)
+            {
+                switch (i % 3)
+                {
+                    case 0:
+                        hatchStyles[i] = HatchStyle.Percent10;
+                        break;
+                    case 1:
+                        hatchStyles[i] = HatchStyle.ForwardDiagonal;
+                        break;
+                    case 2:
+                        hatchStyles[i] = HatchStyle.HorizontalBrick;
+                        break;
+                }    
+            }
             // data是一种flag对应的数据
-            int[] data = new int[] { 64727, 64726, 64338, 64938, 65239, 65428, 65723, 65723, 68403, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69506, 67437, 64727, 64726, 64338, 64938, 65239, 65428, 65723, 65723, 68403, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69506, 67437 };
-            // data-数据 end-绘图的左上角坐标 width-绘图的宽度 height-绘图的高度 maxVal-一年的最大值，用于固定Y轴
-            Point[] points = dataToPoint(data, end2, wholeWidth - leftBorderWidth - rightBorderWidth - 5, wholeHeight - topBorderWidth - bottomBorderWidth - 5, maxVal);
-            // 笔刷中颜色、填充样式应该解析文件得到
-            HatchBrush hBrush = new HatchBrush(HatchStyle.DiagonalBrick, Color.Gray, Color.FromArgb(255, 240, 150, 100));
-            // 画图
-            g.FillPolygon(hBrush, points);
-            g.DrawPolygon(Pens.Black, points);
+            int[] data = new int[] { 64727, 64726, 64338, 64938, 65239, 65428, 65723, 65723, 68403, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69506, 67437,
+                                     64727, 64726, 64338, 64938, 65239, 65428, 65723, 65723, 68403, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69506, 67437 };
+
+            // color是一种flag对应的颜色
+            for (int i = 0; i < types; i++)
+            {
+                for(int j = 0; j < data.Length; j++)
+                {
+                    data[j] = data[j] - i * j * 80 - i * 56 - j * 28;
+                }
+                // data-数据 end-绘图的左上角坐标 width-绘图的宽度 height-绘图的高度 maxVal-一年的最大值，用于固定Y轴
+                Point[] points = dataToPoint(data, end2, wholeWidth - leftBorderWidth - rightBorderWidth - 5, wholeHeight - topBorderWidth - bottomBorderWidth - 5, maxVal);
+                // 笔刷中颜色、填充样式应该解析文件得到
+                HatchBrush hBrush = new HatchBrush(hatchStyles[i], Color.Gray, Color.FromArgb(255, i * 579 % 255, i * 162 % 255, i * 561 % 255));
+                // 画图
+                g.FillPolygon(hBrush, points);
+                g.DrawPolygon(Pens.Black, points);
+            }
+
+            
 
 
             // 绘制完图片部分，再去画坐标轴的间隔
@@ -174,6 +204,9 @@ namespace Test
                 Font font = new Font("黑体", 9);
                 g.DrawString((maxVal / 10 * (i + 1)) + "", font, Brushes.Black, space, format);
             }
+
+            // 绘制网格线
+
         }
 
         // 数据转换为点坐标
