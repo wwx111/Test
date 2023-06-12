@@ -8,6 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Test
 {
@@ -295,5 +300,172 @@ namespace Test
         }
 
         
+    }
+
+    public class loadData
+    {
+        public static DataTable ExcelToDatatable(string fileName, string sheetName)
+        {
+            ISheet sheet = null;
+            DataTable data = new DataTable();
+            int startRow = 1;//第一行均为标题
+            IWorkbook workbook = null;
+            FileStream fs;
+            int cellCount = 0; //需要处理数据的列数
+            int rowCount = 0;
+            try
+            {
+                fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                if (fileName.IndexOf(".xlsx") > 0) // 2007版本
+                {
+                    workbook = new XSSFWorkbook(fs);
+                }
+                else if (fileName.IndexOf(".xls") > 0) // 2003版本
+                {
+                    workbook = new HSSFWorkbook(fs);
+                }
+                if(sheetName != null)
+                {
+                    sheet = workbook.GetSheet(sheetName);
+                }
+                else
+                {
+                    Console.WriteLine("SheetName is null");
+                }
+                if(sheet != null)
+                {
+                    IRow firstRow = sheet.GetRow(0);
+                    if (sheetName.Equals("STYL"))
+                    {
+                        cellCount = 3;
+                    }else if (sheetName.Equals("NORM"))
+                    {
+                        cellCount = 6;
+                    }else if (sheetName.Equals("MAPs"))
+                    {
+                        cellCount = 26;
+                    }
+                    for (int i = firstRow.FirstCellNum; i < cellCount; ++i)//第一行列数循环
+                    {
+                        DataColumn column = new DataColumn(firstRow.GetCell(i).StringCellValue);//获取标题
+                        data.Columns.Add(column);//添加列
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Sheet is null!");
+                }
+                rowCount = sheet.LastRowNum;
+                for (int i = startRow; i <= rowCount; ++i)//循环遍历所有行
+                {
+                    IRow row = sheet.GetRow(i);//第几行
+                    int j = row.FirstCellNum;
+                    if(j < 0)
+                    {
+                        break;
+                    }
+                    //将excel表每一行的数据添加到datatable的行中
+                    DataRow dataRow = data.NewRow();
+                    for (; j < cellCount; ++j)
+                    {
+                        if (row.GetCell(j) != null) //同理，没有数据的单元格都默认是null
+                        {
+                            dataRow[j] = row.GetCell(j).ToString();
+                        }
+                    }
+                    data.Rows.Add(dataRow);
+                }
+                return data;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                return null;
+            }
+        }
+
+        public static List<Dictionary<string,string>> STYLTableToData(DataTable STYLDt)
+        {
+            List <Dictionary<string, string>> STYLData = new List<Dictionary<string, string>>();
+            Dictionary<string, string> colorDictionary = new Dictionary<string, string>();
+            Dictionary<string, string> drawDictionary = new Dictionary<string, string>();
+            STYLData.Add(colorDictionary);
+            STYLData.Add(drawDictionary);
+            int startRow = 0;
+            string data = STYLDt.Rows[startRow][1].ToString();
+            while (!(data.IndexOf("绘图") > 0))
+            {
+                if(data.IndexOf("、") > 0)
+                {
+                    startRow++;
+                    data = STYLDt.Rows[startRow][1].ToString();
+                    continue;
+                }
+                else
+                {
+                    colorDictionary.Add(STYLDt.Rows[startRow]["ID"].ToString(), data);
+                    startRow++;
+                    data = STYLDt.Rows[startRow]["Item"].ToString();
+                }    
+            }
+            startRow++;
+            for(;startRow < STYLDt.Rows.Count; startRow++)
+            {
+                drawDictionary.Add(STYLDt.Rows[startRow]["备注"].ToString(), STYLDt.Rows[startRow]["Item"].ToString());
+            }
+            return STYLData;
+        }
+
+        public static List<Dictionary<string, Dictionary<string, string>>> NORMTableToData(DataTable NORMDt)
+        {
+            List<Dictionary<string, Dictionary<string, string>>> NORMData = new List<Dictionary<string, Dictionary<string, string>>>();
+            Dictionary<string, Dictionary<string, string>> drawParameter= new Dictionary<string, Dictionary<string, string>>();
+            NORMData.Add(drawParameter);
+            int startRow = 0;
+            while (!(NORMDt.Rows[startRow]["Item"].ToString().IndexOf("绘图参数") > 0))
+            {
+                startRow++;
+            }
+            startRow++;
+            for(; startRow < NORMDt.Rows.Count; startRow++)
+            {
+                Dictionary<string, string> dictionary = new Dictionary<string, string>();
+                dictionary.Add("Hatch", NORMDt.Rows[startRow]["Hatch"].ToString());
+                dictionary.Add("ARGB", NORMDt.Rows[startRow]["ARGB"].ToString());
+                dictionary.Add("Mark", "1");
+                if (!(drawParameter.ContainsKey(NORMDt.Rows[startRow]["Flag"].ToString())))
+                {
+                    drawParameter.Add(NORMDt.Rows[startRow]["Flag"].ToString(), dictionary);
+                }
+                
+            }
+            return NORMData;
+        }
+        public static Dictionary<string, Dictionary<string, List<string>>> MAPsTableToData(DataTable MAPsDt)
+        {
+            Dictionary<string, Dictionary<string, List<string>>> flagDictionary = new Dictionary<string, Dictionary<string, List<string>>>();
+            int startRow = 0;
+            for(;startRow < MAPsDt.Rows.Count; startRow++)
+            {
+                string flag = MAPsDt.Rows[startRow]["Flag"].ToString();
+                Dictionary<string, List<string>> dateDictionary;
+                List<string> data = new List<string>();
+                if (!flagDictionary.ContainsKey(flag))
+                {
+                    dateDictionary = new Dictionary<string, List<string>>();
+                    flagDictionary.Add(flag, dateDictionary);
+                }
+                else
+                {
+                    flagDictionary.TryGetValue(flag, out dateDictionary);
+                }
+                for(int startLine = 1; startLine <= 24; startLine++)
+                {
+                    data.Add(MAPsDt.Rows[startRow][startLine].ToString());
+                }
+                dateDictionary.Add(MAPsDt.Rows[startRow]["Date"].ToString(), data);
+            }
+            return flagDictionary;
+        }
     }
 }
