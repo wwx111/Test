@@ -54,7 +54,7 @@ namespace Test
             // 画图
             // 
             this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.ClientSize = new System.Drawing.Size(1032, 683);
+            this.ClientSize = new System.Drawing.Size(1032, 1053);
             this.Name = "画图";
             this.Text = "电站位置图";
             this.Load += new System.EventHandler(this.画图_Load);
@@ -115,7 +115,7 @@ namespace Test
 
             // 整个画面的宽度和高度
             int wholeWidth = 1020;
-            int wholeHeight = 800;
+            int wholeHeight = 950;
 
             // 首先解析excel文件，获取绘图的信息
             loadData LoadData = new loadData();
@@ -126,7 +126,7 @@ namespace Test
             List<Dictionary<string, string>> STYLlist = loadData.STYLTableToData(STYLdata);
             List<Dictionary<string, Dictionary<string, string>>> NORMlist = loadData.NORMTableToData(NORMdata);
             Dictionary<string, Dictionary<string, List<string>>> dictionary = loadData.MAPsTableToData(Mapsdata);
-
+            dictionary = (from d in dictionary orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
 
             // 获取最大纵坐标
             Dictionary<string, string> STYLinfo1 = STYLlist[1];
@@ -166,7 +166,7 @@ namespace Test
             {
                 if (key.Equals("9950"))
                 {
-                    break;
+                    continue;
                 }
                 string flag = key;
                 Dictionary<string, List<string>> dic1 = dictionary[key];
@@ -208,7 +208,7 @@ namespace Test
                     string[] ARGBS = color.Split(' ');
                     if (ARGBS.Length >= 4)
                     {
-                        HatchBrush hBrush = new HatchBrush(hatchStyle[hatchID - 21], Color.Gray, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
+                        HatchBrush hBrush = new HatchBrush(hatchStyle[hatchID - 21], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
                         // 画图
                         g.FillPolygon(hBrush, points);
                         g.DrawPolygon(Pens.Black, points);
@@ -216,56 +216,12 @@ namespace Test
                 }
             }
 
-
-
-
-            //int types = 5;
-            //HatchStyle[] hatchStyles = new HatchStyle[types];
-            //// 这里是随机生成的填充样式
-            //for(int i = 0; i < types; i++)
-            //{
-            //    switch (i % 3)
-            //    {
-            //        case 0:
-            //            hatchStyles[i] = HatchStyle.Percent10;
-            //            break;
-            //        case 1:
-            //            hatchStyles[i] = HatchStyle.ForwardDiagonal;
-            //            break;
-            //        case 2:
-            //            hatchStyles[i] = HatchStyle.HorizontalBrick;
-            //            break;
-            //    }    
-            //}
-            //// data是一种flag对应的数据
-            //int[] data = new int[] { 64727, 64726, 64338, 64938, 65239, 65428, 65723, 65723, 68403, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69506, 67437,
-            //                         64727, 64726, 64338, 64938, 65239, 65428, 65723, 65723, 68403, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69506, 67437 };
-
-            //// color是一种flag对应的颜色
-            //for (int i = 0; i < types; i++)
-            //{
-            //    for(int j = 0; j < data.Length; j++)
-            //    {
-            //        data[j] = data[j] - i * j * 80 - i * 56 - j * 28;
-            //    }
-            //    // data-数据 end-绘图的左上角坐标 width-绘图的宽度 height-绘图的高度 maxVal-一年的最大值，用于固定Y轴
-            //    Point[] points = dataToPoint(data, end2, wholeWidth - leftBorderWidth - rightBorderWidth - 5, wholeHeight - topBorderWidth - bottomBorderWidth - 5, maxVal);
-            //    // 笔刷中颜色、填充样式应该解析文件得到
-            //    HatchBrush hBrush = new HatchBrush(hatchStyles[i], Color.Gray, Color.FromArgb(255, i * 579 % 255, i * 162 % 255, i * 561 % 255));
-            //    // 画图
-            //    g.FillPolygon(hBrush, points);
-            //    g.DrawPolygon(Pens.Black, points);
-            //}
-
-
-
-
             // 绘制完图片部分，再去画坐标轴的间隔
             // 根据天数为1天还是多天，决定X轴分为24小时还是若干天
             int interval;
             if (days > 1)
             {
-                interval = (end.X - start.X - 5) / (days);
+                interval = (wholeWidth - leftBorderWidth - rightBorderWidth - 5) / (days*24) * 24;
                 Point[] downPoints = new Point[days];
                 Point[] upPoints = new Point[days];
                 String[] dates = getDateString(year, startMonth, startDay, days);
