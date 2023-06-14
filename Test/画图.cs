@@ -13,6 +13,7 @@ using System.IO;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using System.Collections;
 
 namespace Test
 {
@@ -81,11 +82,30 @@ namespace Test
         private void 画图_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            paintDays(g, 2020, 8, 30, 2, 80000);
+            HatchStyle[] hatchStyles = new HatchStyle[18];
+            hatchStyles[0] = HatchStyle.Percent10;
+            hatchStyles[1] = HatchStyle.Percent25;
+            hatchStyles[2] = HatchStyle.ForwardDiagonal;
+            hatchStyles[3] = HatchStyle.BackwardDiagonal;
+            hatchStyles[4] = HatchStyle.Sphere;
+            hatchStyles[5] = HatchStyle.LightDownwardDiagonal;
+            hatchStyles[6] = HatchStyle.LightUpwardDiagonal;
+            hatchStyles[7] = HatchStyle.LightVertical;
+            hatchStyles[8] = HatchStyle.NarrowVertical;
+            hatchStyles[9] = HatchStyle.DiagonalCross;
+            hatchStyles[10] = HatchStyle.HorizontalBrick;
+            hatchStyles[11] = HatchStyle.OutlinedDiamond;
+            hatchStyles[12] = HatchStyle.DiagonalBrick;
+            hatchStyles[13] = HatchStyle.Weave;
+            hatchStyles[14] = HatchStyle.DarkDownwardDiagonal;
+            hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
+            hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
+            hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
+            paintDays(g, 2020, 8, 30, 3, hatchStyles);
         }
 
         // 开始绘图的年、月、日、绘图天数、一年最大值 
-        private void paintDays(Graphics g,int year, int startMonth,int startDay, int days, int maxVal)
+        private void paintDays(Graphics g,int year, int startMonth,int startDay, int days, HatchStyle[] hatchStyle)
         {
             // 左右边界的宽度
             int leftBorderWidth = 80;
@@ -96,6 +116,22 @@ namespace Test
             // 整个画面的宽度和高度
             int wholeWidth = 1020;
             int wholeHeight = 800;
+
+            // 首先解析excel文件，获取绘图的信息
+            loadData LoadData = new loadData();
+            string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
+            DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
+            DataTable Mapsdata = loadData.ExcelToDatatable(path, "MAPs");
+            List<Dictionary<string, string>> STYLlist = loadData.STYLTableToData(STYLdata);
+            List<Dictionary<string, Dictionary<string, string>>> NORMlist = loadData.NORMTableToData(NORMdata);
+            Dictionary<string, Dictionary<string, List<string>>> dictionary = loadData.MAPsTableToData(Mapsdata);
+
+
+            // 获取最大纵坐标
+            Dictionary<string, string> STYLinfo1 = STYLlist[1];
+            List<string> temp = new List<string>(STYLinfo1.Keys);
+            int maxVal = int.Parse(STYLinfo1[temp[6]]);
 
             // 绘制坐标轴
             Pen pen = new Pen(Brushes.Black);
@@ -119,51 +155,109 @@ namespace Test
             g.DrawLine(pen, arrow[1], end2);
             end2.Y += 5;
 
-            // 下面的均是测试代码，仅用于查看效果
-            // 需要函数将数值转换为点坐标
-            // 这里应该有一个循环，有多少种Flag，就循环多少次，每次画一种就行
-            // 每种flag需要传来笔刷颜色，背景样式以及数据，数据用数组表示
-            // 按理说这里的代码需要改动，需要调用解析文件的函数来获得具体的数据
-
-            int types = 5;
-            HatchStyle[] hatchStyles = new HatchStyle[types];
-            // 这里是随机生成的填充样式
-            for(int i = 0; i < types; i++)
-            {
-                switch (i % 3)
-                {
-                    case 0:
-                        hatchStyles[i] = HatchStyle.Percent10;
-                        break;
-                    case 1:
-                        hatchStyles[i] = HatchStyle.ForwardDiagonal;
-                        break;
-                    case 2:
-                        hatchStyles[i] = HatchStyle.HorizontalBrick;
-                        break;
-                }    
-            }
-            // data是一种flag对应的数据
-            int[] data = new int[] { 64727, 64726, 64338, 64938, 65239, 65428, 65723, 65723, 68403, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69506, 67437,
-                                     64727, 64726, 64338, 64938, 65239, 65428, 65723, 65723, 68403, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69506, 67437 };
-
-            // color是一种flag对应的颜色
-            for (int i = 0; i < types; i++)
-            {
-                for(int j = 0; j < data.Length; j++)
-                {
-                    data[j] = data[j] - i * j * 80 - i * 56 - j * 28;
-                }
-                // data-数据 end-绘图的左上角坐标 width-绘图的宽度 height-绘图的高度 maxVal-一年的最大值，用于固定Y轴
-                Point[] points = dataToPoint(data, end2, wholeWidth - leftBorderWidth - rightBorderWidth - 5, wholeHeight - topBorderWidth - bottomBorderWidth - 5, maxVal);
-                // 笔刷中颜色、填充样式应该解析文件得到
-                HatchBrush hBrush = new HatchBrush(hatchStyles[i], Color.Gray, Color.FromArgb(255, i * 579 % 255, i * 162 % 255, i * 561 % 255));
-                // 画图
-                g.FillPolygon(hBrush, points);
-                g.DrawPolygon(Pens.Black, points);
-            }
-
+            // 绘制中间的电站位置图
             
+
+            // 获取到数据后，需要绘图
+            // 先得到画图的起始天数
+            int startDays = dateToDay(year, startMonth, startDay);
+            // 获取数据和颜色、样式来绘图
+            foreach (string key in dictionary.Keys)
+            {
+                if (key.Equals("9950"))
+                {
+                    break;
+                }
+                string flag = key;
+                Dictionary<string, List<string>> dic1 = dictionary[key];
+                ArrayList array = new ArrayList();
+                for (int i = 0; i < days; i++)
+                {
+                     string str = Convert.ToString(i + startDays);
+                     if (dic1.ContainsKey(str)){
+                        List<string> list = dic1[str];
+                        foreach(string val in list)
+                        {
+                            array.Add(int.Parse(val));
+                        }  
+                     }
+                     else
+                     {
+                        if(array.Count != 0)
+                        {
+                            for(int j = 0; j < 24; j++)
+                            {
+                                array.Add(0);
+                            }
+                        }
+
+                     }
+                }
+                if (array.Count != 0)
+                {
+                    int[] data = (int[])array.ToArray(typeof(int));
+                    // data-数据 end-绘图的左上角坐标 width-绘图的宽度 height-绘图的高度 maxVal-一年的最大值，用于固定Y轴
+                    Point[] points = dataToPoint(data, end2, wholeWidth - leftBorderWidth - rightBorderWidth - 5, wholeHeight - topBorderWidth - bottomBorderWidth - 5, maxVal);
+                    // 笔刷中颜色、填充样式应该解析文件得到
+                    Dictionary<string, Dictionary<string, string>> NORMdic = NORMlist[0];
+                    Dictionary<string, string> NORMinfo = NORMdic[key];
+                    int hatchID = int.Parse(NORMinfo["Hatch"]);
+                    string color = NORMinfo["ARGB"];
+                    Dictionary<string, string> STYLinfo = STYLlist[0];
+                    color = STYLinfo[color];
+                    string[] ARGBS = color.Split(' ');
+                    if (ARGBS.Length >= 4)
+                    {
+                        HatchBrush hBrush = new HatchBrush(hatchStyle[hatchID - 21], Color.Gray, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
+                        // 画图
+                        g.FillPolygon(hBrush, points);
+                        g.DrawPolygon(Pens.Black, points);
+                    }
+                }
+            }
+
+
+
+
+            //int types = 5;
+            //HatchStyle[] hatchStyles = new HatchStyle[types];
+            //// 这里是随机生成的填充样式
+            //for(int i = 0; i < types; i++)
+            //{
+            //    switch (i % 3)
+            //    {
+            //        case 0:
+            //            hatchStyles[i] = HatchStyle.Percent10;
+            //            break;
+            //        case 1:
+            //            hatchStyles[i] = HatchStyle.ForwardDiagonal;
+            //            break;
+            //        case 2:
+            //            hatchStyles[i] = HatchStyle.HorizontalBrick;
+            //            break;
+            //    }    
+            //}
+            //// data是一种flag对应的数据
+            //int[] data = new int[] { 64727, 64726, 64338, 64938, 65239, 65428, 65723, 65723, 68403, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69506, 67437,
+            //                         64727, 64726, 64338, 64938, 65239, 65428, 65723, 65723, 68403, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69788, 69506, 67437 };
+
+            //// color是一种flag对应的颜色
+            //for (int i = 0; i < types; i++)
+            //{
+            //    for(int j = 0; j < data.Length; j++)
+            //    {
+            //        data[j] = data[j] - i * j * 80 - i * 56 - j * 28;
+            //    }
+            //    // data-数据 end-绘图的左上角坐标 width-绘图的宽度 height-绘图的高度 maxVal-一年的最大值，用于固定Y轴
+            //    Point[] points = dataToPoint(data, end2, wholeWidth - leftBorderWidth - rightBorderWidth - 5, wholeHeight - topBorderWidth - bottomBorderWidth - 5, maxVal);
+            //    // 笔刷中颜色、填充样式应该解析文件得到
+            //    HatchBrush hBrush = new HatchBrush(hatchStyles[i], Color.Gray, Color.FromArgb(255, i * 579 % 255, i * 162 % 255, i * 561 % 255));
+            //    // 画图
+            //    g.FillPolygon(hBrush, points);
+            //    g.DrawPolygon(Pens.Black, points);
+            //}
+
+
 
 
             // 绘制完图片部分，再去画坐标轴的间隔
@@ -232,7 +326,7 @@ namespace Test
             return points;
         }
     
-        // 天数转换为日期
+        // 根据起始日期和天数，转换为x月x日的字符串
         private String[] getDateString(int year, int month, int day, int days)
         {
             String[] date = new String[days];
@@ -283,6 +377,49 @@ namespace Test
             return date;
         }
 
+        // 根据x月x日的日期转换为一年之中的天数
+        private int dateToDay(int year, int month, int day)
+        {
+            Boolean flag = false;
+            if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+            {
+                flag = true;
+            }
+            int days = -1;
+            for(int i=0; i < month - 1; i++)
+            {
+                switch (i+1)
+                {
+                    case 1:
+                    case 3:
+                    case 5:
+                    case 7:
+                    case 8:
+                    case 10:
+                    case 12:
+                        days += 31;
+                        break;
+                    case 2:
+                        if (flag)
+                        {
+                            days += 29;
+                        }
+                        else
+                        {
+                            days += 28;
+                        }
+                        break;
+                    case 4:
+                    case 6:
+                    case 9:
+                    case 11:
+                        days += 30;
+                        break;
+                }
+            }
+            return (days + day);
+        }
+
         private void pictureBox1_Click(object sender, EventArgs e)
         {
 
@@ -291,7 +428,7 @@ namespace Test
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            paintDays(g, 2020, 8, 30, 5, 80000);
+            // paintDays(g, 2020, 8, 30, 5, 80000);
         }
 
         private void pictureBox_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
