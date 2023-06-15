@@ -162,12 +162,10 @@ namespace Test
             // 先得到画图的起始天数
             int startDays = dateToDay(year, startMonth, startDay);
             // 获取数据和颜色、样式来绘图
+            // 原始负荷需要额外处理，最后绘制
+            Point[] originalLoadPoints = new Point[24 * days * 2];
             foreach (string key in dictionary.Keys)
             {
-                if (key.Equals("9950"))
-                {
-                    continue;
-                }
                 string flag = key;
                 Dictionary<string, List<string>> dic1 = dictionary[key];
                 ArrayList array = new ArrayList();
@@ -206,8 +204,11 @@ namespace Test
                     Dictionary<string, string> STYLinfo = STYLlist[0];
                     color = STYLinfo[color];
                     string[] ARGBS = color.Split(' ');
-                    if (ARGBS.Length >= 4)
+                    if (key.Equals("9950"))
                     {
+                        originalLoadPoints = points;
+                    }
+                    else{
                         HatchBrush hBrush = new HatchBrush(hatchStyle[hatchID - 21], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
                         // 画图
                         g.FillPolygon(hBrush, points);
@@ -215,6 +216,9 @@ namespace Test
                     }
                 }
             }
+            Pen blackPen = new Pen(Color.Black, (float)0.5);
+            blackPen.DashPattern = new float[] { 5, 4 };
+            g.DrawPolygon(blackPen, originalLoadPoints);
 
             // 绘制完图片部分，再去画坐标轴的间隔
             // 根据天数为1天还是多天，决定X轴分为24小时还是若干天
