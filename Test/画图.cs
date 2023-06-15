@@ -19,6 +19,8 @@ namespace Test
 {
     public partial class 画图 : Form
     {
+        private MyFunPictureBox myFunPictureBox = null;              //保存图片框控件
+
         public 画图()
         {
             InitializeComponent();
@@ -34,7 +36,18 @@ namespace Test
             this.components = new System.ComponentModel.Container();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.保存图片ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.DayLeft = new System.Windows.Forms.Button();
+            this.DayRight = new System.Windows.Forms.Button();
+            this.MonthLeft = new System.Windows.Forms.Button();
+            this.MonthRight = new System.Windows.Forms.Button();
+            this.AddDay = new System.Windows.Forms.Button();
+            this.RemoveDay = new System.Windows.Forms.Button();
+            this.InZoom = new System.Windows.Forms.Button();
+            this.OutZoom = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.contextMenuStrip1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -43,23 +56,122 @@ namespace Test
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.保存图片ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(139, 28);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 34);
             // 
             // 保存图片ToolStripMenuItem
             // 
             this.保存图片ToolStripMenuItem.Name = "保存图片ToolStripMenuItem";
-            this.保存图片ToolStripMenuItem.Size = new System.Drawing.Size(138, 24);
+            this.保存图片ToolStripMenuItem.Size = new System.Drawing.Size(152, 30);
             this.保存图片ToolStripMenuItem.Text = "保存图片";
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.OutZoom);
+            this.panel1.Controls.Add(this.InZoom);
+            this.panel1.Controls.Add(this.RemoveDay);
+            this.panel1.Controls.Add(this.AddDay);
+            this.panel1.Controls.Add(this.MonthRight);
+            this.panel1.Controls.Add(this.MonthLeft);
+            this.panel1.Controls.Add(this.DayRight);
+            this.panel1.Controls.Add(this.DayLeft);
+            this.panel1.Location = new System.Drawing.Point(12, 12);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(214, 224);
+            this.panel1.TabIndex = 1;
+            // 
+            // DayLeft
+            // 
+            this.DayLeft.Location = new System.Drawing.Point(3, 3);
+            this.DayLeft.Name = "DayLeft";
+            this.DayLeft.Size = new System.Drawing.Size(104, 50);
+            this.DayLeft.TabIndex = 0;
+            this.DayLeft.Text = "<";
+            this.toolTip1.SetToolTip(this.DayLeft, "左移一天");
+            this.DayLeft.UseVisualStyleBackColor = true;
+            // 
+            // DayRight
+            // 
+            this.DayRight.Location = new System.Drawing.Point(107, 3);
+            this.DayRight.Name = "DayRight";
+            this.DayRight.Size = new System.Drawing.Size(104, 50);
+            this.DayRight.TabIndex = 1;
+            this.DayRight.Text = ">";
+            this.toolTip1.SetToolTip(this.DayRight, "右移一天");
+            this.DayRight.UseVisualStyleBackColor = true;
+            // 
+            // MonthLeft
+            // 
+            this.MonthLeft.Location = new System.Drawing.Point(3, 59);
+            this.MonthLeft.Name = "MonthLeft";
+            this.MonthLeft.Size = new System.Drawing.Size(104, 50);
+            this.MonthLeft.TabIndex = 2;
+            this.MonthLeft.Text = "<<";
+            this.toolTip1.SetToolTip(this.MonthLeft, "左移一月");
+            this.MonthLeft.UseVisualStyleBackColor = true;
+            // 
+            // MonthRight
+            // 
+            this.MonthRight.Location = new System.Drawing.Point(107, 59);
+            this.MonthRight.Name = "MonthRight";
+            this.MonthRight.Size = new System.Drawing.Size(104, 50);
+            this.MonthRight.TabIndex = 3;
+            this.MonthRight.Text = ">>";
+            this.toolTip1.SetToolTip(this.MonthRight, "右移一月");
+            this.MonthRight.UseVisualStyleBackColor = true;
+            // 
+            // AddDay
+            // 
+            this.AddDay.Location = new System.Drawing.Point(3, 115);
+            this.AddDay.Name = "AddDay";
+            this.AddDay.Size = new System.Drawing.Size(104, 50);
+            this.AddDay.TabIndex = 4;
+            this.AddDay.Text = "+";
+            this.toolTip1.SetToolTip(this.AddDay, "增加一天");
+            this.AddDay.UseVisualStyleBackColor = true;
+            // 
+            // RemoveDay
+            // 
+            this.RemoveDay.Location = new System.Drawing.Point(107, 115);
+            this.RemoveDay.Name = "RemoveDay";
+            this.RemoveDay.Size = new System.Drawing.Size(104, 50);
+            this.RemoveDay.TabIndex = 5;
+            this.RemoveDay.Text = "-";
+            this.toolTip1.SetToolTip(this.RemoveDay, "减少一天");
+            this.RemoveDay.UseVisualStyleBackColor = true;
+            // 
+            // InZoom
+            // 
+            this.InZoom.Location = new System.Drawing.Point(3, 171);
+            this.InZoom.Name = "InZoom";
+            this.InZoom.Size = new System.Drawing.Size(104, 50);
+            this.InZoom.TabIndex = 6;
+            this.InZoom.Text = "放大";
+            this.toolTip1.SetToolTip(this.InZoom, "放大图片");
+            this.InZoom.UseVisualStyleBackColor = true;
+            this.InZoom.Click += new System.EventHandler(this.InZoom_Click);
+            // 
+            // OutZoom
+            // 
+            this.OutZoom.Location = new System.Drawing.Point(107, 171);
+            this.OutZoom.Name = "OutZoom";
+            this.OutZoom.Size = new System.Drawing.Size(104, 50);
+            this.OutZoom.TabIndex = 7;
+            this.OutZoom.Text = "缩小";
+            this.toolTip1.SetToolTip(this.OutZoom, "缩小图片");
+            this.OutZoom.UseVisualStyleBackColor = true;
+            this.OutZoom.Click += new System.EventHandler(this.OutZoom_Click);
             // 
             // 画图
             // 
             this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.ClientSize = new System.Drawing.Size(1032, 1053);
+            this.Controls.Add(this.panel1);
             this.Name = "画图";
             this.Text = "电站位置图";
             this.Load += new System.EventHandler(this.画图_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.画图_Paint);
             this.contextMenuStrip1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -396,7 +508,274 @@ namespace Test
             
         }
 
-        
+        // 23.6.15 cjy
+        private static void InZoomPic(MyPictureBox picture, Panel panel)
+        {
+            if (picture.Width * 1.1 <= 1400 && picture.Height * 1.1 <= 2400)
+            {
+                picture.Size = new Size((int)(picture.Width * 1.1), (int)(picture.Height * 1.1));
+                panel.AutoScroll = true;
+                picture.smallFontSize = (float)(picture.smallFontSize * 1.1);
+                picture.largeFontSize = (float)(picture.largeFontSize * 1.1);
+                picture.logoWidth = (int)(picture.logoWidth * 1.1);
+                picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 1.1)
+                    , (int)(picture.logoPos.Top * 1.1)
+                    , picture.logoPos.Width
+                    , picture.logoPos.Height); ;
+                picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 1.1),
+                      (int)(picture.drawArea.Top * 1.1),
+                      (int)(picture.drawArea.Width * 1.1),
+                      (int)(picture.drawArea.Height * 1.1
+                      ));
+                picture.Invalidate();
+            }
+        }
+
+        private static void OutZoomPic(MyPictureBox picture, Panel panel)
+        {
+            if (picture.Width * 0.9 > 300 && picture.Height * 0.9 > 500)
+            {
+                picture.Size = new Size((int)(picture.Width * 0.9), (int)(picture.Height * 0.9));
+                panel.AutoScroll = true;
+                picture.smallFontSize = (float)(picture.smallFontSize * 0.9);
+                picture.largeFontSize = (float)(picture.largeFontSize * 0.9);
+                picture.logoWidth = (int)(picture.logoWidth * 0.9);
+                picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 0.9)
+                    , (int)(picture.logoPos.Top * 0.9)
+                    , picture.logoPos.Width
+                    , picture.logoPos.Height);
+                picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 0.9),
+                    (int)(picture.drawArea.Top * 0.9),
+                    (int)(picture.drawArea.Width * 0.9),
+                    (int)(picture.drawArea.Height * 0.9));
+                picture.Invalidate();
+            }
+        }
+
+
+        private string WrapLogoString(string originalStr)
+        {
+            int j = 0;
+            string result = "";
+            for (int i = 0; i < originalStr.Length; i++)
+            {
+                result += originalStr[i];
+                j++;
+                if (j == 5)
+                {
+                    result += "\n";
+                    j = 0;
+                }
+            }
+            return result;
+        }
+        private void SortLogo(MyPictureBox picture)
+        {
+            for (int i = 0; i < picture.LogoItems.Count; i++)
+            {
+                int minPriority = 10000;
+                int index = -1;
+                for (int j = i; j < picture.LogoItems.Count; j++)
+                    if (picture.LogoItems[j].priority < minPriority)
+                    {
+                        minPriority = picture.LogoItems[j].priority;
+                        index = j;
+                    }
+                LogoItem item = new LogoItem();
+                item.brush = picture.LogoItems[index].brush;
+                item.description = picture.LogoItems[index].description;
+                item.priority = picture.LogoItems[index].priority;
+                picture.LogoItems.RemoveAt(index);
+                picture.LogoItems.Insert(i, item); ;
+            }
+        }
+        //private void DrawLogo(MyPictureBox picture, Graphics g)
+        //{
+        //    //修改如下 直接将所有的图标画出
+        //    //SortLogo(picture);
+        //    fillBrushes.Sort();
+        //    for (Int32 brushIndex = 0; brushIndex < fillBrushes.Count; brushIndex++)
+        //    {
+        //        if (fillBrushes[brushIndex].describe.Contains("出力"))
+        //        {
+        //            LogoItem item = new LogoItem();
+        //            item.brush = fillBrushes[brushIndex].myBrush;
+        //            item.description = fillBrushes[brushIndex].describe;
+        //            item.priority = fillBrushes[brushIndex].priority;
+        //            picture.LogoItems.Add(item);
+        //        }
+        //    }
+
+        //    LogoItem newItem = new LogoItem();
+        //    newItem.priority = 0;
+        //    newItem.brush = new SolidBrush(Color.SkyBlue);
+        //    newItem.description = "原始负荷";
+        //    picture.LogoItems.Insert(0, newItem);
+
+        //    //因为吴老师要求将部分图例合并，所以也在此处添加添加by孙凯 2016.1.19
+        //    //抽蓄发电/抽蓄填谷合并、电力不足/调峰不足合并、新能源弃电/水电弃水合并
+        //    newItem.brush = fillBrushes[myDrawHelper.getBrushArrayIndex(5)].myBrush;
+        //    newItem.secondBrush = fillBrushes[myDrawHelper.getBrushArrayIndex(21)].myBrush;
+        //    newItem.description = "抽蓄发电/抽蓄填谷";
+        //    picture.LogoItems.Insert(1, newItem);
+
+        //    newItem.brush = fillBrushes[myDrawHelper.getBrushArrayIndex(22)].myBrush;
+        //    newItem.secondBrush = fillBrushes[myDrawHelper.getBrushArrayIndex(24)].myBrush;
+        //    newItem.description = "电力不足/调峰不足";
+        //    picture.LogoItems.Insert(2, newItem);
+
+        //    newItem.brush = fillBrushes[myDrawHelper.getBrushArrayIndex(23)].myBrush;
+        //    newItem.secondBrush = fillBrushes[myDrawHelper.getBrushArrayIndex(25)].myBrush;
+        //    newItem.description = "新能源弃电/水电弃水";
+        //    picture.LogoItems.Insert(3, newItem);
+
+        //    //添加Flg = 27、28的Logo
+        //    //添加by孙凯 2015.7.7
+        //    //Logo 背景使用新能源 此处采用硬编码 为config文件中selectItems的Priority-1
+        //    newItem.brush = fillBrushes[myDrawHelper.getBrushArrayIndex(23)].myBrush;
+        //    newItem.description = "新能源/风/光发电";
+        //    picture.LogoItems.Insert(4, newItem);
+
+        //    //newItem = new LogoItem();
+        //    //newItem.priority = 2;
+        //    //newItem.brush = new SolidBrush(Color.Green);
+        //    //newItem.description = "光伏发电位置曲线";
+        //    //picture.LogoItems.Insert(2, newItem);
+        //    //添加结束 by 孙凯
+
+        //    SolidBrush backBrush = new SolidBrush(Color.White);
+
+        //    Font drawFont = new Font("宋体", picture.smallFontSize);
+        //    SolidBrush drawBrush = new SolidBrush(Color.Black);
+        //    Pen framePen = new Pen(Color.Black, 1.0f);
+        //    Pen dashPen = new Pen(Color.Black, 1.0f);
+        //    dashPen.DashStyle = DashStyle.Dash;
+        //    //用于绘制Flg=27的图标
+        //    Pen tmpPen1 = new Pen(Color.Orange, 1.0f);
+        //    tmpPen1.DashStyle = DashStyle.Dash;
+        //    //用于绘制Flg=28的图标
+        //    //Pen tmpPen2 = new Pen(Color.HotPink, 1.0f);
+        //    //tmpPen2.DashStyle = DashStyle.Dash;
+
+        //    int vacant = 10;
+        //    Font titleFont = new Font("宋体", picture.largeFontSize, FontStyle.Bold);
+
+        //    picture.logoPos = new Rectangle(picture.logoPos.Left
+        //        , picture.logoPos.Top
+        //        , picture.logoWidth
+        //        , (picture.LogoItems.Count + 1) / 2 * (drawFont.Height * 2 + vacant) +
+        //        vacant + titleFont.Height + vacant + 3);
+
+
+        //    g.FillRectangle(backBrush, picture.logoPos);
+        //    StringFormat stringFormat = new StringFormat();
+        //    stringFormat.Alignment = StringAlignment.Center;
+
+        //    int itemWidth = picture.logoPos.Width / 2;
+
+        //    g.DrawString("图例", titleFont, drawBrush, picture.logoPos.Left + picture.logoPos.Width / 2, picture.logoPos.Top + vacant, stringFormat);
+        //    Pen pen = new Pen(Color.Black);
+        //    g.DrawLine(pen, picture.logoPos.Left, picture.logoPos.Top + vacant + titleFont.Height + 3,
+        //        picture.logoPos.Right, picture.logoPos.Top + vacant + titleFont.Height + 3);
+        //    Point startPoint = new Point(picture.logoPos.Left, picture.logoPos.Top + vacant + titleFont.Height + 3);
+
+
+        //    for (int i = 0; i < picture.LogoItems.Count; i++)
+        //    {
+        //        Point point = new Point(startPoint.X + 5 + (i % 2) * itemWidth,
+        //            startPoint.Y + (i / 2) * (drawFont.Height * 2 + vacant) + vacant);
+        //        //因为Flg = 0,27,28(对应下标分别为0, 1与其他情况不同故修改
+        //        //修改by孙凯 2015.7.7
+        //        switch (i)
+        //        {
+        //            case 0:
+        //                g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y + drawFont.Height, 40, drawFont.Height);
+        //                g.DrawLine(framePen, point.X, point.Y + drawFont.Height, point.X + 40, point.Y + drawFont.Height);
+
+        //                PointF[] points = new PointF[]
+        //                {
+        //                    new PointF(point.X, point.Y + (float)drawFont.Height*3.0f/2),
+        //                    new PointF(point.X + 20, point.Y + (float)drawFont.Height*3.0f/2),
+        //                    new PointF(point.X + 20, point.Y+(float)drawFont.Height/2.0f),
+        //                    new PointF(point.X + 40, point.Y+(float)drawFont.Height/2.0f)
+        //                };
+        //                g.DrawLines(dashPen, points);
+        //                g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
+        //                break;
+        //            //因为吴老师要求将部分图例合并，所以也在此处添加添加by孙凯 2016.1.19
+        //            //抽蓄发电/抽蓄填谷合并、电力不足/调峰不足合并、新能源弃电/水电弃水合并
+        //            case 1:
+        //            case 2:
+        //            case 3:
+        //                g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y, 40, drawFont.Height);
+        //                g.FillRectangle(picture.LogoItems[i].secondBrush, point.X, point.Y + drawFont.Height, 40, drawFont.Height);
+        //                g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
+        //                break;
+        //            case 4:
+        //                g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y, 40, drawFont.Height * 2);
+        //                //g.DrawLine(framePen, point.X, point.Y + drawFont.Height, point.X + 40, point.Y + drawFont.Height);
+
+        //                PointF[] points3 = new PointF[]
+        //                {
+        //                    new PointF(point.X, point.Y + (float)drawFont.Height*3.0f/4),
+        //                    new PointF(point.X + 20, point.Y + (float)drawFont.Height*3.0f/4),
+        //                    new PointF(point.X + 20, point.Y+(float)drawFont.Height/4.0f),
+        //                    new PointF(point.X + 40, point.Y+(float)drawFont.Height/4.0f)
+        //                };
+        //                g.DrawLines(tmpPen1, points3);
+
+        //                PointF[] points4 = new PointF[]
+        //                {
+        //                    new PointF(point.X, point.Y + (float)drawFont.Height*7.0f/4),
+        //                    new PointF(point.X + 12, point.Y + (float)drawFont.Height*7.0f/4),
+        //                    new PointF(point.X + 12, point.Y+(float)drawFont.Height*5/4.0f),
+        //                    new PointF(point.X + 28, point.Y + (float)drawFont.Height*5.0f/4),
+        //                    new PointF(point.X + 28, point.Y+(float)drawFont.Height*7/4.0f),
+        //                    new PointF(point.X + 40, point.Y+(float)drawFont.Height*7/4.0f)
+        //                };
+        //                g.DrawLines(tmpPen1, points4);
+        //                g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
+        //                break;
+        //            //case 2:
+        //            //    g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y+drawFont.Height, 40, drawFont.Height );
+        //            //    g.DrawLine(framePen, point.X, point.Y + drawFont.Height, point.X + 40, point.Y + drawFont.Height);
+
+        //            //    PointF[] points2 = new PointF[]
+        //            //    {
+        //            //        new PointF(point.X, point.Y + (float)drawFont.Height*3.0f/2),
+        //            //        new PointF(point.X + 20, point.Y + (float)drawFont.Height*3.0f/2),
+        //            //        new PointF(point.X + 20, point.Y+(float)drawFont.Height/2.0f),
+        //            //        new PointF(point.X + 40, point.Y+(float)drawFont.Height/2.0f)
+        //            //    };
+        //            //    g.DrawLines(tmpPen2,points2);
+        //            //    g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
+        //            //    break;
+        //            default:
+        //                g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y, 40, drawFont.Height * 2);
+        //                g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
+        //                break;
+        //        }
+        //        g.DrawRectangle(framePen, point.X, point.Y, 40, drawFont.Height * 2);
+        //    }
+
+        //    stringFormat.Dispose();
+        //    pen.Dispose();
+        //    framePen.Dispose();
+        //    drawBrush.Dispose();
+        //    titleFont.Dispose();
+        //    drawFont.Dispose();
+        //}
+
+
+        private void InZoom_Click(object sender, EventArgs e)
+        {
+            //InZoomPic(myFunPictureBox, myFunPictureBox.Parent as Panel);
+        }
+
+        private void OutZoom_Click(object sender, EventArgs e)
+        {
+            //OutZoomPic(myFunPictureBox, myFunPictureBox.Parent as Panel);
+        }
     }
 
     public class loadData
@@ -564,5 +943,34 @@ namespace Test
             }
             return flagDictionary;
         }
+    }
+
+    public class MyFunPictureBox : MyPictureBox
+    {
+        new public List<DataTable> LevelLines { get; set; }
+    }
+
+    public struct LogoItem
+    {
+        public Brush brush;
+        //因为一些图标合并到一起所以需要保存两个Brush 添加by孙凯 2016.1.19
+        public Brush secondBrush;
+        public string description;
+        public int priority;
+    }
+    public class MyPictureBox : PictureBox
+    {
+        public DataTable LevelLines { get; set; }
+        public DataTable genPos { get; set; }
+        public Rectangle logoPos { get; set; }
+        public List<LogoItem> LogoItems = new List<LogoItem>();
+        public Point previousPos { get; set; }
+        public float largeFontSize = 12;
+        public float smallFontSize = 10.5F;
+        public System.Drawing.Printing.PageSettings pageSettings { get; set; }
+        public Rectangle drawArea { get; set; }
+        public int logoWidth = 300;
+        public bool drawed = false;
+        public int maxRectangleY = 10000;
     }
 }

@@ -33,6 +33,16 @@ namespace Test
 
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 保存图片ToolStripMenuItem;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button OutZoom;
+        private System.Windows.Forms.Button InZoom;
+        private System.Windows.Forms.Button RemoveDay;
+        private System.Windows.Forms.Button AddDay;
+        private System.Windows.Forms.Button MonthRight;
+        private System.Windows.Forms.Button MonthLeft;
+        private System.Windows.Forms.Button DayRight;
+        private System.Windows.Forms.Button DayLeft;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
