@@ -9,6 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using DevComponents.DotNetBar;
+using System.Drawing.Printing;
+
 
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
@@ -25,6 +28,260 @@ namespace Test
         {
             InitializeComponent();
         }
+
+        public void newTab()
+        {
+            TabItem tp  = this.tabControl1.CreateTab("图1");
+
+            TabControlPanel tcp = new TabControlPanel();
+            tcp.Visible = false;
+            tcp.TabItem = tp;
+            tcp.AutoScroll = true;
+            tcp.Dock = DockStyle.Fill;
+
+            tcp.Resize += new System.EventHandler(this.pictureBox_Resize);
+
+            myFunPictureBox = new MyFunPictureBox();
+
+            tcp.Controls.Add(myFunPictureBox);
+
+
+            myFunPictureBox.AutoScrollOffset = new Point(0, 0);
+
+            tcp.ScrollControlIntoView(myFunPictureBox);
+
+            //属性设置
+            //myFunPictureBox.LevelLines = d;
+            //TODO 注释by孙凯 2015.12.17 pictureBox.genPos=d[2*dtIndex+1];
+
+            myFunPictureBox.pageSettings = new System.Drawing.Printing.PageSettings();
+            PageSettings pageSettings = myFunPictureBox.pageSettings;
+            //TODO 暂时修改by孙凯 2016.1.6
+
+            myFunPictureBox.Width = (int)(pageSettings.PaperSize.Width / 100.0 * 96);
+            myFunPictureBox.Height = (int)(pageSettings.PaperSize.Height / 100.0 * 96);
+
+            int xDraw = (int)(pageSettings.Margins.Left / 254.0 * 96);
+            int yDraw = (int)(pageSettings.Margins.Top / 254.0 * 96);
+            int widthDraw = (int)(pageSettings.PaperSize.Width / 100.0 * 96) -
+                (int)((pageSettings.Margins.Left + pageSettings.Margins.Right) / 254.0 * 96);
+            int heightDraw = (int)(pageSettings.PaperSize.Height / 100.0 * 96) -
+                (int)((pageSettings.Margins.Top + pageSettings.Margins.Bottom) / 254.0 * 96);
+            myFunPictureBox.drawArea = new Rectangle(xDraw, yDraw, widthDraw, heightDraw);
+
+            myFunPictureBox.logoPos = new Rectangle(myFunPictureBox.drawArea.Left + (int)(myFunPictureBox.drawArea.Width * 0.5)
+                , myFunPictureBox.drawArea.Bottom - (int)(myFunPictureBox.drawArea.Height * 0.4)
+                , 300
+                , (myFunPictureBox.LogoItems.Count + 1) / 2 * 50);
+
+
+
+            myFunPictureBox.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseWheel);
+            myFunPictureBox.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
+            myFunPictureBox.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
+            myFunPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
+            myFunPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
+            myFunPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
+            myFunPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
+            myFunPictureBox.Resize += new System.EventHandler(this.pictureBox_Resize);
+
+
+            this.tabControl1.Controls.Add(tcp);
+            tp.AttachedControl = tcp;
+        }
+
+        private void pictureBox_Resize(object sender, EventArgs e)
+        {
+            Control picture;
+            Control parent;
+            if (sender is PictureBox || sender is Panel)
+            {
+                if (sender is PictureBox)
+                {
+                    picture = sender as Control;
+                    parent = picture.Parent;
+                }
+                else
+                {
+                    parent = sender as Control;
+                    picture = parent.Controls[0];
+                }
+                int x = picture.Width < parent.Width ? (parent.Width - picture.Width) / 2 : 0;
+                int y = picture.Height < parent.Height ? (parent.Height - picture.Height) / 2 : 0;
+                picture.Location = new Point(x, y);
+
+            }
+        }
+
+        private void pictureBox_MouseEnter(object sender, System.EventArgs e)
+        {
+            //((sender as PictureBox).Parent as Panel).Focus();
+            (sender as PictureBox).Focus();
+        }
+
+        private void pictureBox_MouseLeave(object sender, System.EventArgs e)
+        {
+            // this.Focus();
+        }
+
+        //指示是否正在进行图例拖动
+        private bool isDragPic = false;
+
+        private void pictureBox_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            MyPictureBox picture = sender as MyPictureBox;
+            picture.previousPos = new Point(e.X, e.Y);
+
+            //指示开始图例拖动
+            if (e.Button == MouseButtons.Left && picture.logoPos.Contains(new Point(e.X, e.Y)))
+                this.isDragPic = true;
+        }
+
+        private void pictureBox_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            MyPictureBox picture = sender as MyPictureBox;
+
+            //指示结束图例拖动
+            if (e.Button == MouseButtons.Left)
+                this.isDragPic = false;
+        }
+
+
+
+
+        bool ctrl = false;
+        private void tabControl1_KeyDown(object sender, KeyEventArgs e)
+        {
+            ctrl = e.Control;
+        }
+
+        private void tabControl1_KeyUp(object sender, KeyEventArgs e)
+        {
+            ctrl = e.Control;
+        }
+
+        private void pictureBox_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (ctrl)
+            {
+                MyPictureBox picture = sender as MyPictureBox;
+                Panel panel = picture.Parent as Panel;
+                panel.AutoScroll = false;
+                if (e.Delta < 0)
+                {
+                    shrinkPicture(picture, panel);
+                    panel.AutoScroll = true;
+                }
+                else
+                {
+                    amplifyPicture(picture, panel);
+                }
+            }
+            else
+            {
+                Point mousePoint = new Point(e.X, e.Y);
+                Panel panel = (sender as PictureBox).Parent as Panel;
+                mousePoint.Offset(this.Location.X, this.Location.Y);
+                if (panel.RectangleToScreen(panel.DisplayRectangle).Contains(mousePoint))
+                {
+                    panel.AutoScrollPosition = new Point(0, panel.VerticalScroll.Value - e.Delta);
+                }
+            }
+        }
+
+        private void pictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            MyFunPictureBox picture = sender as MyFunPictureBox;
+
+            try
+            {
+                Graphics g = e.Graphics; ;
+                g.Clear(Color.White);
+
+                picture.LogoItems.Clear();
+
+                //画图_Paint(picture, e);
+
+
+                HatchStyle[] hatchStyles = new HatchStyle[18];
+                hatchStyles[0] = HatchStyle.Percent10;
+                hatchStyles[1] = HatchStyle.Percent25;
+                hatchStyles[2] = HatchStyle.ForwardDiagonal;
+                hatchStyles[3] = HatchStyle.BackwardDiagonal;
+                hatchStyles[4] = HatchStyle.Sphere;
+                hatchStyles[5] = HatchStyle.LightDownwardDiagonal;
+                hatchStyles[6] = HatchStyle.LightUpwardDiagonal;
+                hatchStyles[7] = HatchStyle.LightVertical;
+                hatchStyles[8] = HatchStyle.NarrowVertical;
+                hatchStyles[9] = HatchStyle.DiagonalCross;
+                hatchStyles[10] = HatchStyle.HorizontalBrick;
+                hatchStyles[11] = HatchStyle.OutlinedDiamond;
+                hatchStyles[12] = HatchStyle.DiagonalBrick;
+                hatchStyles[13] = HatchStyle.Weave;
+                hatchStyles[14] = HatchStyle.DarkDownwardDiagonal;
+                hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
+                hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
+                hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
+                paintDays(g, 2020, 8, 30, 3, hatchStyles);
+
+                //myDrawHelper.drawAxes(picture, g);
+
+                //DrawLogo(picture, g);
+
+                picture.drawed = true;
+                // picture.Image = memImage;
+            }
+            catch (Exception ex)
+            {
+                //ex.WriteLog();
+                MessageBox.Show(ex.ToString());
+            }
+
+        }
+
+        private static void amplifyPicture(MyPictureBox picture, Panel panel)
+        {
+            if (picture.Width * 1.1 <= 1400 && picture.Height * 1.1 <= 2400)
+            {
+                picture.Size = new Size((int)(picture.Width * 1.1), (int)(picture.Height * 1.1));
+                panel.AutoScroll = true;
+                picture.smallFontSize = (float)(picture.smallFontSize * 1.1);
+                picture.largeFontSize = (float)(picture.largeFontSize * 1.1);
+                picture.logoWidth = (int)(picture.logoWidth * 1.1);
+                picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 1.1)
+                    , (int)(picture.logoPos.Top * 1.1)
+                    , picture.logoPos.Width
+                    , picture.logoPos.Height); ;
+                picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 1.1),
+                      (int)(picture.drawArea.Top * 1.1),
+                      (int)(picture.drawArea.Width * 1.1),
+                      (int)(picture.drawArea.Height * 1.1
+                      ));
+                picture.Invalidate();
+            }
+        }
+
+        private static void shrinkPicture(MyPictureBox picture, Panel panel)
+        {
+            if (picture.Width * 0.9 > 300 && picture.Height * 0.9 > 500)
+            {
+                picture.Size = new Size((int)(picture.Width * 0.9), (int)(picture.Height * 0.9));
+                panel.AutoScroll = true;
+                picture.smallFontSize = (float)(picture.smallFontSize * 0.9);
+                picture.largeFontSize = (float)(picture.largeFontSize * 0.9);
+                picture.logoWidth = (int)(picture.logoWidth * 0.9);
+                picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 0.9)
+                    , (int)(picture.logoPos.Top * 0.9)
+                    , picture.logoPos.Width
+                    , picture.logoPos.Height);
+                picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 0.9),
+                    (int)(picture.drawArea.Top * 0.9),
+                    (int)(picture.drawArea.Width * 0.9),
+                    (int)(picture.drawArea.Height * 0.9));
+                picture.Invalidate();
+            }
+        }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -87,7 +344,8 @@ namespace Test
 
             // 首先解析excel文件，获取绘图的信息
             loadData LoadData = new loadData();
-            string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
+            //string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
             DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
             DataTable Mapsdata = loadData.ExcelToDatatable(path, "MAPs");

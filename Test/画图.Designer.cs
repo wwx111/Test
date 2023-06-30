@@ -178,11 +178,13 @@ namespace Test
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedTabFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold);
             this.tabControl1.SelectedTabIndex = -1;
-            this.tabControl1.Size = new System.Drawing.Size(770, 543);
+            this.tabControl1.Size = new System.Drawing.Size(1032, 1053);
             this.tabControl1.TabIndex = 4;
             this.tabControl1.TabLayoutType = DevComponents.DotNetBar.eTabLayoutType.FixedWithNavigationBox;
             this.tabControl1.Tag = "tabControl1";
             this.tabControl1.Text = "tabControl1";
+            this.tabControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyDown);
+            this.tabControl1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyUp);
             // 
             // 画图
             // 
