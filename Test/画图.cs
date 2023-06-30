@@ -23,10 +23,23 @@ namespace Test
     public partial class 画图 : Form
     {
         private MyFunPictureBox myFunPictureBox = null;              //保存图片框控件
+        private List<Dictionary<string, string>> STYLlist;
+        private List<Dictionary<string, Dictionary<string, string>>> NORMlist;
+        private Dictionary<string, Dictionary<string, List<string>>> dictionary;
 
         public 画图()
         {
             InitializeComponent();
+            string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
+            //string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            loadData LoadData = new loadData();
+            DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
+            DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
+            DataTable Mapsdata = loadData.ExcelToDatatable(path, "MAPs");
+            this.STYLlist = loadData.STYLTableToData(STYLdata);
+            this.NORMlist = loadData.NORMTableToData(NORMdata);
+            this.dictionary = loadData.MAPsTableToData(Mapsdata);
+            this.dictionary = (from d in dictionary orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
         }
 
         public void newTab()
@@ -343,16 +356,8 @@ namespace Test
             int wholeHeight = 950;
 
             // 首先解析excel文件，获取绘图的信息
-            loadData LoadData = new loadData();
-            string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
-            //string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
-            DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
-            DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
-            DataTable Mapsdata = loadData.ExcelToDatatable(path, "MAPs");
-            List<Dictionary<string, string>> STYLlist = loadData.STYLTableToData(STYLdata);
-            List<Dictionary<string, Dictionary<string, string>>> NORMlist = loadData.NORMTableToData(NORMdata);
-            Dictionary<string, Dictionary<string, List<string>>> dictionary = loadData.MAPsTableToData(Mapsdata);
-            dictionary = (from d in dictionary orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
+            
+            
 
             // 获取最大纵坐标
             Dictionary<string, string> STYLinfo1 = STYLlist[1];
@@ -390,7 +395,7 @@ namespace Test
             // 获取数据和颜色、样式来绘图
             // 原始负荷需要额外处理，最后绘制
             Point[] originalLoadPoints = new Point[24 * days * 2];
-            foreach (string key in dictionary.Keys)
+            foreach (string key in this.dictionary.Keys)
             {
                 string flag = key;
                 Dictionary<string, List<string>> dic1 = dictionary[key];
@@ -899,12 +904,12 @@ namespace Test
 
         private void InZoom_Click(object sender, EventArgs e)
         {
-            //InZoomPic(myFunPictureBox, myFunPictureBox.Parent as Panel);
+            InZoomPic(myFunPictureBox, myFunPictureBox.Parent as Panel);
         }
 
         private void OutZoom_Click(object sender, EventArgs e)
         {
-            //OutZoomPic(myFunPictureBox, myFunPictureBox.Parent as Panel);
+            OutZoomPic(myFunPictureBox, myFunPictureBox.Parent as Panel);
         }
     }
 
