@@ -26,23 +26,38 @@ namespace Test
         private List<Dictionary<string, string>> STYLlist;
         private List<Dictionary<string, Dictionary<string, string>>> NORMlist;
         private Dictionary<string, Dictionary<string, List<string>>> dictionary;
+        //private DrawHelper drawHelper;
+        private Int32 currentDay;
+        private Int32 currentMonth;
+        private Int32 currentYear;
+        private Int32 currentSpan;
 
         public 画图()
         {
             InitializeComponent();
-            string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
-            //string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            //string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
+            string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
             loadData LoadData = new loadData();
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
             DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
             DataTable Mapsdata = loadData.ExcelToDatatable(path, "MAPs");
-            this.STYLlist = loadData.STYLTableToData(STYLdata);
-            this.NORMlist = loadData.NORMTableToData(NORMdata);
-            this.dictionary = loadData.MAPsTableToData(Mapsdata);
-            this.dictionary = (from d in dictionary orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
+            STYLlist = loadData.STYLTableToData(STYLdata);
+            NORMlist = loadData.NORMTableToData(NORMdata);
+            dictionary = loadData.MAPsTableToData(Mapsdata);
+            dictionary = (from d in dictionary orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
         }
 
-        public void newTab()
+        private void 画图_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 画图_Paint(object sender, PaintEventArgs e)
+        { 
+
+        }
+
+        public void newTab(int startDay, int startMonth, int startYear)
         {
             TabItem tp  = this.tabControl1.CreateTab("图1");
 
@@ -53,6 +68,12 @@ namespace Test
             tcp.Dock = DockStyle.Fill;
 
             tcp.Resize += new System.EventHandler(this.pictureBox_Resize);
+
+            //this.drawHelper = new DrawHelper(startYear, startMonth, startDay, 3);
+            currentDay = startDay;
+            currentMonth = startMonth;
+            currentYear = startYear;
+            currentSpan = 3;
 
             myFunPictureBox = new MyFunPictureBox();
 
@@ -101,6 +122,9 @@ namespace Test
 
             this.tabControl1.Controls.Add(tcp);
             tp.AttachedControl = tcp;
+
+            
+
         }
 
         private void pictureBox_Resize(object sender, EventArgs e)
@@ -182,12 +206,12 @@ namespace Test
                 panel.AutoScroll = false;
                 if (e.Delta < 0)
                 {
-                    shrinkPicture(picture, panel);
+                    OutZoomPic(picture, panel);
                     panel.AutoScroll = true;
                 }
                 else
                 {
-                    amplifyPicture(picture, panel);
+                    InZoomPic(picture, panel);
                 }
             }
             else
@@ -208,13 +232,12 @@ namespace Test
 
             try
             {
-                Graphics g = e.Graphics; ;
+                Graphics g = e.Graphics;
                 g.Clear(Color.White);
 
                 picture.LogoItems.Clear();
 
                 //画图_Paint(picture, e);
-
 
                 HatchStyle[] hatchStyles = new HatchStyle[18];
                 hatchStyles[0] = HatchStyle.Percent10;
@@ -235,7 +258,7 @@ namespace Test
                 hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
                 hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
                 hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
-                paintDays(g, 2020, 8, 30, 3, hatchStyles);
+                paintDays(g, currentYear, currentMonth, currentDay, currentSpan, hatchStyles);
 
                 //myDrawHelper.drawAxes(picture, g);
 
@@ -250,96 +273,6 @@ namespace Test
                 MessageBox.Show(ex.ToString());
             }
 
-        }
-
-        private static void amplifyPicture(MyPictureBox picture, Panel panel)
-        {
-            if (picture.Width * 1.1 <= 1400 && picture.Height * 1.1 <= 2400)
-            {
-                picture.Size = new Size((int)(picture.Width * 1.1), (int)(picture.Height * 1.1));
-                panel.AutoScroll = true;
-                picture.smallFontSize = (float)(picture.smallFontSize * 1.1);
-                picture.largeFontSize = (float)(picture.largeFontSize * 1.1);
-                picture.logoWidth = (int)(picture.logoWidth * 1.1);
-                picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 1.1)
-                    , (int)(picture.logoPos.Top * 1.1)
-                    , picture.logoPos.Width
-                    , picture.logoPos.Height); ;
-                picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 1.1),
-                      (int)(picture.drawArea.Top * 1.1),
-                      (int)(picture.drawArea.Width * 1.1),
-                      (int)(picture.drawArea.Height * 1.1
-                      ));
-                picture.Invalidate();
-            }
-        }
-
-        private static void shrinkPicture(MyPictureBox picture, Panel panel)
-        {
-            if (picture.Width * 0.9 > 300 && picture.Height * 0.9 > 500)
-            {
-                picture.Size = new Size((int)(picture.Width * 0.9), (int)(picture.Height * 0.9));
-                panel.AutoScroll = true;
-                picture.smallFontSize = (float)(picture.smallFontSize * 0.9);
-                picture.largeFontSize = (float)(picture.largeFontSize * 0.9);
-                picture.logoWidth = (int)(picture.logoWidth * 0.9);
-                picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 0.9)
-                    , (int)(picture.logoPos.Top * 0.9)
-                    , picture.logoPos.Width
-                    , picture.logoPos.Height);
-                picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 0.9),
-                    (int)(picture.drawArea.Top * 0.9),
-                    (int)(picture.drawArea.Width * 0.9),
-                    (int)(picture.drawArea.Height * 0.9));
-                picture.Invalidate();
-            }
-        }
-
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-         
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void 画图_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void 画图_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            HatchStyle[] hatchStyles = new HatchStyle[18];
-            hatchStyles[0] = HatchStyle.Percent10;
-            hatchStyles[1] = HatchStyle.Percent25;
-            hatchStyles[2] = HatchStyle.ForwardDiagonal;
-            hatchStyles[3] = HatchStyle.BackwardDiagonal;
-            hatchStyles[4] = HatchStyle.Sphere;
-            hatchStyles[5] = HatchStyle.LightDownwardDiagonal;
-            hatchStyles[6] = HatchStyle.LightUpwardDiagonal;
-            hatchStyles[7] = HatchStyle.LightVertical;
-            hatchStyles[8] = HatchStyle.NarrowVertical;
-            hatchStyles[9] = HatchStyle.DiagonalCross;
-            hatchStyles[10] = HatchStyle.HorizontalBrick;
-            hatchStyles[11] = HatchStyle.OutlinedDiamond;
-            hatchStyles[12] = HatchStyle.DiagonalBrick;
-            hatchStyles[13] = HatchStyle.Weave;
-            hatchStyles[14] = HatchStyle.DarkDownwardDiagonal;
-            hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
-            hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
-            hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
-            paintDays(g, 2020, 8, 30, 3, hatchStyles);
         }
 
         // 开始绘图的年、月、日、绘图天数、一年最大值 
@@ -611,17 +544,6 @@ namespace Test
             return (days + day);
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void pictureBox1_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            // paintDays(g, 2020, 8, 30, 5, 80000);
-        }
-
         private void pictureBox_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -642,51 +564,6 @@ namespace Test
                 }
             }
         }
-
-        // 23.6.15 cjy
-        private static void InZoomPic(MyPictureBox picture, Panel panel)
-        {
-            if (picture.Width * 1.1 <= 1400 && picture.Height * 1.1 <= 2400)
-            {
-                picture.Size = new Size((int)(picture.Width * 1.1), (int)(picture.Height * 1.1));
-                panel.AutoScroll = true;
-                picture.smallFontSize = (float)(picture.smallFontSize * 1.1);
-                picture.largeFontSize = (float)(picture.largeFontSize * 1.1);
-                picture.logoWidth = (int)(picture.logoWidth * 1.1);
-                picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 1.1)
-                    , (int)(picture.logoPos.Top * 1.1)
-                    , picture.logoPos.Width
-                    , picture.logoPos.Height); ;
-                picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 1.1),
-                      (int)(picture.drawArea.Top * 1.1),
-                      (int)(picture.drawArea.Width * 1.1),
-                      (int)(picture.drawArea.Height * 1.1
-                      ));
-                picture.Invalidate();
-            }
-        }
-
-        private static void OutZoomPic(MyPictureBox picture, Panel panel)
-        {
-            if (picture.Width * 0.9 > 300 && picture.Height * 0.9 > 500)
-            {
-                picture.Size = new Size((int)(picture.Width * 0.9), (int)(picture.Height * 0.9));
-                panel.AutoScroll = true;
-                picture.smallFontSize = (float)(picture.smallFontSize * 0.9);
-                picture.largeFontSize = (float)(picture.largeFontSize * 0.9);
-                picture.logoWidth = (int)(picture.logoWidth * 0.9);
-                picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 0.9)
-                    , (int)(picture.logoPos.Top * 0.9)
-                    , picture.logoPos.Width
-                    , picture.logoPos.Height);
-                picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 0.9),
-                    (int)(picture.drawArea.Top * 0.9),
-                    (int)(picture.drawArea.Width * 0.9),
-                    (int)(picture.drawArea.Height * 0.9));
-                picture.Invalidate();
-            }
-        }
-
 
         private string WrapLogoString(string originalStr)
         {
@@ -911,7 +788,180 @@ namespace Test
         {
             OutZoomPic(myFunPictureBox, myFunPictureBox.Parent as Panel);
         }
+
+        private void DayLeft_Click(object sender, EventArgs e)
+        {
+            Boolean flag = true;
+            if (currentDay > 1)
+                currentDay--;
+            else if (currentDay == 1 && currentMonth == 1)
+                flag = false;
+            else
+            {
+                currentMonth--;
+                currentDay = getMaxDay(currentYear, currentMonth);
+            }
+
+            if (flag)
+                this.myFunPictureBox.Invalidate();
+        }
+
+        private void DayRight_Click(object sender, EventArgs e)
+        {
+            Boolean flag = true;
+            Int32 maxDay = getMaxDay(currentYear, currentMonth);
+            if (currentDay < maxDay)
+                currentDay++;
+            else if (currentMonth < 12)
+            {
+                currentDay = 1;
+                currentMonth++;
+            }
+            else
+                flag = false;
+
+            if (flag)
+                this.myFunPictureBox.Invalidate();
+        }
+
+        private void MonthLeft_Click(object sender, EventArgs e)
+        {
+            Boolean flag = true;
+            if (currentMonth > 1)
+                currentMonth--;
+            else
+                flag = false;
+
+            if (flag)
+                this.myFunPictureBox.Invalidate();
+        }
+
+        private void MonthRight_Click(object sender, EventArgs e)
+        {
+            Boolean flag = true;
+            if (currentMonth < 12)
+                currentMonth++;
+            else
+                flag = false;
+
+            if (flag)
+                this.myFunPictureBox.Invalidate();
+        }
+
+        private void AddDay_Click(object sender, EventArgs e)
+        {
+            Boolean flag = true;
+            currentSpan++;
+            if (currentSpan > 10)
+            {
+                currentSpan--;
+                flag = false;
+            }
+            else
+            {
+                // 调整横坐标interval
+            }
+
+            if (flag)
+                this.myFunPictureBox.Invalidate();
+        }
+
+        private void RemoveDay_Click(object sender, EventArgs e)
+        {
+            Boolean flag = true;
+            currentSpan--;
+            if (currentSpan < 1)
+            {
+                currentSpan++;
+                flag = false;
+            }
+            else
+            {
+                // 调整横坐标interval
+            }
+
+            if (flag)
+                this.myFunPictureBox.Invalidate();
+
+        }
+
+        private int getMaxDay(int year, int month)
+        {
+            switch (month)
+            {
+                case 1:
+                case 3:
+                case 5:
+                case 7:
+                case 8:
+                case 10:
+                case 12:
+                    return 31;
+                case 2:
+
+                    if (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0))
+                        return 29;
+                    else
+                        return 28;
+                default:
+                    return 30;
+            }
+        }
+
+        // 23.6.15 cjy
+        private static void InZoomPic(MyPictureBox picture, Panel panel)
+        {
+            if (picture.Width * 1.1 <= 1400 && picture.Height * 1.1 <= 2400)
+            {
+                picture.Size = new Size((int)(picture.Width * 1.1), (int)(picture.Height * 1.1));
+                panel.AutoScroll = true;
+                picture.smallFontSize = (float)(picture.smallFontSize * 1.1);
+                picture.largeFontSize = (float)(picture.largeFontSize * 1.1);
+                picture.logoWidth = (int)(picture.logoWidth * 1.1);
+                picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 1.1)
+                    , (int)(picture.logoPos.Top * 1.1)
+                    , picture.logoPos.Width
+                    , picture.logoPos.Height); ;
+                picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 1.1),
+                      (int)(picture.drawArea.Top * 1.1),
+                      (int)(picture.drawArea.Width * 1.1),
+                      (int)(picture.drawArea.Height * 1.1
+                      ));
+                picture.Invalidate();
+            }
+        }
+
+        private static void OutZoomPic(MyPictureBox picture, Panel panel)
+        {
+            if (picture.Width * 0.9 > 300 && picture.Height * 0.9 > 500)
+            {
+                picture.Size = new Size((int)(picture.Width * 0.9), (int)(picture.Height * 0.9));
+                panel.AutoScroll = true;
+                picture.smallFontSize = (float)(picture.smallFontSize * 0.9);
+                picture.largeFontSize = (float)(picture.largeFontSize * 0.9);
+                picture.logoWidth = (int)(picture.logoWidth * 0.9);
+                picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 0.9)
+                    , (int)(picture.logoPos.Top * 0.9)
+                    , picture.logoPos.Width
+                    , picture.logoPos.Height);
+                picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 0.9),
+                    (int)(picture.drawArea.Top * 0.9),
+                    (int)(picture.drawArea.Width * 0.9),
+                    (int)(picture.drawArea.Height * 0.9));
+                picture.Invalidate();
+            }
+        }
+
+
+
+
+
+
+
+
     }
+
+
 
     public class loadData
     {

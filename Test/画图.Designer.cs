@@ -112,6 +112,7 @@ namespace Test
             this.RemoveDay.Text = "-";
             this.toolTip1.SetToolTip(this.RemoveDay, "减少一天");
             this.RemoveDay.UseVisualStyleBackColor = true;
+            this.RemoveDay.Click += new System.EventHandler(this.RemoveDay_Click);
             // 
             // AddDay
             // 
@@ -122,6 +123,7 @@ namespace Test
             this.AddDay.Text = "+";
             this.toolTip1.SetToolTip(this.AddDay, "增加一天");
             this.AddDay.UseVisualStyleBackColor = true;
+            this.AddDay.Click += new System.EventHandler(this.AddDay_Click);
             // 
             // MonthRight
             // 
@@ -132,6 +134,7 @@ namespace Test
             this.MonthRight.Text = ">>";
             this.toolTip1.SetToolTip(this.MonthRight, "右移一月");
             this.MonthRight.UseVisualStyleBackColor = true;
+            this.MonthRight.Click += new System.EventHandler(this.MonthRight_Click);
             // 
             // MonthLeft
             // 
@@ -142,6 +145,7 @@ namespace Test
             this.MonthLeft.Text = "<<";
             this.toolTip1.SetToolTip(this.MonthLeft, "左移一月");
             this.MonthLeft.UseVisualStyleBackColor = true;
+            this.MonthLeft.Click += new System.EventHandler(this.MonthLeft_Click);
             // 
             // DayRight
             // 
@@ -152,6 +156,7 @@ namespace Test
             this.DayRight.Text = ">";
             this.toolTip1.SetToolTip(this.DayRight, "右移一天");
             this.DayRight.UseVisualStyleBackColor = true;
+            this.DayRight.Click += new System.EventHandler(this.DayRight_Click);
             // 
             // DayLeft
             // 
@@ -162,6 +167,7 @@ namespace Test
             this.DayLeft.Text = "<";
             this.toolTip1.SetToolTip(this.DayLeft, "左移一天");
             this.DayLeft.UseVisualStyleBackColor = true;
+            this.DayLeft.Click += new System.EventHandler(this.DayLeft_Click);
             // 
             // tabControl1
             // 
