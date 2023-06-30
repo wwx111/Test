@@ -42,7 +42,7 @@
     </Reference>
     <Reference Include="DevComponents.DotNetBar2, Version=7.2.0.6, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\DevComponents.DotNetBar2.dll</HintPath>
+      <HintPath>C:\Users\11852\Desktop\UniversalDLL_20170421\SPER_ProS\bin\Debug\DevComponents.DotNetBar2.dll</HintPath>
     </Reference>
     <Reference Include="Enums.NET, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7ea1c1650d506225, processorArchitecture=MSIL">
       <HintPath>..\packages\Enums.NET.4.0.0\lib\net45\Enums.NET.dll</HintPath>

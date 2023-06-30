@@ -619,7 +619,23 @@ namespace Test
 
         private void pictureBox_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            
+            if (e.Button == MouseButtons.Left)
+            {
+                MyPictureBox picture = sender as MyPictureBox;
+                Point mousePoint = new Point(e.X, e.Y);
+                if (isDragPic == true) //2013-9-22 刘水兵：当鼠标拖离图例的时候，应该也是要进行移动的.所以 用一个变量指示 是否正在拖动
+                {//if(picture.logoPos.Countains(mousePoint))
+                    Point topleft = new Point(picture.logoPos.Left, picture.logoPos.Top);
+                    picture.logoPos = new Rectangle(
+                        picture.logoPos.Left + e.X - picture.previousPos.X,
+                        picture.logoPos.Top + e.Y - picture.previousPos.Y,
+                        picture.logoPos.Width,
+                        picture.logoPos.Height);
+                    picture.previousPos = mousePoint;
+                    picture.Invalidate(new Rectangle(topleft.X, topleft.Y,
+                        picture.Width + e.X - picture.previousPos.X, picture.logoPos.Height + e.Y - picture.previousPos.Y));
+                }
+            }
         }
 
         // 23.6.15 cjy
