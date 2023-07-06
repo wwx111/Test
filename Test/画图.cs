@@ -35,8 +35,8 @@ namespace Test
         public 画图()
         {
             InitializeComponent();
-            string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
-            //string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            //string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
+            string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
             loadData LoadData = new loadData();
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
             DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
@@ -49,8 +49,17 @@ namespace Test
 
         private void 画图_Load(object sender, EventArgs e)
         {
-
+            //tabControl1.Focus();
+            //Application.Idle += new EventHandler(Application_Idle);
         }
+        //void Application_Idle(object sender, EventArgs e)
+        //{
+        //    // 取消订阅，确保只运行一次
+        //    Application.Idle -= new EventHandler(Application_Idle);
+
+        //    // 设置TabControl为焦点
+        //    tabControl1.Focus();
+        //}
 
         private void 画图_Paint(object sender, PaintEventArgs e)
         { 
@@ -116,6 +125,10 @@ namespace Test
             myFunPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
             myFunPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
             myFunPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
+
+            myFunPictureBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyDown);
+            myFunPictureBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyUp);
+
             myFunPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
             myFunPictureBox.Resize += new System.EventHandler(this.pictureBox_Resize);
 
@@ -154,6 +167,7 @@ namespace Test
         {
             //((sender as PictureBox).Parent as Panel).Focus();
             (sender as PictureBox).Focus();
+            myFunPictureBox.Focus();
         }
 
         private void pictureBox_MouseLeave(object sender, System.EventArgs e)
@@ -182,8 +196,6 @@ namespace Test
             if (e.Button == MouseButtons.Left)
                 this.isDragPic = false;
         }
-
-
 
 
         bool ctrl = false;
@@ -961,13 +973,15 @@ namespace Test
             }
         }
 
+        private void tabControl1_Enter(object sender, EventArgs e)
+        {
+            tabControl1.Focus();
+        }
 
-
-
-
-
-
-
+        private void panel1_Leave(object sender, EventArgs e)
+        {
+            tabControl1.Focus();
+        }
     }
 
 

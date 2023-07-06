@@ -76,14 +76,17 @@ namespace Test
             this.panel1.Controls.Add(this.MonthLeft);
             this.panel1.Controls.Add(this.DayRight);
             this.panel1.Controls.Add(this.DayLeft);
-            this.panel1.Location = new System.Drawing.Point(77, 172);
+            this.panel1.Location = new System.Drawing.Point(77, 159);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(214, 224);
+            this.panel1.Size = new System.Drawing.Size(221, 250);
             this.panel1.TabIndex = 1;
+            this.panel1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyUp);
+            this.panel1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyDown);
+            this.panel1.Leave += new System.EventHandler(this.panel1_Leave);
             // 
             // OutZoom
             // 
-            this.OutZoom.Location = new System.Drawing.Point(107, 171);
+            this.OutZoom.Location = new System.Drawing.Point(113, 195);
             this.OutZoom.Name = "OutZoom";
             this.OutZoom.Size = new System.Drawing.Size(104, 50);
             this.OutZoom.TabIndex = 7;
@@ -94,7 +97,7 @@ namespace Test
             // 
             // InZoom
             // 
-            this.InZoom.Location = new System.Drawing.Point(3, 171);
+            this.InZoom.Location = new System.Drawing.Point(3, 195);
             this.InZoom.Name = "InZoom";
             this.InZoom.Size = new System.Drawing.Size(104, 50);
             this.InZoom.TabIndex = 6;
@@ -105,7 +108,7 @@ namespace Test
             // 
             // RemoveDay
             // 
-            this.RemoveDay.Location = new System.Drawing.Point(107, 115);
+            this.RemoveDay.Location = new System.Drawing.Point(113, 139);
             this.RemoveDay.Name = "RemoveDay";
             this.RemoveDay.Size = new System.Drawing.Size(104, 50);
             this.RemoveDay.TabIndex = 5;
@@ -116,7 +119,7 @@ namespace Test
             // 
             // AddDay
             // 
-            this.AddDay.Location = new System.Drawing.Point(3, 115);
+            this.AddDay.Location = new System.Drawing.Point(3, 139);
             this.AddDay.Name = "AddDay";
             this.AddDay.Size = new System.Drawing.Size(104, 50);
             this.AddDay.TabIndex = 4;
@@ -127,7 +130,7 @@ namespace Test
             // 
             // MonthRight
             // 
-            this.MonthRight.Location = new System.Drawing.Point(107, 59);
+            this.MonthRight.Location = new System.Drawing.Point(113, 83);
             this.MonthRight.Name = "MonthRight";
             this.MonthRight.Size = new System.Drawing.Size(104, 50);
             this.MonthRight.TabIndex = 3;
@@ -138,7 +141,7 @@ namespace Test
             // 
             // MonthLeft
             // 
-            this.MonthLeft.Location = new System.Drawing.Point(3, 59);
+            this.MonthLeft.Location = new System.Drawing.Point(3, 83);
             this.MonthLeft.Name = "MonthLeft";
             this.MonthLeft.Size = new System.Drawing.Size(104, 50);
             this.MonthLeft.TabIndex = 2;
@@ -149,7 +152,7 @@ namespace Test
             // 
             // DayRight
             // 
-            this.DayRight.Location = new System.Drawing.Point(107, 3);
+            this.DayRight.Location = new System.Drawing.Point(113, 27);
             this.DayRight.Name = "DayRight";
             this.DayRight.Size = new System.Drawing.Size(104, 50);
             this.DayRight.TabIndex = 1;
@@ -160,7 +163,7 @@ namespace Test
             // 
             // DayLeft
             // 
-            this.DayLeft.Location = new System.Drawing.Point(3, 3);
+            this.DayLeft.Location = new System.Drawing.Point(3, 27);
             this.DayLeft.Name = "DayLeft";
             this.DayLeft.Size = new System.Drawing.Size(104, 50);
             this.DayLeft.TabIndex = 0;
@@ -185,10 +188,11 @@ namespace Test
             this.tabControl1.SelectedTabFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold);
             this.tabControl1.SelectedTabIndex = -1;
             this.tabControl1.Size = new System.Drawing.Size(1032, 1053);
-            this.tabControl1.TabIndex = 4;
+            this.tabControl1.TabIndex = 0;
             this.tabControl1.TabLayoutType = DevComponents.DotNetBar.eTabLayoutType.FixedWithNavigationBox;
             this.tabControl1.Tag = "tabControl1";
             this.tabControl1.Text = "tabControl1";
+            this.tabControl1.Enter += new System.EventHandler(this.tabControl1_Enter);
             this.tabControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyDown);
             this.tabControl1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyUp);
             // 
@@ -198,6 +202,7 @@ namespace Test
             this.ClientSize = new System.Drawing.Size(1032, 1053);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.tabControl1);
+            this.KeyPreview = true;
             this.Name = "画图";
             this.Text = "电站位置图";
             this.Load += new System.EventHandler(this.画图_Load);
