@@ -35,8 +35,8 @@ namespace Test
         public 画图()
         {
             InitializeComponent();
-            //string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
-            string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
+            //string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
             loadData LoadData = new loadData();
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
             DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
@@ -258,7 +258,7 @@ namespace Test
                 hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
                 hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
                 hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
-                paintDays(g, currentYear, currentMonth, currentDay, currentSpan, hatchStyles);
+                paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan, hatchStyles);
 
                 //myDrawHelper.drawAxes(picture, g);
 
@@ -276,17 +276,20 @@ namespace Test
         }
 
         // 开始绘图的年、月、日、绘图天数、一年最大值 
-        private void paintDays(Graphics g,int year, int startMonth,int startDay, int days, HatchStyle[] hatchStyle)
+        private void paintDays(Graphics g, MyFunPictureBox picture, int year, int startMonth,int startDay, int days, HatchStyle[] hatchStyle)
         {
+            //Point zeroPoint = new Point(picture.drawArea.Left + (int)(picture.drawArea.Width * 0.1), picture.drawArea.Top + (int)(picture.drawArea.Height * 0.9));
+            //setXYInterval(this.myFunPictureBox.drawArea.Width, this.myFunPictureBox.drawArea.Height);
+            //myDrawHelper.setZeroPoint(zeroPoint.X, zeroPoint.Y);
             // 左右边界的宽度
-            int leftBorderWidth = 80;
-            int rightBorderWidth = 15;
-            int topBorderWidth = 20;
-            int bottomBorderWidth = 220;
+            int leftBorderWidth = (int)(picture.drawArea.Width * 0.1);
+            int rightBorderWidth = (int)(picture.drawArea.Width * 0.01);
+            int topBorderWidth = (int)(picture.drawArea.Height * 0.05);
+            int bottomBorderWidth = (int)(picture.drawArea.Height * 0.01);
 
             // 整个画面的宽度和高度
-            int wholeWidth = 1020;
-            int wholeHeight = 950;
+            int wholeWidth = this.myFunPictureBox.drawArea.Width;
+            int wholeHeight = this.myFunPictureBox.drawArea.Height;
 
             // 首先解析excel文件，获取绘图的信息
             
@@ -328,6 +331,7 @@ namespace Test
             // 获取数据和颜色、样式来绘图
             // 原始负荷需要额外处理，最后绘制
             Point[] originalLoadPoints = new Point[24 * days * 2];
+            int task = 0;
             foreach (string key in this.dictionary.Keys)
             {
                 string flag = key;
@@ -379,6 +383,11 @@ namespace Test
                         g.DrawPolygon(Pens.Black, points);
                     }
                 }
+                task++;
+                //if(task > 1)
+                //{
+                    //break;
+                //}
             }
             Pen blackPen = new Pen(Color.Black, (float)0.5);
             blackPen.DashPattern = new float[] { 5, 4 };
