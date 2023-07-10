@@ -32,6 +32,9 @@ namespace Test
         private Int32 currentYear;
         private Int32 currentSpan;
 
+        private Boolean isPanelDrag = false;
+        private Point panelPrePosition;
+
         public 画图()
         {
             InitializeComponent();
@@ -126,8 +129,8 @@ namespace Test
             myFunPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
             myFunPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
 
-            myFunPictureBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyDown);
-            myFunPictureBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyUp);
+            myFunPictureBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.myFunPictureBox_KeyDown);
+            myFunPictureBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.myFunPictureBox_KeyUp);
 
             myFunPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
             myFunPictureBox.Resize += new System.EventHandler(this.pictureBox_Resize);
@@ -166,7 +169,7 @@ namespace Test
         private void pictureBox_MouseEnter(object sender, System.EventArgs e)
         {
             //((sender as PictureBox).Parent as Panel).Focus();
-            (sender as PictureBox).Focus();
+            //(sender as PictureBox).Focus();
             myFunPictureBox.Focus();
         }
 
@@ -199,12 +202,12 @@ namespace Test
 
 
         bool ctrl = false;
-        private void tabControl1_KeyDown(object sender, KeyEventArgs e)
+        private void myFunPictureBox_KeyDown(object sender, KeyEventArgs e)
         {
             ctrl = e.Control;
         }
 
-        private void tabControl1_KeyUp(object sender, KeyEventArgs e)
+        private void myFunPictureBox_KeyUp(object sender, KeyEventArgs e)
         {
             ctrl = e.Control;
         }
@@ -973,14 +976,30 @@ namespace Test
             }
         }
 
-        private void tabControl1_Enter(object sender, EventArgs e)
+        private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
-            tabControl1.Focus();
+            if (e.Button == MouseButtons.Left)
+            {
+                this.isPanelDrag = true;
+                this.panelPrePosition = new Point(e.X, e.Y);
+            }
         }
 
-        private void panel1_Leave(object sender, EventArgs e)
+        private void panel1_MouseMove(object sender, MouseEventArgs e)
         {
-            tabControl1.Focus();
+            if (e.Button == MouseButtons.Left && this.isPanelDrag)
+            {
+                this.panel1.Left = this.panel1.Left + e.X - this.panelPrePosition.X;
+                this.panel1.Top = this.panel1.Top + e.Y - this.panelPrePosition.Y;
+            }
+        }
+
+        private void panel1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                this.isPanelDrag = false;
+            }
         }
     }
 

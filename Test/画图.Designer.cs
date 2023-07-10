@@ -80,9 +80,9 @@ namespace Test
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(221, 250);
             this.panel1.TabIndex = 1;
-            this.panel1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyUp);
-            this.panel1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyDown);
-            this.panel1.Leave += new System.EventHandler(this.panel1_Leave);
+            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
+            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
             // 
             // OutZoom
             // 
@@ -192,9 +192,8 @@ namespace Test
             this.tabControl1.TabLayoutType = DevComponents.DotNetBar.eTabLayoutType.FixedWithNavigationBox;
             this.tabControl1.Tag = "tabControl1";
             this.tabControl1.Text = "tabControl1";
-            this.tabControl1.Enter += new System.EventHandler(this.tabControl1_Enter);
-            this.tabControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyDown);
-            this.tabControl1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tabControl1_KeyUp);
+            this.tabControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.myFunPictureBox_KeyDown);
+            this.tabControl1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.myFunPictureBox_KeyUp);
             // 
             // 画图
             // 
