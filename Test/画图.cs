@@ -85,7 +85,7 @@ namespace Test
             currentDay = startDay;
             currentMonth = startMonth;
             currentYear = startYear;
-            currentSpan = 3;
+            currentSpan = 4;
 
             myFunPictureBox = new MyFunPictureBox();
 
@@ -306,9 +306,52 @@ namespace Test
             int wholeWidth = this.myFunPictureBox.drawArea.Width;
             int wholeHeight = this.myFunPictureBox.drawArea.Height;
 
+            int width = wholeWidth - leftBorderWidth - rightBorderWidth - 10;
+
+            float fontSize = width / 70;//根据图片的绘制宽度调整字体的大小
+            if(fontSize > 14)
+            {
+                fontSize = 14;
+            }
+            else if(fontSize < 7)
+            {
+                fontSize = 7;
+            }
+            int hours = 24 * days;
+            int hourLeft = width % hours;//由于整数存在缩进，需要对不能进行整除的部分进行处理，选择的方式是将多余的部分平均分配到每一天的前i个小时中
+            int dayRemainder = hourLeft % days;
+            int prehours = hourLeft / days;
+            int hourWidth = width / hours;
+
+            int[] coordinateList = new int[hours + 1];
+
+            coordinateList[0] = 0;
+
+            for(int i = 1; i <= hours ; i++)//将不能平均分配的长度分别分配到每一天中，其中dayRemainder参数说明前dayRemainder相较于其余天宽度长1px，prehours说明每天的前prehours小时的宽度长1px
+            {
+                int day = i / 24;
+                int hour = i % 24;
+                coordinateList[i] = coordinateList[i - 1] + hourWidth;
+
+                if (day < dayRemainder)
+                {
+                    if (hour < prehours + 1)
+                    {
+                        coordinateList[i]++;
+                    }
+                }
+                else if (hour < prehours)
+                {
+                    coordinateList[i]++;
+                }
+            }
+
+            
+
+
             // 首先解析excel文件，获取绘图的信息
-            
-            
+
+
 
             // 获取最大纵坐标
             Dictionary<string, string> STYLinfo1 = STYLlist[1];
@@ -342,11 +385,14 @@ namespace Test
 
             // 获取到数据后，需要绘图
             // 先得到画图的起始天数
+
             int startDays = dateToDay(year, startMonth, startDay);
             // 获取数据和颜色、样式来绘图
             // 原始负荷需要额外处理，最后绘制
             Point[] originalLoadPoints = new Point[24 * days * 2];
-            int task = 0;
+
+            //int task = 0;
+
             foreach (string key in this.dictionary.Keys)
             {
                 string flag = key;
@@ -378,7 +424,12 @@ namespace Test
                 {
                     int[] data = (int[])array.ToArray(typeof(int));
                     // data-数据 end-绘图的左上角坐标 width-绘图的宽度 height-绘图的高度 maxVal-一年的最大值，用于固定Y轴
-                    Point[] points = dataToPoint(data, end2, wholeWidth - leftBorderWidth - rightBorderWidth - 5, wholeHeight - topBorderWidth - bottomBorderWidth - 5, maxVal);
+                    Console.WriteLine(days + ":" + (wholeWidth - leftBorderWidth - rightBorderWidth - 5));
+
+                    int height = wholeHeight - topBorderWidth - bottomBorderWidth - 5;
+
+
+                    Point[] points = dataToPoint(data, end2, coordinateList, height, maxVal);
                     // 笔刷中颜色、填充样式应该解析文件得到
                     Dictionary<string, Dictionary<string, string>> NORMdic = NORMlist[0];
                     Dictionary<string, string> NORMinfo = NORMdic[key];
@@ -398,7 +449,7 @@ namespace Test
                         g.DrawPolygon(Pens.Black, points);
                     }
                 }
-                task++;
+                //task++;
                 //if(task > 1)
                 //{
                     //break;
@@ -413,31 +464,32 @@ namespace Test
             int interval;
             if (days > 1)
             {
-                interval = (wholeWidth - leftBorderWidth - rightBorderWidth - 5) / (days*24) * 24;
+                //interval = (wholeWidth - leftBorderWidth - rightBorderWidth - 5) / (days*24) * 24;
                 Point[] downPoints = new Point[days];
                 Point[] upPoints = new Point[days];
                 String[] dates = getDateString(year, startMonth, startDay, days);
                 for (int i = 0; i < days; i++)
                 {
-                    downPoints[i] = new Point(start.X + interval * i, start.Y);
-                    upPoints[i] = new Point(start.X + interval * i, start.Y - 5);
+                    downPoints[i] = new Point(start.X + coordinateList[i * 24], start.Y);
+                    upPoints[i] = new Point(start.X + coordinateList[i * 24], start.Y - 5);
                     g.DrawLine(Pens.Black, downPoints[i], upPoints[i]);
-                    Font font = new Font("黑体", 9);
+                    Font font = new Font("黑体", fontSize);
                     g.DrawString(dates[i], font, Brushes.Black, new Point(downPoints[i].X - 8, downPoints[i].Y + 5));
                 }
             }
             else
             {
-                interval = (end.X - start.X - 5) / 24;
+                //interval = (end.X - start.X - 5) / 24;
                 Point[] downPoints = new Point[24];
                 Point[] upPoints = new Point[24];
                 for (int i = 0; i < 24; i++)
                 {
-                    downPoints[i] = new Point(start.X + interval * (i + 1), start.Y);
-                    upPoints[i] = new Point(start.X + interval * (i + 1), start.Y - 5);
+                                        
+                    downPoints[i] = new Point(start.X + coordinateList[i + 1], start.Y);
+                    upPoints[i] = new Point(start.X + coordinateList[i + 1], start.Y - 5);
                     g.DrawLine(Pens.Black, downPoints[i], upPoints[i]);
-                    Font font = new Font("黑体", 9);
-                    g.DrawString((i + 1) + "时", font, Brushes.Black, new Point(downPoints[i].X - 8, downPoints[i].Y + 5));
+                    Font font = new Font("黑体", fontSize);
+                    g.DrawString((i + 1) + "时", font, Brushes.Black, new Point(downPoints[i].X - 8, downPoints[i].Y + 5));                                     
                 }
             }
 
@@ -447,8 +499,8 @@ namespace Test
             {
                 StringFormat format = new StringFormat();
                 format.Alignment = StringAlignment.Far; //靠右对齐
-                Rectangle space = new Rectangle(start.X - 70, (start.Y - interval * (i + 1)), 60, 10);
-                Font font = new Font("黑体", 9);
+                Rectangle space = new Rectangle(start.X - 70, (start.Y - interval * (i + 1)), 60, 20);
+                Font font = new Font("黑体", fontSize);
                 g.DrawString((maxVal / 10 * (i + 1)) + "", font, Brushes.Black, space, format);
             }
 
@@ -457,18 +509,36 @@ namespace Test
         }
 
         // 数据转换为点坐标
-        private Point[] dataToPoint(int[] data, Point start, int width, int height, int maxVal)
+        private Point[] dataToPoint(int[] data, Point start, int[] coordinateList, int height, int maxVal)
         {
+            //Console.WriteLine(width);
             Point[] points = new Point[data.Length * 2 + 2];
-            int oneWidth = width / data.Length;
-            double oneHeight = (float)height / maxVal;
-            for(int i = 0; i < data.Length; i++)
+            int days = data.Length / 24;
+
+            int X = start.X;
+            double oneHeight = (float)height / maxVal;//每1单位对应的纵坐标长度
+            int pointIndex = 0;
+            for(int i = 0; i < days; i++)
             {
-                int left = i * 2;
-                int right = left + 1;
-                points[left] = new Point(start.X + i * oneWidth, (int)(start.Y + height - data[i] * oneHeight));
-                points[right] = new Point(start.X + (i + 1) * oneWidth, (int)(start.Y + height - data[i] * oneHeight));
+                for(int j = 0; j < 24; j++)//按照每天24小时进行作图
+                {
+                    int hours = i * 24 + j;//当前坐标点所表示的总小时位置
+                    points[pointIndex] = new Point(X + coordinateList[hours], (int)(start.Y + height - data[hours] * oneHeight));
+                    pointIndex++;
+                    points[pointIndex] = new Point(X + coordinateList[hours + 1], (int)(start.Y + height - data[hours] * oneHeight));
+                    pointIndex++;
+                }
+                
             }
+            //int X = 0;
+            //int oneWidth = width / data.Length;
+            //for(int i = 0; i < data.Length; i++)
+            //{
+                
+                //int left = i * 2;
+                //int right = left + 1;
+                
+            //}
             points[points.Length - 2] = new Point(points[points.Length - 3].X, start.Y + height);
             points[points.Length - 1] = new Point(points[0].X, start.Y + height);
             return points;
