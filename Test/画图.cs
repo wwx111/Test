@@ -38,8 +38,8 @@ namespace Test
         public 画图()
         {
             InitializeComponent();
-            //string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
-            string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
+            //string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
             loadData LoadData = new loadData();
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
             DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
@@ -65,13 +65,13 @@ namespace Test
         //}
 
         private void 画图_Paint(object sender, PaintEventArgs e)
-        { 
+        {
 
         }
 
         public void newTab(int startDay, int startMonth, int startYear)
         {
-            TabItem tp  = this.tabControl1.CreateTab("图1");
+            TabItem tp = this.tabControl1.CreateTab("图1");
 
             TabControlPanel tcp = new TabControlPanel();
             tcp.Visible = false;
@@ -139,7 +139,7 @@ namespace Test
             this.tabControl1.Controls.Add(tcp);
             tp.AttachedControl = tcp;
 
-            
+
 
         }
 
@@ -273,11 +273,12 @@ namespace Test
                 hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
                 hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
                 hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
+
                 paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan, hatchStyles);
 
                 //myDrawHelper.drawAxes(picture, g);
 
-                //DrawLogo(picture, g);
+                DrawLogo(picture, g, hatchStyles);
 
                 picture.drawed = true;
                 // picture.Image = memImage;
@@ -291,7 +292,7 @@ namespace Test
         }
 
         // 开始绘图的年、月、日、绘图天数、一年最大值 
-        private void paintDays(Graphics g, MyFunPictureBox picture, int year, int startMonth,int startDay, int days, HatchStyle[] hatchStyle)
+        private void paintDays(Graphics g, MyFunPictureBox picture, int year, int startMonth, int startDay, int days, HatchStyle[] hatchStyle)
         {
             //Point zeroPoint = new Point(picture.drawArea.Left + (int)(picture.drawArea.Width * 0.1), picture.drawArea.Top + (int)(picture.drawArea.Height * 0.9));
             //setXYInterval(this.myFunPictureBox.drawArea.Width, this.myFunPictureBox.drawArea.Height);
@@ -309,11 +310,11 @@ namespace Test
             int width = wholeWidth - leftBorderWidth - rightBorderWidth - 10;
 
             float fontSize = width / 70;//根据图片的绘制宽度调整字体的大小
-            if(fontSize > 14)
+            if (fontSize > 14)
             {
                 fontSize = 14;
             }
-            else if(fontSize < 7)
+            else if (fontSize < 7)
             {
                 fontSize = 7;
             }
@@ -327,7 +328,7 @@ namespace Test
 
             coordinateList[0] = 0;
 
-            for(int i = 1; i <= hours ; i++)//将不能平均分配的长度分别分配到每一天中，其中dayRemainder参数说明前dayRemainder相较于其余天宽度长1px，prehours说明每天的前prehours小时的宽度长1px
+            for (int i = 1; i <= hours; i++)//将不能平均分配的长度分别分配到每一天中，其中dayRemainder参数说明前dayRemainder相较于其余天宽度长1px，prehours说明每天的前prehours小时的宽度长1px
             {
                 int day = i / 24;
                 int hour = i % 24;
@@ -346,7 +347,7 @@ namespace Test
                 }
             }
 
-            
+
 
 
             // 首先解析excel文件，获取绘图的信息
@@ -381,7 +382,7 @@ namespace Test
             end2.Y += 5;
 
             // 绘制中间的电站位置图
-            
+
 
             // 获取到数据后，需要绘图
             // 先得到画图的起始天数
@@ -400,31 +401,32 @@ namespace Test
                 ArrayList array = new ArrayList();
                 for (int i = 0; i < days; i++)
                 {
-                     string str = Convert.ToString(i + startDays);
-                     if (dic1.ContainsKey(str)){
+                    string str = Convert.ToString(i + startDays);
+                    if (dic1.ContainsKey(str))
+                    {
                         List<string> list = dic1[str];
-                        foreach(string val in list)
+                        foreach (string val in list)
                         {
                             array.Add(int.Parse(val));
-                        }  
-                     }
-                     else
-                     {
-                        if(array.Count != 0)
+                        }
+                    }
+                    else
+                    {
+                        if (array.Count != 0)
                         {
-                            for(int j = 0; j < 24; j++)
+                            for (int j = 0; j < 24; j++)
                             {
                                 array.Add(0);
                             }
                         }
 
-                     }
+                    }
                 }
                 if (array.Count != 0)
                 {
                     int[] data = (int[])array.ToArray(typeof(int));
                     // data-数据 end-绘图的左上角坐标 width-绘图的宽度 height-绘图的高度 maxVal-一年的最大值，用于固定Y轴
-                    Console.WriteLine(days + ":" + (wholeWidth - leftBorderWidth - rightBorderWidth - 5));
+                    //Console.WriteLine(days + ":" + (wholeWidth - leftBorderWidth - rightBorderWidth - 5));
 
                     int height = wholeHeight - topBorderWidth - bottomBorderWidth - 5;
 
@@ -442,7 +444,8 @@ namespace Test
                     {
                         originalLoadPoints = points;
                     }
-                    else{
+                    else
+                    {
                         HatchBrush hBrush = new HatchBrush(hatchStyle[hatchID - 21], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
                         // 画图
                         g.FillPolygon(hBrush, points);
@@ -452,12 +455,18 @@ namespace Test
                 //task++;
                 //if(task > 1)
                 //{
-                    //break;
+                //break;
                 //}
             }
             Pen blackPen = new Pen(Color.Black, (float)0.5);
             blackPen.DashPattern = new float[] { 5, 4 };
             g.DrawPolygon(blackPen, originalLoadPoints);
+
+
+            Point top;
+            Pen dotted = new Pen(Color.Black, 1);
+            dotted.DashStyle = System.Drawing.Drawing2D.DashStyle.Custom;
+            dotted.DashPattern = new float[] { 1, 1 };
 
             // 绘制完图片部分，再去画坐标轴的间隔
             // 根据天数为1天还是多天，决定X轴分为24小时还是若干天
@@ -465,31 +474,43 @@ namespace Test
             if (days > 1)
             {
                 //interval = (wholeWidth - leftBorderWidth - rightBorderWidth - 5) / (days*24) * 24;
-                Point[] downPoints = new Point[days];
+                Point[] downPoints = new Point[days + 1];
                 Point[] upPoints = new Point[days];
+
                 String[] dates = getDateString(year, startMonth, startDay, days);
+
                 for (int i = 0; i < days; i++)
                 {
                     downPoints[i] = new Point(start.X + coordinateList[i * 24], start.Y);
                     upPoints[i] = new Point(start.X + coordinateList[i * 24], start.Y - 5);
+                    top = new Point(start.X + coordinateList[i * 24], end2.Y + 8);
                     g.DrawLine(Pens.Black, downPoints[i], upPoints[i]);
+                    g.DrawLine(dotted, downPoints[i], top);
                     Font font = new Font("黑体", fontSize);
                     g.DrawString(dates[i], font, Brushes.Black, new Point(downPoints[i].X - 8, downPoints[i].Y + 5));
                 }
+                downPoints[days] = new Point(start.X + coordinateList[days * 24], start.Y);
+                top = new Point(start.X + coordinateList[days * 24], end2.Y + 8);
+                g.DrawLine(dotted, downPoints[days], top);
+
             }
             else
             {
+                String[] dates = getDateString(year, startMonth, startDay, days);
+                Font font = new Font("黑体", fontSize);
+                g.DrawString(dates[0], font, Brushes.Black, new Point(start.X - 28, start.Y + 5));
                 //interval = (end.X - start.X - 5) / 24;
                 Point[] downPoints = new Point[24];
                 Point[] upPoints = new Point[24];
                 for (int i = 0; i < 24; i++)
                 {
-                                        
+
                     downPoints[i] = new Point(start.X + coordinateList[i + 1], start.Y);
                     upPoints[i] = new Point(start.X + coordinateList[i + 1], start.Y - 5);
+                    top = new Point(start.X + coordinateList[i + 1], end2.Y + 8);
                     g.DrawLine(Pens.Black, downPoints[i], upPoints[i]);
-                    Font font = new Font("黑体", fontSize);
-                    g.DrawString((i + 1) + "时", font, Brushes.Black, new Point(downPoints[i].X - 8, downPoints[i].Y + 5));                                     
+                    g.DrawLine(dotted, downPoints[i], top);
+                    g.DrawString((i + 1) + "时", font, Brushes.Black, new Point(downPoints[i].X - 8, downPoints[i].Y + 5));
                 }
             }
 
@@ -500,6 +521,11 @@ namespace Test
                 StringFormat format = new StringFormat();
                 format.Alignment = StringAlignment.Far; //靠右对齐
                 Rectangle space = new Rectangle(start.X - 70, (start.Y - interval * (i + 1)), 60, 20);
+                Point leftPoint = new Point(start.X, start.Y - interval * (i + 1));
+                Point rightPoint = new Point(start.X + 5, start.Y - interval * (i + 1));
+                top = new Point(end.X - 10, start.Y - interval * (i + 1));
+                g.DrawLine(Pens.Black, leftPoint, rightPoint);
+                g.DrawLine(dotted, leftPoint, top);
                 Font font = new Font("黑体", fontSize);
                 g.DrawString((maxVal / 10 * (i + 1)) + "", font, Brushes.Black, space, format);
             }
@@ -518,9 +544,9 @@ namespace Test
             int X = start.X;
             double oneHeight = (float)height / maxVal;//每1单位对应的纵坐标长度
             int pointIndex = 0;
-            for(int i = 0; i < days; i++)
+            for (int i = 0; i < days; i++)
             {
-                for(int j = 0; j < 24; j++)//按照每天24小时进行作图
+                for (int j = 0; j < 24; j++)//按照每天24小时进行作图
                 {
                     int hours = i * 24 + j;//当前坐标点所表示的总小时位置
                     points[pointIndex] = new Point(X + coordinateList[hours], (int)(start.Y + height - data[hours] * oneHeight));
@@ -528,22 +554,22 @@ namespace Test
                     points[pointIndex] = new Point(X + coordinateList[hours + 1], (int)(start.Y + height - data[hours] * oneHeight));
                     pointIndex++;
                 }
-                
+
             }
             //int X = 0;
             //int oneWidth = width / data.Length;
             //for(int i = 0; i < data.Length; i++)
             //{
-                
-                //int left = i * 2;
-                //int right = left + 1;
-                
+
+            //int left = i * 2;
+            //int right = left + 1;
+
             //}
             points[points.Length - 2] = new Point(points[points.Length - 3].X, start.Y + height);
             points[points.Length - 1] = new Point(points[0].X, start.Y + height);
             return points;
         }
-    
+
         // 根据起始日期和天数，转换为x月x日的字符串
         private String[] getDateString(int year, int month, int day, int days)
         {
@@ -582,7 +608,7 @@ namespace Test
                     monthDay = 30;
                     break;
             }
-            for(int i = 0; i < days; i++)
+            for (int i = 0; i < days; i++)
             {
                 if (day > monthDay)
                 {
@@ -604,9 +630,9 @@ namespace Test
                 flag = true;
             }
             int days = -1;
-            for(int i=0; i < month - 1; i++)
+            for (int i = 0; i < month - 1; i++)
             {
-                switch (i+1)
+                switch (i + 1)
                 {
                     case 1:
                     case 3:
@@ -695,182 +721,163 @@ namespace Test
                 picture.LogoItems.Insert(i, item); ;
             }
         }
-        //private void DrawLogo(MyPictureBox picture, Graphics g)
-        //{
-        //    //修改如下 直接将所有的图标画出
-        //    //SortLogo(picture);
-        //    fillBrushes.Sort();
-        //    for (Int32 brushIndex = 0; brushIndex < fillBrushes.Count; brushIndex++)
-        //    {
-        //        if (fillBrushes[brushIndex].describe.Contains("出力"))
-        //        {
-        //            LogoItem item = new LogoItem();
-        //            item.brush = fillBrushes[brushIndex].myBrush;
-        //            item.description = fillBrushes[brushIndex].describe;
-        //            item.priority = fillBrushes[brushIndex].priority;
-        //            picture.LogoItems.Add(item);
-        //        }
-        //    }
+        private void DrawLogo(MyPictureBox picture, Graphics g, HatchStyle[] hatchStyles)
+        {
+            LogoItem newItem = new LogoItem();
+            newItem.brush = new SolidBrush(Color.SkyBlue);
+            newItem.description = "原始负荷";
+            picture.LogoItems.Add(newItem);
+            //    newItem.priority = 0;
 
-        //    LogoItem newItem = new LogoItem();
-        //    newItem.priority = 0;
-        //    newItem.brush = new SolidBrush(Color.SkyBlue);
-        //    newItem.description = "原始负荷";
-        //    picture.LogoItems.Insert(0, newItem);
-
-        //    //因为吴老师要求将部分图例合并，所以也在此处添加添加by孙凯 2016.1.19
-        //    //抽蓄发电/抽蓄填谷合并、电力不足/调峰不足合并、新能源弃电/水电弃水合并
-        //    newItem.brush = fillBrushes[myDrawHelper.getBrushArrayIndex(5)].myBrush;
-        //    newItem.secondBrush = fillBrushes[myDrawHelper.getBrushArrayIndex(21)].myBrush;
-        //    newItem.description = "抽蓄发电/抽蓄填谷";
-        //    picture.LogoItems.Insert(1, newItem);
-
-        //    newItem.brush = fillBrushes[myDrawHelper.getBrushArrayIndex(22)].myBrush;
-        //    newItem.secondBrush = fillBrushes[myDrawHelper.getBrushArrayIndex(24)].myBrush;
-        //    newItem.description = "电力不足/调峰不足";
-        //    picture.LogoItems.Insert(2, newItem);
-
-        //    newItem.brush = fillBrushes[myDrawHelper.getBrushArrayIndex(23)].myBrush;
-        //    newItem.secondBrush = fillBrushes[myDrawHelper.getBrushArrayIndex(25)].myBrush;
-        //    newItem.description = "新能源弃电/水电弃水";
-        //    picture.LogoItems.Insert(3, newItem);
-
-        //    //添加Flg = 27、28的Logo
-        //    //添加by孙凯 2015.7.7
-        //    //Logo 背景使用新能源 此处采用硬编码 为config文件中selectItems的Priority-1
-        //    newItem.brush = fillBrushes[myDrawHelper.getBrushArrayIndex(23)].myBrush;
-        //    newItem.description = "新能源/风/光发电";
-        //    picture.LogoItems.Insert(4, newItem);
-
-        //    //newItem = new LogoItem();
-        //    //newItem.priority = 2;
-        //    //newItem.brush = new SolidBrush(Color.Green);
-        //    //newItem.description = "光伏发电位置曲线";
-        //    //picture.LogoItems.Insert(2, newItem);
-        //    //添加结束 by 孙凯
-
-        //    SolidBrush backBrush = new SolidBrush(Color.White);
-
-        //    Font drawFont = new Font("宋体", picture.smallFontSize);
-        //    SolidBrush drawBrush = new SolidBrush(Color.Black);
-        //    Pen framePen = new Pen(Color.Black, 1.0f);
-        //    Pen dashPen = new Pen(Color.Black, 1.0f);
-        //    dashPen.DashStyle = DashStyle.Dash;
-        //    //用于绘制Flg=27的图标
-        //    Pen tmpPen1 = new Pen(Color.Orange, 1.0f);
-        //    tmpPen1.DashStyle = DashStyle.Dash;
-        //    //用于绘制Flg=28的图标
-        //    //Pen tmpPen2 = new Pen(Color.HotPink, 1.0f);
-        //    //tmpPen2.DashStyle = DashStyle.Dash;
-
-        //    int vacant = 10;
-        //    Font titleFont = new Font("宋体", picture.largeFontSize, FontStyle.Bold);
-
-        //    picture.logoPos = new Rectangle(picture.logoPos.Left
-        //        , picture.logoPos.Top
-        //        , picture.logoWidth
-        //        , (picture.LogoItems.Count + 1) / 2 * (drawFont.Height * 2 + vacant) +
-        //        vacant + titleFont.Height + vacant + 3);
+            Dictionary<String, Dictionary<String, String>> LogoParameter = NORMlist[1];
+            Dictionary<string, string> STYLinfo = STYLlist[0];
 
 
-        //    g.FillRectangle(backBrush, picture.logoPos);
-        //    StringFormat stringFormat = new StringFormat();
-        //    stringFormat.Alignment = StringAlignment.Center;
+            for (int i = 4; i <= 20; i++)
+            {
+                Dictionary<String, String> Info = LogoParameter[i.ToString()];
+                int firstHatchID = int.Parse(Info["firstHatch"]);
+                int secondHatchID = int.Parse(Info["secondHatch"]);
+                string firstColor = Info["firstARGB"];
+                string secondColor = Info["secondARGB"];
+                string firstItem = Info["firstItem"];
+                string secondItem = Info["secondItem"];
+                //从Info中取出ARGB编号，再从STYLlist[0]中取出编号对应的ARGB
 
-        //    int itemWidth = picture.logoPos.Width / 2;
 
-        //    g.DrawString("图例", titleFont, drawBrush, picture.logoPos.Left + picture.logoPos.Width / 2, picture.logoPos.Top + vacant, stringFormat);
-        //    Pen pen = new Pen(Color.Black);
-        //    g.DrawLine(pen, picture.logoPos.Left, picture.logoPos.Top + vacant + titleFont.Height + 3,
-        //        picture.logoPos.Right, picture.logoPos.Top + vacant + titleFont.Height + 3);
-        //    Point startPoint = new Point(picture.logoPos.Left, picture.logoPos.Top + vacant + titleFont.Height + 3);
+                Brush firstBrush = infoToBrush(firstColor, firstHatchID);
+                Brush secondBrush = infoToBrush(secondColor, secondHatchID);
+
+                newItem = new LogoItem();
+                newItem.brush = firstBrush;
+                newItem.secondBrush = secondBrush;
+                if (secondItem == "")
+                {
+                    if (firstItem == "")
+                    {
+                        continue;
+                    }
+                    newItem.description = firstItem;
+                }
+                else
+                {
+                    newItem.description = firstItem + "/" + secondItem;
+                }
+                picture.LogoItems.Add(newItem);
+            }
 
 
-        //    for (int i = 0; i < picture.LogoItems.Count; i++)
-        //    {
-        //        Point point = new Point(startPoint.X + 5 + (i % 2) * itemWidth,
-        //            startPoint.Y + (i / 2) * (drawFont.Height * 2 + vacant) + vacant);
-        //        //因为Flg = 0,27,28(对应下标分别为0, 1与其他情况不同故修改
-        //        //修改by孙凯 2015.7.7
-        //        switch (i)
-        //        {
-        //            case 0:
-        //                g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y + drawFont.Height, 40, drawFont.Height);
-        //                g.DrawLine(framePen, point.X, point.Y + drawFont.Height, point.X + 40, point.Y + drawFont.Height);
+            SolidBrush backBrush = new SolidBrush(Color.White);
+            Font drawFont = new Font("宋体", picture.smallFontSize);
 
-        //                PointF[] points = new PointF[]
-        //                {
-        //                    new PointF(point.X, point.Y + (float)drawFont.Height*3.0f/2),
-        //                    new PointF(point.X + 20, point.Y + (float)drawFont.Height*3.0f/2),
-        //                    new PointF(point.X + 20, point.Y+(float)drawFont.Height/2.0f),
-        //                    new PointF(point.X + 40, point.Y+(float)drawFont.Height/2.0f)
-        //                };
-        //                g.DrawLines(dashPen, points);
-        //                g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
-        //                break;
-        //            //因为吴老师要求将部分图例合并，所以也在此处添加添加by孙凯 2016.1.19
-        //            //抽蓄发电/抽蓄填谷合并、电力不足/调峰不足合并、新能源弃电/水电弃水合并
-        //            case 1:
-        //            case 2:
-        //            case 3:
-        //                g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y, 40, drawFont.Height);
-        //                g.FillRectangle(picture.LogoItems[i].secondBrush, point.X, point.Y + drawFont.Height, 40, drawFont.Height);
-        //                g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
-        //                break;
-        //            case 4:
-        //                g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y, 40, drawFont.Height * 2);
-        //                //g.DrawLine(framePen, point.X, point.Y + drawFont.Height, point.X + 40, point.Y + drawFont.Height);
+            SolidBrush drawBrush = new SolidBrush(Color.Black);
+            Pen framePen = new Pen(Color.Black, 1.0f);
+            Pen dashPen = new Pen(Color.Black, 1.0f);
+            dashPen.DashStyle = DashStyle.Dash;
 
-        //                PointF[] points3 = new PointF[]
-        //                {
-        //                    new PointF(point.X, point.Y + (float)drawFont.Height*3.0f/4),
-        //                    new PointF(point.X + 20, point.Y + (float)drawFont.Height*3.0f/4),
-        //                    new PointF(point.X + 20, point.Y+(float)drawFont.Height/4.0f),
-        //                    new PointF(point.X + 40, point.Y+(float)drawFont.Height/4.0f)
-        //                };
-        //                g.DrawLines(tmpPen1, points3);
+            int vacant = 10;
+            Font titleFont = new Font("宋体", picture.largeFontSize, FontStyle.Bold);
 
-        //                PointF[] points4 = new PointF[]
-        //                {
-        //                    new PointF(point.X, point.Y + (float)drawFont.Height*7.0f/4),
-        //                    new PointF(point.X + 12, point.Y + (float)drawFont.Height*7.0f/4),
-        //                    new PointF(point.X + 12, point.Y+(float)drawFont.Height*5/4.0f),
-        //                    new PointF(point.X + 28, point.Y + (float)drawFont.Height*5.0f/4),
-        //                    new PointF(point.X + 28, point.Y+(float)drawFont.Height*7/4.0f),
-        //                    new PointF(point.X + 40, point.Y+(float)drawFont.Height*7/4.0f)
-        //                };
-        //                g.DrawLines(tmpPen1, points4);
-        //                g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
-        //                break;
-        //            //case 2:
-        //            //    g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y+drawFont.Height, 40, drawFont.Height );
-        //            //    g.DrawLine(framePen, point.X, point.Y + drawFont.Height, point.X + 40, point.Y + drawFont.Height);
 
-        //            //    PointF[] points2 = new PointF[]
-        //            //    {
-        //            //        new PointF(point.X, point.Y + (float)drawFont.Height*3.0f/2),
-        //            //        new PointF(point.X + 20, point.Y + (float)drawFont.Height*3.0f/2),
-        //            //        new PointF(point.X + 20, point.Y+(float)drawFont.Height/2.0f),
-        //            //        new PointF(point.X + 40, point.Y+(float)drawFont.Height/2.0f)
-        //            //    };
-        //            //    g.DrawLines(tmpPen2,points2);
-        //            //    g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
-        //            //    break;
-        //            default:
-        //                g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y, 40, drawFont.Height * 2);
-        //                g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
-        //                break;
-        //        }
-        //        g.DrawRectangle(framePen, point.X, point.Y, 40, drawFont.Height * 2);
-        //    }
+            picture.logoPos = new Rectangle(picture.logoPos.Left
+                , picture.logoPos.Top
+                , picture.logoWidth
+                , (picture.LogoItems.Count + 1) / 2 * (drawFont.Height * 2 + vacant) +
+                vacant + titleFont.Height + vacant + 3);
 
-        //    stringFormat.Dispose();
-        //    pen.Dispose();
-        //    framePen.Dispose();
-        //    drawBrush.Dispose();
-        //    titleFont.Dispose();
-        //    drawFont.Dispose();
-        //}
+            g.FillRectangle(backBrush, picture.logoPos);
+            StringFormat stringFormat = new StringFormat();
+            stringFormat.Alignment = StringAlignment.Center;
+
+            int itemWidth = picture.logoPos.Width / 2;
+
+            g.DrawString("图例", titleFont, drawBrush, picture.logoPos.Left + picture.logoPos.Width / 2, picture.logoPos.Top + vacant, stringFormat);
+            Pen pen = new Pen(Color.Black);
+            g.DrawLine(pen, picture.logoPos.Left, picture.logoPos.Top + vacant + titleFont.Height + 3,
+                    picture.logoPos.Right, picture.logoPos.Top + vacant + titleFont.Height + 3);
+            Point startPoint = new Point(picture.logoPos.Left, picture.logoPos.Top + vacant + titleFont.Height + 3);
+
+            for (int i = 0; i < picture.LogoItems.Count; i++)
+            {
+                Point point = new Point(startPoint.X + 5 + (i % 2) * itemWidth,
+                    startPoint.Y + (i / 2) * (drawFont.Height * 2 + vacant) + vacant);
+                if (i == 0)
+                {
+                    g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y + drawFont.Height, 40, drawFont.Height);
+                    g.DrawLine(framePen, point.X, point.Y + drawFont.Height, point.X + 40, point.Y + drawFont.Height);
+
+                    PointF[] points = new PointF[]
+                    {
+                                new PointF(point.X, point.Y + (float)drawFont.Height*3.0f/2),
+                                new PointF(point.X + 20, point.Y + (float)drawFont.Height*3.0f/2),
+                                new PointF(point.X + 20, point.Y+(float)drawFont.Height/2.0f),
+                                new PointF(point.X + 40, point.Y+(float)drawFont.Height/2.0f)
+                        };
+                    g.DrawLines(dashPen, points);
+                    g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
+                }
+                else
+                {
+                    g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y, 40, drawFont.Height);
+                    g.FillRectangle(picture.LogoItems[i].secondBrush, point.X, point.Y + drawFont.Height, 40, drawFont.Height);
+                    g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
+                }
+                g.DrawRectangle(framePen, point.X, point.Y, 40, drawFont.Height * 2);
+            }
+
+            stringFormat.Dispose();
+            pen.Dispose();
+            framePen.Dispose();
+            drawBrush.Dispose();
+            titleFont.Dispose();
+            drawFont.Dispose();
+        }
+        
+        //通过NORM表格中的color和hatch的编码，在Style表格中获取对应的填充风格和颜色类型，并生成对应的笔刷
+        private Brush infoToBrush(string colorID, int hatchID)
+        {
+            Dictionary<string, string> STYLinfo = STYLlist[0];
+
+            HatchStyle[] hatchStyles = new HatchStyle[18];
+            hatchStyles[0] = HatchStyle.Percent10;
+            hatchStyles[1] = HatchStyle.Percent25;
+            hatchStyles[2] = HatchStyle.ForwardDiagonal;
+            hatchStyles[3] = HatchStyle.BackwardDiagonal;
+            hatchStyles[4] = HatchStyle.Sphere;
+            hatchStyles[5] = HatchStyle.LightDownwardDiagonal;
+            hatchStyles[6] = HatchStyle.LightUpwardDiagonal;
+            hatchStyles[7] = HatchStyle.LightVertical;
+            hatchStyles[8] = HatchStyle.NarrowVertical;
+            hatchStyles[9] = HatchStyle.DiagonalCross;
+            hatchStyles[10] = HatchStyle.HorizontalBrick;
+            hatchStyles[11] = HatchStyle.OutlinedDiamond;
+            hatchStyles[12] = HatchStyle.DiagonalBrick;
+            hatchStyles[13] = HatchStyle.Weave;
+            hatchStyles[14] = HatchStyle.DarkDownwardDiagonal;
+            hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
+            hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
+            hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
+            
+            //当hatchID=39，也就是超出了hatchStyles的列表范围时，代表的是无填充风格，因此生成只包含颜色的SolidBrush笔刷，否则生成带有填充风格的HatchBrush笔刷
+            if (hatchID < hatchStyles.Length + 21)
+            {          
+                string color = STYLinfo[colorID];
+                string[] ARGBS = color.Split(' ');
+                HatchBrush hBrush = new HatchBrush(hatchStyles[hatchID - 21], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
+                return hBrush;
+            }
+            else
+            {
+                string color = STYLinfo[colorID];
+                string[] ARGBS = color.Split(' ');
+                SolidBrush sBrush = new SolidBrush(Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
+                return sBrush;
+            }
+        }
+
+
+
+
 
 
         private void InZoom_Click(object sender, EventArgs e)
@@ -1193,14 +1200,38 @@ namespace Test
         {
             List<Dictionary<string, Dictionary<string, string>>> NORMData = new List<Dictionary<string, Dictionary<string, string>>>();
             Dictionary<string, Dictionary<string, string>> drawParameter= new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, Dictionary<string, string>> LogoParameter = new Dictionary<string, Dictionary<string, string>>();
             NORMData.Add(drawParameter);
+            NORMData.Add(LogoParameter);
             int startRow = 0;
-            while (!(NORMDt.Rows[startRow]["Item"].ToString().IndexOf("绘图参数") > 0))
+            while (!(NORMDt.Rows[startRow]["Item"].ToString().IndexOf("图例参数") > 0))
             {
                 startRow++;
             }
             startRow++;
-            for(; startRow < NORMDt.Rows.Count; startRow++)
+            while (!(NORMDt.Rows[startRow]["Item"].ToString().IndexOf("绘图参数") > 0))
+            {
+                if (LogoParameter.ContainsKey(NORMDt.Rows[startRow]["Flag"].ToString()))
+                {
+                    Dictionary<string, string> dictionary = LogoParameter[NORMDt.Rows[startRow]["Flag"].ToString()];
+                    dictionary.Add("secondItem", NORMDt.Rows[startRow]["Item"].ToString());
+                    dictionary.Add("secondHatch", NORMDt.Rows[startRow]["Hatch"].ToString());
+                    dictionary.Add("secondARGB", NORMDt.Rows[startRow]["ARGB"].ToString());
+                    dictionary.Add("secondMark", "1");
+                }
+                else
+                {
+                    Dictionary<string, string> dictionary = new Dictionary<string, string>();
+                    dictionary.Add("firstItem", NORMDt.Rows[startRow]["Item"].ToString());
+                    dictionary.Add("firstHatch", NORMDt.Rows[startRow]["Hatch"].ToString());
+                    dictionary.Add("firstARGB", NORMDt.Rows[startRow]["ARGB"].ToString());
+                    dictionary.Add("firstMark", "1");
+                    LogoParameter.Add(NORMDt.Rows[startRow]["Flag"].ToString(), dictionary);
+                }
+                startRow++;
+            }
+            startRow++;
+            for (; startRow < NORMDt.Rows.Count; startRow++)
             {
                 Dictionary<string, string> dictionary = new Dictionary<string, string>();
                 dictionary.Add("Hatch", NORMDt.Rows[startRow]["Hatch"].ToString());
