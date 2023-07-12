@@ -38,8 +38,8 @@ namespace Test
         public 画图()
         {
             InitializeComponent();
-            string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
-            //string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            //string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
+            string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
             loadData LoadData = new loadData();
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
             DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");

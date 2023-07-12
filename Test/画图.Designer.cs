@@ -187,7 +187,7 @@ namespace Test
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedTabFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold);
             this.tabControl1.SelectedTabIndex = -1;
-            this.tabControl1.Size = new System.Drawing.Size(1032, 1053);
+            this.tabControl1.Size = new System.Drawing.Size(1032, 800);
             this.tabControl1.TabIndex = 0;
             this.tabControl1.TabLayoutType = DevComponents.DotNetBar.eTabLayoutType.FixedWithNavigationBox;
             this.tabControl1.Tag = "tabControl1";
@@ -198,12 +198,13 @@ namespace Test
             // 画图
             // 
             this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.ClientSize = new System.Drawing.Size(1032, 1053);
+            this.ClientSize = new System.Drawing.Size(1032, 800);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.tabControl1);
             this.KeyPreview = true;
             this.Name = "画图";
             this.Text = "电站位置图";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.画图_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.画图_Paint);
             this.contextMenuStrip1.ResumeLayout(false);
