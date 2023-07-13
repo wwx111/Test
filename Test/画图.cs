@@ -33,6 +33,7 @@ namespace Test
         private Int32 currentSpan;
 
         private Boolean isPanelDrag = false;
+        private Boolean isMouseMove = false;
         private Point panelPrePosition;
 
         public 画图()
@@ -1055,6 +1056,7 @@ namespace Test
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
+            //this.isMouseMove = false;
             if (e.Button == MouseButtons.Left)
             {
                 this.isPanelDrag = true;
@@ -1068,7 +1070,9 @@ namespace Test
             {
                 this.panel1.Left = this.panel1.Left + e.X - this.panelPrePosition.X;
                 this.panel1.Top = this.panel1.Top + e.Y - this.panelPrePosition.Y;
+                //this.isMouseMove = true;
             }
+
         }
 
         private void panel1_MouseUp(object sender, MouseEventArgs e)
@@ -1078,6 +1082,21 @@ namespace Test
                 this.isPanelDrag = false;
             }
         }
+
+        //private void button_MouseUp(object sender, MouseEventArgs e)
+        //{
+        //    if (!isMouseMove)
+        //    {
+
+        //    }
+        //}
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+
     }
 
 

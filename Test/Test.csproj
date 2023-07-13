@@ -121,6 +121,11 @@
   <ItemGroup>
     <Compile Include="DrawHelper.cs" />
     <Compile Include="MyBrush.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="画图.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -131,14 +136,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="画图.resx">
       <DependentUpon>画图.cs</DependentUpon>
     </EmbeddedResource>
@@ -155,6 +155,45 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\向左4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\向左2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\向右4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\向右2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\缩小.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\放大.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Right向右.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Left向左.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\减少减去减号.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\增加添加加号.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\28E拖动.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\拖动3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\拖动3 %281%29.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

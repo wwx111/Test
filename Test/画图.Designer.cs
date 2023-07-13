@@ -76,9 +76,9 @@ namespace Test
             this.panel1.Controls.Add(this.MonthLeft);
             this.panel1.Controls.Add(this.DayRight);
             this.panel1.Controls.Add(this.DayLeft);
-            this.panel1.Location = new System.Drawing.Point(77, 159);
+            this.panel1.Location = new System.Drawing.Point(77, 157);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(221, 250);
+            this.panel1.Size = new System.Drawing.Size(107, 238);
             this.panel1.TabIndex = 1;
             this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
             this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
@@ -86,91 +86,106 @@ namespace Test
             // 
             // OutZoom
             // 
-            this.OutZoom.Location = new System.Drawing.Point(113, 195);
+            this.OutZoom.Image = global::Test.Properties.Resources.缩小;
+            this.OutZoom.Location = new System.Drawing.Point(54, 171);
             this.OutZoom.Name = "OutZoom";
-            this.OutZoom.Size = new System.Drawing.Size(104, 50);
+            this.OutZoom.Size = new System.Drawing.Size(50, 50);
             this.OutZoom.TabIndex = 7;
-            this.OutZoom.Text = "缩小";
             this.toolTip1.SetToolTip(this.OutZoom, "缩小图片");
             this.OutZoom.UseVisualStyleBackColor = true;
             this.OutZoom.Click += new System.EventHandler(this.OutZoom_Click);
             // 
             // InZoom
             // 
-            this.InZoom.Location = new System.Drawing.Point(3, 195);
+            this.InZoom.Image = global::Test.Properties.Resources.放大;
+            this.InZoom.Location = new System.Drawing.Point(3, 171);
             this.InZoom.Name = "InZoom";
-            this.InZoom.Size = new System.Drawing.Size(104, 50);
+            this.InZoom.Size = new System.Drawing.Size(50, 50);
             this.InZoom.TabIndex = 6;
-            this.InZoom.Text = "放大";
             this.toolTip1.SetToolTip(this.InZoom, "放大图片");
             this.InZoom.UseVisualStyleBackColor = true;
             this.InZoom.Click += new System.EventHandler(this.InZoom_Click);
             // 
             // RemoveDay
             // 
-            this.RemoveDay.Location = new System.Drawing.Point(113, 139);
+            this.RemoveDay.Image = global::Test.Properties.Resources.减少减去减号;
+            this.RemoveDay.Location = new System.Drawing.Point(54, 115);
             this.RemoveDay.Name = "RemoveDay";
-            this.RemoveDay.Size = new System.Drawing.Size(104, 50);
+            this.RemoveDay.Size = new System.Drawing.Size(50, 50);
             this.RemoveDay.TabIndex = 5;
-            this.RemoveDay.Text = "-";
             this.toolTip1.SetToolTip(this.RemoveDay, "减少一天");
             this.RemoveDay.UseVisualStyleBackColor = true;
             this.RemoveDay.Click += new System.EventHandler(this.RemoveDay_Click);
             // 
             // AddDay
             // 
-            this.AddDay.Location = new System.Drawing.Point(3, 139);
+            this.AddDay.Image = global::Test.Properties.Resources.增加添加加号;
+            this.AddDay.Location = new System.Drawing.Point(3, 115);
             this.AddDay.Name = "AddDay";
-            this.AddDay.Size = new System.Drawing.Size(104, 50);
+            this.AddDay.Size = new System.Drawing.Size(50, 50);
             this.AddDay.TabIndex = 4;
-            this.AddDay.Text = "+";
             this.toolTip1.SetToolTip(this.AddDay, "增加一天");
             this.AddDay.UseVisualStyleBackColor = true;
             this.AddDay.Click += new System.EventHandler(this.AddDay_Click);
             // 
             // MonthRight
             // 
-            this.MonthRight.Location = new System.Drawing.Point(113, 83);
+            this.MonthRight.Image = global::Test.Properties.Resources.向右4;
+            this.MonthRight.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.MonthRight.Location = new System.Drawing.Point(54, 59);
             this.MonthRight.Name = "MonthRight";
-            this.MonthRight.Size = new System.Drawing.Size(104, 50);
+            this.MonthRight.Size = new System.Drawing.Size(50, 50);
             this.MonthRight.TabIndex = 3;
-            this.MonthRight.Text = ">>";
             this.toolTip1.SetToolTip(this.MonthRight, "右移一月");
             this.MonthRight.UseVisualStyleBackColor = true;
             this.MonthRight.Click += new System.EventHandler(this.MonthRight_Click);
+            this.MonthRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            this.MonthRight.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
+            this.MonthRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
             // 
             // MonthLeft
             // 
-            this.MonthLeft.Location = new System.Drawing.Point(3, 83);
+            this.MonthLeft.Image = global::Test.Properties.Resources.向左4;
+            this.MonthLeft.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.MonthLeft.Location = new System.Drawing.Point(3, 59);
             this.MonthLeft.Name = "MonthLeft";
-            this.MonthLeft.Size = new System.Drawing.Size(104, 50);
+            this.MonthLeft.Size = new System.Drawing.Size(50, 50);
             this.MonthLeft.TabIndex = 2;
-            this.MonthLeft.Text = "<<";
             this.toolTip1.SetToolTip(this.MonthLeft, "左移一月");
             this.MonthLeft.UseVisualStyleBackColor = true;
             this.MonthLeft.Click += new System.EventHandler(this.MonthLeft_Click);
+            this.MonthLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            this.MonthLeft.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
+            this.MonthLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
             // 
             // DayRight
             // 
-            this.DayRight.Location = new System.Drawing.Point(113, 27);
+            this.DayRight.Image = global::Test.Properties.Resources.Right向右;
+            this.DayRight.Location = new System.Drawing.Point(54, 3);
             this.DayRight.Name = "DayRight";
-            this.DayRight.Size = new System.Drawing.Size(104, 50);
+            this.DayRight.Size = new System.Drawing.Size(50, 50);
             this.DayRight.TabIndex = 1;
-            this.DayRight.Text = ">";
             this.toolTip1.SetToolTip(this.DayRight, "右移一天");
             this.DayRight.UseVisualStyleBackColor = true;
             this.DayRight.Click += new System.EventHandler(this.DayRight_Click);
+            this.DayRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            this.DayRight.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
+            this.DayRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
             // 
             // DayLeft
             // 
-            this.DayLeft.Location = new System.Drawing.Point(3, 27);
+            this.DayLeft.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.DayLeft.Image = global::Test.Properties.Resources.Left向左;
+            this.DayLeft.Location = new System.Drawing.Point(3, 3);
             this.DayLeft.Name = "DayLeft";
-            this.DayLeft.Size = new System.Drawing.Size(104, 50);
+            this.DayLeft.Size = new System.Drawing.Size(50, 50);
             this.DayLeft.TabIndex = 0;
-            this.DayLeft.Text = "<";
             this.toolTip1.SetToolTip(this.DayLeft, "左移一天");
             this.DayLeft.UseVisualStyleBackColor = true;
             this.DayLeft.Click += new System.EventHandler(this.DayLeft_Click);
+            this.DayLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            this.DayLeft.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
+            this.DayLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
             // 
             // tabControl1
             // 
@@ -223,10 +238,10 @@ namespace Test
         private System.Windows.Forms.Button AddDay;
         private System.Windows.Forms.Button MonthRight;
         private System.Windows.Forms.Button MonthLeft;
-        private System.Windows.Forms.Button DayRight;
-        private System.Windows.Forms.Button DayLeft;
         private System.Windows.Forms.ToolTip toolTip1;
         private DevComponents.DotNetBar.TabControl tabControl1;
+        private System.Windows.Forms.Button DayRight;
+        private System.Windows.Forms.Button DayLeft;
         //private DevComponents.DotNetBar.TabControlPanel tabControlPanel1;
         //private DevComponents.DotNetBar.TabItem tabItem1;
     }
