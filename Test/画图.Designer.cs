@@ -35,7 +35,8 @@ namespace Test
         {
             this.components = new System.ComponentModel.Container();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.保存图片ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dlgSavePic = new System.Windows.Forms.SaveFileDialog();
+            this.SavePicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.OutZoom = new System.Windows.Forms.Button();
             this.InZoom = new System.Windows.Forms.Button();
@@ -56,15 +57,20 @@ namespace Test
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.保存图片ToolStripMenuItem});
+            this.SavePicMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 34);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(241, 67);
             // 
-            // 保存图片ToolStripMenuItem
+            // SavePicMenuItem
             // 
-            this.保存图片ToolStripMenuItem.Name = "保存图片ToolStripMenuItem";
-            this.保存图片ToolStripMenuItem.Size = new System.Drawing.Size(152, 30);
-            this.保存图片ToolStripMenuItem.Text = "保存图片";
+            this.SavePicMenuItem.Name = "SavePicMenuItem";
+            this.SavePicMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.SavePicMenuItem.Text = "保存图片";
+            this.SavePicMenuItem.Click += new System.EventHandler(this.SavePicMenuItem_Click);
+            // 
+            // dlgSavePic
+            // 
+            this.dlgSavePic.Filter = "*.bmp|*.bmp|*.png|*.png|*.jpg|*.jpg|*.gif|*.gif";
             // 
             // panel1
             // 
@@ -230,7 +236,8 @@ namespace Test
         }
 
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem 保存图片ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SavePicMenuItem;
+        private System.Windows.Forms.SaveFileDialog dlgSavePic;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button OutZoom;
         private System.Windows.Forms.Button InZoom;

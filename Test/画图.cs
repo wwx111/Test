@@ -17,11 +17,13 @@ using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Collections;
+using System.Threading;
 
 namespace Test
 {
     public partial class 画图 : Form
     {
+        //private progress myprogress;
         private MyFunPictureBox myFunPictureBox = null;              //保存图片框控件
         private List<Dictionary<string, string>> STYLlist;
         private List<Dictionary<string, Dictionary<string, string>>> NORMlist;
@@ -31,10 +33,18 @@ namespace Test
         private Int32 currentMonth;
         private Int32 currentYear;
         private Int32 currentSpan;
+        private HatchStyle[] hatchStyles = new HatchStyle[18];
 
         private Boolean isPanelDrag = false;
         private Boolean isMouseMove = false;
         private Point panelPrePosition;
+
+        //public void progressB()
+        //{
+        //    this.myprogress = new progress();
+        //    myprogress.Start();
+        //    myprogress.ShowDialog();
+        //}
 
         public 画图()
         {
@@ -49,6 +59,26 @@ namespace Test
             NORMlist = loadData.NORMTableToData(NORMdata);
             dictionary = loadData.MAPsTableToData(Mapsdata);
             dictionary = (from d in dictionary orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
+
+            hatchStyles[0] = HatchStyle.Percent10;
+            hatchStyles[1] = HatchStyle.Percent25;
+            hatchStyles[2] = HatchStyle.ForwardDiagonal;
+            hatchStyles[3] = HatchStyle.BackwardDiagonal;
+            hatchStyles[4] = HatchStyle.Sphere;
+            hatchStyles[5] = HatchStyle.LightDownwardDiagonal;
+            hatchStyles[6] = HatchStyle.LightUpwardDiagonal;
+            hatchStyles[7] = HatchStyle.LightVertical;
+            hatchStyles[8] = HatchStyle.NarrowVertical;
+            hatchStyles[9] = HatchStyle.DiagonalCross;
+            hatchStyles[10] = HatchStyle.HorizontalBrick;
+            hatchStyles[11] = HatchStyle.OutlinedDiamond;
+            hatchStyles[12] = HatchStyle.DiagonalBrick;
+            hatchStyles[13] = HatchStyle.Weave;
+            hatchStyles[14] = HatchStyle.DarkDownwardDiagonal;
+            hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
+            hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
+            hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
+
         }
 
         private void 画图_Load(object sender, EventArgs e)
@@ -121,7 +151,7 @@ namespace Test
                 , 300
                 , (myFunPictureBox.LogoItems.Count + 1) / 2 * 50);
 
-
+            myFunPictureBox.ContextMenuStrip = contextMenuStrip1;
 
             myFunPictureBox.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseWheel);
             myFunPictureBox.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
@@ -242,6 +272,8 @@ namespace Test
             }
         }
 
+
+
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
             MyFunPictureBox picture = sender as MyFunPictureBox;
@@ -254,26 +286,6 @@ namespace Test
                 picture.LogoItems.Clear();
 
                 //画图_Paint(picture, e);
-
-                HatchStyle[] hatchStyles = new HatchStyle[18];
-                hatchStyles[0] = HatchStyle.Percent10;
-                hatchStyles[1] = HatchStyle.Percent25;
-                hatchStyles[2] = HatchStyle.ForwardDiagonal;
-                hatchStyles[3] = HatchStyle.BackwardDiagonal;
-                hatchStyles[4] = HatchStyle.Sphere;
-                hatchStyles[5] = HatchStyle.LightDownwardDiagonal;
-                hatchStyles[6] = HatchStyle.LightUpwardDiagonal;
-                hatchStyles[7] = HatchStyle.LightVertical;
-                hatchStyles[8] = HatchStyle.NarrowVertical;
-                hatchStyles[9] = HatchStyle.DiagonalCross;
-                hatchStyles[10] = HatchStyle.HorizontalBrick;
-                hatchStyles[11] = HatchStyle.OutlinedDiamond;
-                hatchStyles[12] = HatchStyle.DiagonalBrick;
-                hatchStyles[13] = HatchStyle.Weave;
-                hatchStyles[14] = HatchStyle.DarkDownwardDiagonal;
-                hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
-                hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
-                hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
 
                 paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan, hatchStyles);
 
@@ -1096,9 +1108,58 @@ namespace Test
 
         }
 
+        private void SavePicMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dlgSavePic.ShowDialog() == DialogResult.OK)
+            {
+                ////开启进度条
+                //Thread thdSub = new Thread(new ThreadStart(this.progressB));
+                //thdSub.Start();
+                //Thread.Sleep(100);
+
+                MyFunPictureBox picture = ((sender as ToolStripMenuItem).Owner as ContextMenuStrip).SourceControl as MyFunPictureBox;
+                SavePicture(picture, dlgSavePic.FileName);
+
+                ////关闭进度条
+                //this.myprogress.isOver = true;
+
+                MessageBox.Show("保存图片成功！");
+            }
+        }
+
+        private void SavePicture(MyFunPictureBox picture, string filename)
+        {
+
+            MyFunPictureBox picBox = tabControl1.SelectedPanel.Controls[0] as MyFunPictureBox;
+            //MyFunPictureBox imagePic = CreatePictureFromSource(picBox);
+            MyFunPictureBox imagePic = picBox;
+
+            Bitmap memImage = new Bitmap(imagePic.Width, imagePic.Height);
+
+            Graphics g = Graphics.FromImage(memImage);
+            imagePic.LogoItems.Clear();
+
+            g.Clear(Color.White);
+
+            paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan, hatchStyles);
+
+            //myDrawHelper.drawAxes(picture, g);
+
+            DrawLogo(picture, g, hatchStyles);
+
+
+            String picPath = "";
+            if (filename == "")
+                picPath = Application.StartupPath + "\\ListView.bmp";
+
+            memImage.Save(filename);
+
+            g.Dispose();
+            memImage.Dispose();
+        }
+
 
     }
-
 
 
     public class loadData
