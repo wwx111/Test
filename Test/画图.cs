@@ -774,7 +774,7 @@ namespace Test
                 }
                 else
                 {
-                    newItem.description = firstItem + "/" + secondItem;
+                    newItem.description = firstItem + "/n" + secondItem;
                 }
                 picture.LogoItems.Add(newItem);
             }
