@@ -34,7 +34,8 @@ namespace Test
         private Int32 currentMonth;
         private Int32 currentYear;
         private Int32 currentSpan;
-        private HatchStyle[] hatchStyles = new HatchStyle[18];
+        private Dictionary<string, HatchStyle> hatchStyles = new Dictionary<string, HatchStyle>();
+        //private HatchStyle[] hatchStyles = new HatchStyle[18];
 
         private Boolean isPanelDrag = false;
         //private Boolean isMouseMove = false;
@@ -61,27 +62,27 @@ namespace Test
             NORMlist = loadData.NORMTableToData(ds.Tables[1]);
             dictionary = loadData.MAPsTableToData(ds.Tables[2]);
             dictionary = (from d in dictionary orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
-            title = STYLlist[1]["图片名"];
+            title = STYLlist[2]["16"];
             dlgSavePic.FileName = title;
 
-            hatchStyles[0] = HatchStyle.Percent10;
-            hatchStyles[1] = HatchStyle.Percent25;
-            hatchStyles[2] = HatchStyle.ForwardDiagonal;
-            hatchStyles[3] = HatchStyle.BackwardDiagonal;
-            hatchStyles[4] = HatchStyle.Sphere;
-            hatchStyles[5] = HatchStyle.LightDownwardDiagonal;
-            hatchStyles[6] = HatchStyle.LightUpwardDiagonal;
-            hatchStyles[7] = HatchStyle.LightVertical;
-            hatchStyles[8] = HatchStyle.NarrowVertical;
-            hatchStyles[9] = HatchStyle.DiagonalCross;
-            hatchStyles[10] = HatchStyle.HorizontalBrick;
-            hatchStyles[11] = HatchStyle.OutlinedDiamond;
-            hatchStyles[12] = HatchStyle.DiagonalBrick;
-            hatchStyles[13] = HatchStyle.Weave;
-            hatchStyles[14] = HatchStyle.DarkDownwardDiagonal;
-            hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
-            hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
-            hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
+
+
+            
+            Dictionary<String, String> hatchDictionary = STYLlist[1];
+
+            foreach (var pair in hatchDictionary)
+            {
+                HatchStyle hatchStyle;
+                string key = pair.Key;
+                string value = pair.Value;
+                if(value == "")
+                {
+                    continue;
+                }
+                hatchStyle = (HatchStyle)Enum.Parse(typeof(HatchStyle), value);
+                hatchStyles.Add(key, hatchStyle);
+            }
+            
 
         }
 
@@ -375,7 +376,7 @@ namespace Test
 
 
             // 获取最大纵坐标
-            Dictionary<string, string> STYLinfo1 = STYLlist[1];
+            Dictionary<string, string> STYLinfo1 = STYLlist[2];
             List<string> temp = new List<string>(STYLinfo1.Keys);
             int maxVal = int.Parse(STYLinfo1[temp[6]]);
 
@@ -456,7 +457,7 @@ namespace Test
                     // 笔刷中颜色、填充样式应该解析文件得到
                     Dictionary<string, Dictionary<string, string>> NORMdic = NORMlist[0];
                     Dictionary<string, string> NORMinfo = NORMdic[key];
-                    int hatchID = int.Parse(NORMinfo["Hatch"]);
+                    string hatchID = NORMinfo["Hatch"];
                     string color = NORMinfo["ARGB"];
                     Dictionary<string, string> STYLinfo = STYLlist[0];
                     color = STYLinfo[color];
@@ -467,7 +468,7 @@ namespace Test
                     }
                     else
                     {
-                        HatchBrush hBrush = new HatchBrush(hatchStyles[hatchID - 21], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
+                        HatchBrush hBrush = new HatchBrush(hatchStyles[hatchID], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
                         // 画图
                         g.FillPolygon(hBrush, points);
                         g.DrawPolygon(Pens.Black, points);
@@ -594,7 +595,7 @@ namespace Test
             //打印单位在图片上，打印的内容在STYL表中记录
             Rectangle unitSpace = new Rectangle(start.X - 30, end2.Y  - 20, 80, 20);
             StringFormat unitFormat = new StringFormat();
-            g.DrawString(STYLlist[1]["纵轴坐标标注单位（MW 或 万kW）"], new Font("黑体", fontSize + 3), Brushes.Black, unitSpace, unitFormat);
+            g.DrawString(STYLlist[2]["5"], new Font("黑体", fontSize + 3), Brushes.Black, unitSpace, unitFormat);
 
         }
 
@@ -806,8 +807,8 @@ namespace Test
                 {
                     continue;
                 }
-                int firstHatchID = int.Parse(Info["firstHatch"]);
-                int secondHatchID = int.Parse(Info["secondHatch"]);
+                string firstHatchID = Info["firstHatch"];
+                string secondHatchID = Info["secondHatch"];
                 string firstColor = Info["firstARGB"];
                 string secondColor = Info["secondARGB"];
 
@@ -926,17 +927,17 @@ namespace Test
         }
         
         //通过NORM表格中的color和hatch的编码，在Style表格中获取对应的填充风格和颜色类型，并生成对应的笔刷
-        private Brush infoToBrush(string colorID, int hatchID)
+        private Brush infoToBrush(string colorID, string hatchID)
         {
             Dictionary<string, string> STYLinfo = STYLlist[0];
 
             
             //当hatchID=39，也就是超出了hatchStyles的列表范围时，代表的是无填充风格，因此生成只包含颜色的SolidBrush笔刷，否则生成带有填充风格的HatchBrush笔刷
-            if (hatchID < hatchStyles.Length + 21)
+            if (hatchStyles.ContainsKey(hatchID))
             {          
                 string color = STYLinfo[colorID];
                 string[] ARGBS = color.Split(' ');
-                HatchBrush hBrush = new HatchBrush(hatchStyles[hatchID - 21], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
+                HatchBrush hBrush = new HatchBrush(hatchStyles[hatchID], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
                 return hBrush;
             }
             else
@@ -1321,6 +1322,7 @@ namespace Test
                 data = STYLDt.Rows[startRow]["Item"].ToString(); 
             }
             startRow++;
+            data = STYLDt.Rows[startRow]["Item"].ToString();
             while (!(data.IndexOf("绘图") > 0))
             {
                 hatchDictionary.Add(STYLDt.Rows[startRow]["ID"].ToString(), data);
