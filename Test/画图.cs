@@ -28,6 +28,7 @@ namespace Test
         private List<Dictionary<string, string>> STYLlist;
         private List<Dictionary<string, Dictionary<string, string>>> NORMlist;
         private Dictionary<string, Dictionary<string, List<string>>> dictionary;
+        private string title;
         //private DrawHelper drawHelper;
         private Int32 currentDay;
         private Int32 currentMonth;
@@ -36,29 +37,30 @@ namespace Test
         private HatchStyle[] hatchStyles = new HatchStyle[18];
 
         private Boolean isPanelDrag = false;
-        private Boolean isMouseMove = false;
+        //private Boolean isMouseMove = false;
         private Point panelPrePosition;
 
-        //public void progressB()
-        //{
-        //    this.myprogress = new progress();
-        //    myprogress.Start();
-        //    myprogress.ShowDialog();
-        //}
 
         public 画图()
         {
             InitializeComponent();
-            //string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
-            string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
+            //string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            DataSet ds = new DataSet();
             loadData LoadData = new loadData();
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
             DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
             DataTable Mapsdata = loadData.ExcelToDatatable(path, "MAPs");
-            STYLlist = loadData.STYLTableToData(STYLdata);
-            NORMlist = loadData.NORMTableToData(NORMdata);
-            dictionary = loadData.MAPsTableToData(Mapsdata);
+            ds.Tables.Add(STYLdata);
+            ds.Tables.Add(NORMdata);
+            ds.Tables.Add(Mapsdata);
+
+            STYLlist = loadData.STYLTableToData(ds.Tables[0]);
+            NORMlist = loadData.NORMTableToData(ds.Tables[1]);
+            dictionary = loadData.MAPsTableToData(ds.Tables[2]);
             dictionary = (from d in dictionary orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
+            title = STYLlist[1]["图片名"];
+            dlgSavePic.FileName = title;
 
             hatchStyles[0] = HatchStyle.Percent10;
             hatchStyles[1] = HatchStyle.Percent25;
@@ -287,11 +289,11 @@ namespace Test
 
                 //画图_Paint(picture, e);
 
-                paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan, hatchStyles);
+                paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan);
 
                 //myDrawHelper.drawAxes(picture, g);
 
-                DrawLogo(picture, g, hatchStyles);
+                DrawLogo(picture, g);
 
                 picture.drawed = true;
                 // picture.Image = memImage;
@@ -305,7 +307,7 @@ namespace Test
         }
 
         // 开始绘图的年、月、日、绘图天数、一年最大值 
-        private void paintDays(Graphics g, MyFunPictureBox picture, int year, int startMonth, int startDay, int days, HatchStyle[] hatchStyle)
+        private void paintDays(Graphics g, MyFunPictureBox picture, int year, int startMonth, int startDay, int days)
         {
             //Point zeroPoint = new Point(picture.drawArea.Left + (int)(picture.drawArea.Width * 0.1), picture.drawArea.Top + (int)(picture.drawArea.Height * 0.9));
             //setXYInterval(this.myFunPictureBox.drawArea.Width, this.myFunPictureBox.drawArea.Height);
@@ -371,6 +373,7 @@ namespace Test
             Dictionary<string, string> STYLinfo1 = STYLlist[1];
             List<string> temp = new List<string>(STYLinfo1.Keys);
             int maxVal = int.Parse(STYLinfo1[temp[6]]);
+
 
             // 绘制坐标轴
             Pen pen = new Pen(Brushes.Black);
@@ -459,17 +462,12 @@ namespace Test
                     }
                     else
                     {
-                        HatchBrush hBrush = new HatchBrush(hatchStyle[hatchID - 21], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
+                        HatchBrush hBrush = new HatchBrush(hatchStyles[hatchID - 21], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
                         // 画图
                         g.FillPolygon(hBrush, points);
                         g.DrawPolygon(Pens.Black, points);
                     }
                 }
-                //task++;
-                //if(task > 1)
-                //{
-                //break;
-                //}
             }
             Pen blackPen = new Pen(Color.Black, (float)0.5);
             blackPen.DashPattern = new float[] { 5, 4 };
@@ -492,19 +490,45 @@ namespace Test
 
                 String[] dates = getDateString(year, startMonth, startDay, days);
 
+                int span = days / 10 + 1;
+
                 for (int i = 0; i < days; i++)
                 {
                     downPoints[i] = new Point(start.X + coordinateList[i * 24], start.Y);
                     upPoints[i] = new Point(start.X + coordinateList[i * 24], start.Y - 5);
                     top = new Point(start.X + coordinateList[i * 24], end2.Y + 8);
-                    g.DrawLine(Pens.Black, downPoints[i], upPoints[i]);
-                    g.DrawLine(dotted, downPoints[i], top);
-                    Font font = new Font("黑体", fontSize);
-                    g.DrawString(dates[i], font, Brushes.Black, new Point(downPoints[i].X - 8, downPoints[i].Y + 5));
+                    
+                    if (i % span == 0)
+                    {
+                        //绘制坐标轴刻度
+                        g.DrawLine(Pens.Black, downPoints[i], upPoints[i]);
+                        //绘制参考虚线
+                        g.DrawLine(dotted, downPoints[i], top);
+                        //坐标轴刻度大小
+                        g.DrawString(dates[i], new Font("黑体", fontSize), Brushes.Black, new Point(downPoints[i].X - 10, downPoints[i].Y + 5));
+                    }
+
                 }
                 downPoints[days] = new Point(start.X + coordinateList[days * 24], start.Y);
                 top = new Point(start.X + coordinateList[days * 24], end2.Y + 8);
                 g.DrawLine(dotted, downPoints[days], top);
+
+                //在图中打印横坐标轴的单位
+                g.DrawString("日", new Font("黑体", fontSize + 3), Brushes.Black, downPoints[days].X + 15, downPoints[days].Y);
+                //打印标题
+                Rectangle rect;
+                if (days % 2 == 0)
+                {
+                    rect = new Rectangle(downPoints[days / 2].X - 80, downPoints[days].Y + (int)(fontSize * 3.5), 160, 80);
+                }
+                else
+                {
+                    rect = new Rectangle((downPoints[days / 2].X + downPoints[days / 2 + 1].X)/2 - 80, downPoints[days].Y + (int)(fontSize * 3.5), 160, 80);
+                }
+                
+                var stringFormat = new StringFormat();
+                stringFormat.Alignment = StringAlignment.Center;
+                g.DrawString(title, new Font("黑体", fontSize + 5), Brushes.Black, rect, stringFormat);
 
             }
             else
@@ -521,29 +545,51 @@ namespace Test
                     downPoints[i] = new Point(start.X + coordinateList[i + 1], start.Y);
                     upPoints[i] = new Point(start.X + coordinateList[i + 1], start.Y - 5);
                     top = new Point(start.X + coordinateList[i + 1], end2.Y + 8);
-                    g.DrawLine(Pens.Black, downPoints[i], upPoints[i]);
-                    g.DrawLine(dotted, downPoints[i], top);
-                    g.DrawString((i + 1) + "时", font, Brushes.Black, new Point(downPoints[i].X - 8, downPoints[i].Y + 5));
+                    
+                    if(i % 4 == 3)
+                    {
+                        g.DrawLine(dotted, downPoints[i], top);
+                        g.DrawLine(Pens.Black, downPoints[i], upPoints[i]);
+                        g.DrawString((i + 1) + "时", font, Brushes.Black, new Point(downPoints[i].X - 10, downPoints[i].Y + 5));
+                    }
                 }
+
+                //在图中打印横坐标轴的单位
+                g.DrawString("时", new Font("黑体", fontSize + 3), Brushes.Black, downPoints[23].X + 20, downPoints[days].Y - 2);
+                //打印标题
+                Font titleFont = new Font("黑体", fontSize + 3);
+                Rectangle rect = new Rectangle(downPoints[11].X - 80, downPoints[days].Y + (int)(fontSize * 3.5), 160, 80);
+                var stringFormat = new StringFormat();
+                stringFormat.Alignment = StringAlignment.Center;
+                g.DrawString(title, new Font("黑体", fontSize + 5), Brushes.Black, rect, stringFormat);
             }
 
             // 绘制Y轴的间隔
             interval = (start.Y - end2.Y - 5) / 10;
+
+            //从数据表中读取量纲
+            float dimension = float.Parse(STYLinfo1[temp[5]]);
+
+
             for (int i = 0; i < 10; i++)
             {
                 StringFormat format = new StringFormat();
                 format.Alignment = StringAlignment.Far; //靠右对齐
-                Rectangle space = new Rectangle(start.X - 70, (start.Y - interval * (i + 1)), 60, 20);
+                Rectangle space = new Rectangle(start.X - 70, (start.Y - interval * (i + 1)), 70, 20);
                 Point leftPoint = new Point(start.X, start.Y - interval * (i + 1));
                 Point rightPoint = new Point(start.X + 5, start.Y - interval * (i + 1));
                 top = new Point(end.X - 10, start.Y - interval * (i + 1));
                 g.DrawLine(Pens.Black, leftPoint, rightPoint);
                 g.DrawLine(dotted, leftPoint, top);
                 Font font = new Font("黑体", fontSize);
-                g.DrawString((maxVal / 10 * (i + 1)) + "", font, Brushes.Black, space, format);
+                //根据量纲打印纵坐标轴的刻度
+                g.DrawString((int)(maxVal * dimension / 10 * (i + 1)) + "", font, Brushes.Black, space, format);
             }
 
-            // 绘制网格线
+            //打印单位在图片上，打印的内容在STYL表中记录
+            Rectangle unitSpace = new Rectangle(start.X - 30, end2.Y  - 20, 80, 20);
+            StringFormat unitFormat = new StringFormat();
+            g.DrawString(STYLlist[1]["纵轴坐标标注单位（MW 或 万kW）"], new Font("黑体", fontSize + 3), Brushes.Black, unitSpace, unitFormat);
 
         }
 
@@ -569,15 +615,7 @@ namespace Test
                 }
 
             }
-            //int X = 0;
-            //int oneWidth = width / data.Length;
-            //for(int i = 0; i < data.Length; i++)
-            //{
 
-            //int left = i * 2;
-            //int right = left + 1;
-
-            //}
             points[points.Length - 2] = new Point(points[points.Length - 3].X, start.Y + height);
             points[points.Length - 1] = new Point(points[0].X, start.Y + height);
             return points;
@@ -628,7 +666,12 @@ namespace Test
                     month += 1;
                     day = 1;
                 }
+                
                 date[i] = month + "月" + day + "日";
+                if (month > 12 || month < 1)
+                {
+                    date[i] = "";
+                }
                 day++;
             }
             return date;
@@ -734,7 +777,7 @@ namespace Test
                 picture.LogoItems.Insert(i, item); ;
             }
         }
-        private void DrawLogo(MyPictureBox picture, Graphics g, HatchStyle[] hatchStyles)
+        private void DrawLogo(MyPictureBox picture, Graphics g)
         {
             LogoItem newItem = new LogoItem();
             newItem.brush = new SolidBrush(Color.SkyBlue);
@@ -743,20 +786,25 @@ namespace Test
             //    newItem.priority = 0;
 
             Dictionary<String, Dictionary<String, String>> LogoParameter = NORMlist[1];
-            Dictionary<string, string> STYLinfo = STYLlist[0];
 
-
-            for (int i = 4; i <= 20; i++)
+            for (int i = 0; i < LogoParameter.Count; i++)
             {
-                Dictionary<String, String> Info = LogoParameter[i.ToString()];
+                KeyValuePair<String, Dictionary<String, String>> kv = LogoParameter.ElementAt(i);
+                Dictionary<String, String> Info = kv.Value;
+                int firstMark = int.Parse(Info["firstMark"]);
+                int secondMark = int.Parse(Info["secondMark"]);
+
+                string firstItem = Info["firstItem"];
+                string secondItem = Info["secondItem"];
+
+                if ((firstMark == 0 && secondMark == 0) || firstItem.Equals("原始负荷"))
+                {
+                    continue;
+                }
                 int firstHatchID = int.Parse(Info["firstHatch"]);
                 int secondHatchID = int.Parse(Info["secondHatch"]);
                 string firstColor = Info["firstARGB"];
                 string secondColor = Info["secondARGB"];
-                string firstItem = Info["firstItem"];
-                string secondItem = Info["secondItem"];
-                //从Info中取出ARGB编号，再从STYLlist[0]中取出编号对应的ARGB
-
 
                 Brush firstBrush = infoToBrush(firstColor, firstHatchID);
                 Brush secondBrush = infoToBrush(secondColor, secondHatchID);
@@ -774,10 +822,36 @@ namespace Test
                 }
                 else
                 {
-                    newItem.description = firstItem + "/n" + secondItem;
+                    //保证图例解释文字能够正确显示，这里根据已有数据进行了简易的判定，当firstItem长度小于4时，需要加入空格，保证两个图例的解释文字分为两行
+                    if (firstItem.Length < 5)
+                    {
+                        newItem.description = firstItem + " " + secondItem;
+                    }
+                    else
+                    {
+                        newItem.description = firstItem + secondItem;
+                    }
+
                 }
                 picture.LogoItems.Add(newItem);
             }
+
+
+            //for (int i = 4; i <= 20; i++)
+            //{
+            //    Dictionary<String, String> Info = LogoParameter[i.ToString()];
+            //    int firstHatchID = int.Parse(Info["firstHatch"]);
+            //    int secondHatchID = int.Parse(Info["secondHatch"]);
+            //    string firstColor = Info["firstARGB"];
+            //    string secondColor = Info["secondARGB"];
+            //    string firstItem = Info["firstItem"];
+            //    string secondItem = Info["secondItem"];
+            //    int firstMark = int.Parse(Info["firstMark"]);
+            //    int secondMark = int.Parse(Info["secondMark"]);
+
+
+                
+            //}
 
 
             SolidBrush backBrush = new SolidBrush(Color.White);
@@ -851,25 +925,6 @@ namespace Test
         {
             Dictionary<string, string> STYLinfo = STYLlist[0];
 
-            HatchStyle[] hatchStyles = new HatchStyle[18];
-            hatchStyles[0] = HatchStyle.Percent10;
-            hatchStyles[1] = HatchStyle.Percent25;
-            hatchStyles[2] = HatchStyle.ForwardDiagonal;
-            hatchStyles[3] = HatchStyle.BackwardDiagonal;
-            hatchStyles[4] = HatchStyle.Sphere;
-            hatchStyles[5] = HatchStyle.LightDownwardDiagonal;
-            hatchStyles[6] = HatchStyle.LightUpwardDiagonal;
-            hatchStyles[7] = HatchStyle.LightVertical;
-            hatchStyles[8] = HatchStyle.NarrowVertical;
-            hatchStyles[9] = HatchStyle.DiagonalCross;
-            hatchStyles[10] = HatchStyle.HorizontalBrick;
-            hatchStyles[11] = HatchStyle.OutlinedDiamond;
-            hatchStyles[12] = HatchStyle.DiagonalBrick;
-            hatchStyles[13] = HatchStyle.Weave;
-            hatchStyles[14] = HatchStyle.DarkDownwardDiagonal;
-            hatchStyles[15] = HatchStyle.DarkUpwardDiagonal;
-            hatchStyles[16] = HatchStyle.DashedDownwardDiagonal;
-            hatchStyles[17] = HatchStyle.DashedUpwardDiagonal;
             
             //当hatchID=39，也就是超出了hatchStyles的列表范围时，代表的是无填充风格，因此生成只包含颜色的SolidBrush笔刷，否则生成带有填充风格的HatchBrush笔刷
             if (hatchID < hatchStyles.Length + 21)
@@ -966,16 +1021,7 @@ namespace Test
         {
             Boolean flag = true;
             currentSpan++;
-            if (currentSpan > 10)
-            {
-                currentSpan--;
-                flag = false;
-            }
-            else
-            {
-                // 调整横坐标interval
-            }
-
+            
             if (flag)
                 this.myFunPictureBox.Invalidate();
         }
@@ -1103,10 +1149,6 @@ namespace Test
         //    }
         //}
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
 
         private void SavePicMenuItem_Click(object sender, EventArgs e)
         {
@@ -1141,11 +1183,11 @@ namespace Test
 
             g.Clear(Color.White);
 
-            paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan, hatchStyles);
+            paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan);
 
             //myDrawHelper.drawAxes(picture, g);
 
-            DrawLogo(picture, g, hatchStyles);
+            DrawLogo(picture, g);
 
 
             String picPath = "";
@@ -1297,7 +1339,7 @@ namespace Test
                     dictionary.Add("secondItem", NORMDt.Rows[startRow]["Item"].ToString());
                     dictionary.Add("secondHatch", NORMDt.Rows[startRow]["Hatch"].ToString());
                     dictionary.Add("secondARGB", NORMDt.Rows[startRow]["ARGB"].ToString());
-                    dictionary.Add("secondMark", "1");
+                    dictionary.Add("secondMark", NORMDt.Rows[startRow]["Mark"].ToString());
                 }
                 else
                 {
@@ -1305,7 +1347,7 @@ namespace Test
                     dictionary.Add("firstItem", NORMDt.Rows[startRow]["Item"].ToString());
                     dictionary.Add("firstHatch", NORMDt.Rows[startRow]["Hatch"].ToString());
                     dictionary.Add("firstARGB", NORMDt.Rows[startRow]["ARGB"].ToString());
-                    dictionary.Add("firstMark", "1");
+                    dictionary.Add("firstMark", NORMDt.Rows[startRow]["Mark"].ToString());
                     LogoParameter.Add(NORMDt.Rows[startRow]["Flag"].ToString(), dictionary);
                 }
                 startRow++;
