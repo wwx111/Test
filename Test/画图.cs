@@ -1307,30 +1307,30 @@ namespace Test
         {
             List <Dictionary<string, string>> STYLData = new List<Dictionary<string, string>>();
             Dictionary<string, string> colorDictionary = new Dictionary<string, string>();
+            Dictionary<string, string> hatchDictionary = new Dictionary<string, string>();
             Dictionary<string, string> drawDictionary = new Dictionary<string, string>();
             STYLData.Add(colorDictionary);
+            STYLData.Add(hatchDictionary);
             STYLData.Add(drawDictionary);
             int startRow = 0;
             string data = STYLDt.Rows[startRow][1].ToString();
-            while (!(data.IndexOf("绘图") > 0))
-            {
-                if(data.IndexOf("、") > 0)
-                {
-                    startRow++;
-                    data = STYLDt.Rows[startRow][1].ToString();
-                    continue;
-                }
-                else
-                {
-                    colorDictionary.Add(STYLDt.Rows[startRow]["ID"].ToString(), data);
-                    startRow++;
-                    data = STYLDt.Rows[startRow]["Item"].ToString();
-                }    
+            while (!(data.IndexOf("填充风格") > 0))
+            {            
+                colorDictionary.Add(STYLDt.Rows[startRow]["ID"].ToString(), data);
+                startRow++;
+                data = STYLDt.Rows[startRow]["Item"].ToString(); 
             }
             startRow++;
-            for(;startRow < STYLDt.Rows.Count; startRow++)
+            while (!(data.IndexOf("绘图") > 0))
             {
-                drawDictionary.Add(STYLDt.Rows[startRow]["备注"].ToString(), STYLDt.Rows[startRow]["Item"].ToString());
+                hatchDictionary.Add(STYLDt.Rows[startRow]["ID"].ToString(), data);
+                startRow++;
+                data = STYLDt.Rows[startRow]["Item"].ToString();
+            }
+            //drawId是绘图参数中据“绘图”一行的偏移量
+            for (int drawId = 1;startRow + drawId < STYLDt.Rows.Count; drawId++)
+            {
+                drawDictionary.Add(drawId.ToString(), STYLDt.Rows[startRow + drawId]["Item"].ToString());                
             }
             return STYLData;
         }
