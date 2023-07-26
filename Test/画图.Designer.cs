@@ -35,8 +35,12 @@ namespace Test
         {
             this.components = new System.ComponentModel.Container();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.dlgSavePic = new System.Windows.Forms.SaveFileDialog();
             this.SavePicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.隐藏显示图例ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.隐藏显示控制板ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.切换宽高比ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dlgSavePic = new System.Windows.Forms.SaveFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
             this.OutZoom = new System.Windows.Forms.Button();
             this.InZoom = new System.Windows.Forms.Button();
@@ -57,16 +61,46 @@ namespace Test
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.SavePicMenuItem});
+            this.SavePicMenuItem,
+            this.隐藏显示图例ToolStripMenuItem,
+            this.隐藏显示控制板ToolStripMenuItem,
+            this.切换宽高比ToolStripMenuItem,
+            this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(241, 67);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(269, 154);
             // 
             // SavePicMenuItem
             // 
             this.SavePicMenuItem.Name = "SavePicMenuItem";
-            this.SavePicMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.SavePicMenuItem.Size = new System.Drawing.Size(268, 30);
             this.SavePicMenuItem.Text = "保存图片";
             this.SavePicMenuItem.Click += new System.EventHandler(this.SavePicMenuItem_Click);
+            // 
+            // 隐藏显示图例ToolStripMenuItem
+            // 
+            this.隐藏显示图例ToolStripMenuItem.Name = "隐藏显示图例ToolStripMenuItem";
+            this.隐藏显示图例ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
+            this.隐藏显示图例ToolStripMenuItem.Text = "隐藏/显示图例";
+            this.隐藏显示图例ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示图例ToolStripMenuItem_Click);
+            // 
+            // 隐藏显示控制板ToolStripMenuItem
+            // 
+            this.隐藏显示控制板ToolStripMenuItem.Name = "隐藏显示控制板ToolStripMenuItem";
+            this.隐藏显示控制板ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
+            this.隐藏显示控制板ToolStripMenuItem.Text = "隐藏/显示控制板";
+            this.隐藏显示控制板ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示控制板ToolStripMenuItem_Click);
+            // 
+            // 切换宽高比ToolStripMenuItem
+            // 
+            this.切换宽高比ToolStripMenuItem.Name = "切换宽高比ToolStripMenuItem";
+            this.切换宽高比ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
+            this.切换宽高比ToolStripMenuItem.Text = "切换宽高比";
+            // 
+            // 按住Ctrl鼠标滚轮缩放ToolStripMenuItem
+            // 
+            this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem.Name = "按住Ctrl鼠标滚轮缩放ToolStripMenuItem";
+            this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
+            this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem.Text = "按住Ctrl+鼠标滚轮缩放";
             // 
             // dlgSavePic
             // 
@@ -249,6 +283,10 @@ namespace Test
         private DevComponents.DotNetBar.TabControl tabControl1;
         private System.Windows.Forms.Button DayRight;
         private System.Windows.Forms.Button DayLeft;
+        private System.Windows.Forms.ToolStripMenuItem 隐藏显示图例ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 隐藏显示控制板ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 切换宽高比ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 按住Ctrl鼠标滚轮缩放ToolStripMenuItem;
         //private DevComponents.DotNetBar.TabControlPanel tabControlPanel1;
         //private DevComponents.DotNetBar.TabItem tabItem1;
     }

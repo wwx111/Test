@@ -38,14 +38,16 @@ namespace Test
 
         private Boolean isPanelDrag = false;
         //private Boolean isMouseMove = false;
+        private Boolean isLogoOn = true;
+        private Boolean isPanelOn = true;
         private Point panelPrePosition;
 
 
         public 画图()
         {
             InitializeComponent();
-            string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
-            //string path = "C:\\power_system\\data\\804\\XML\\input_11_2022020000_70_0.xlsx";
+            //string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
+            string path = "D:\\input_11_2022020000_70_0.xlsx";
             DataSet ds = new DataSet();
             loadData LoadData = new loadData();
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
@@ -293,7 +295,10 @@ namespace Test
 
                 //myDrawHelper.drawAxes(picture, g);
 
-                DrawLogo(picture, g);
+                if (isLogoOn == true)
+                {
+                    DrawLogo(picture, g);
+                }
 
                 picture.drawed = true;
                 // picture.Image = memImage;
@@ -1187,8 +1192,10 @@ namespace Test
 
             //myDrawHelper.drawAxes(picture, g);
 
-            DrawLogo(picture, g);
-
+            if (isLogoOn == true)
+            {
+                DrawLogo(picture, g);
+            }
 
             String picPath = "";
             if (filename == "")
@@ -1200,7 +1207,17 @@ namespace Test
             memImage.Dispose();
         }
 
+        private void 隐藏显示图例ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            isLogoOn = !isLogoOn;
+            this.myFunPictureBox.Invalidate();
+        }
 
+        private void 隐藏显示控制板ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            isPanelOn = !isPanelOn;
+            this.panel1.Visible = isPanelOn;
+        }
     }
 
 
