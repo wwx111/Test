@@ -41,6 +41,8 @@ namespace Test
         //private Boolean isMouseMove = false;
         private Boolean isLogoOn = true;
         private Boolean isPanelOn = true;
+        //private Boolean isHoverPic = true;
+        //private Boolean picLandScape = true;
         private Point panelPrePosition;
 
 
@@ -137,18 +139,21 @@ namespace Test
             //TODO 注释by孙凯 2015.12.17 pictureBox.genPos=d[2*dtIndex+1];
 
             myFunPictureBox.pageSettings = new System.Drawing.Printing.PageSettings();
+
             PageSettings pageSettings = myFunPictureBox.pageSettings;
             //TODO 暂时修改by孙凯 2016.1.6
 
-            myFunPictureBox.Width = (int)(pageSettings.PaperSize.Width / 100.0 * 96);
-            myFunPictureBox.Height = (int)(pageSettings.PaperSize.Height / 100.0 * 96);
+            //初始修改为横向 cjy 7.27
+            myFunPictureBox.Width = (int)(pageSettings.PaperSize.Height / 100.0 * 96);
+            myFunPictureBox.Height = (int)(pageSettings.PaperSize.Width / 100.0 * 96);
 
-            int xDraw = (int)(pageSettings.Margins.Left / 254.0 * 96);
-            int yDraw = (int)(pageSettings.Margins.Top / 254.0 * 96);
-            int widthDraw = (int)(pageSettings.PaperSize.Width / 100.0 * 96) -
-                (int)((pageSettings.Margins.Left + pageSettings.Margins.Right) / 254.0 * 96);
-            int heightDraw = (int)(pageSettings.PaperSize.Height / 100.0 * 96) -
+            int xDraw = (int)(pageSettings.Margins.Top / 254.0 * 96);
+            int yDraw = (int)(pageSettings.Margins.Left / 254.0 * 96);
+            int widthDraw =
+            (int)(pageSettings.PaperSize.Height / 100.0 * 96) -
                 (int)((pageSettings.Margins.Top + pageSettings.Margins.Bottom) / 254.0 * 96);
+            int heightDraw = (int)(pageSettings.PaperSize.Width / 100.0 * 96) -
+                (int)((pageSettings.Margins.Left + pageSettings.Margins.Right) / 254.0 * 96);
             myFunPictureBox.drawArea = new Rectangle(xDraw, yDraw, widthDraw, heightDraw);
 
             myFunPictureBox.logoPos = new Rectangle(myFunPictureBox.drawArea.Left + (int)(myFunPictureBox.drawArea.Width * 0.5)
@@ -159,11 +164,12 @@ namespace Test
             myFunPictureBox.ContextMenuStrip = contextMenuStrip1;
 
             myFunPictureBox.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseWheel);
-            myFunPictureBox.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
+            //myFunPictureBox.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
             myFunPictureBox.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
             myFunPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
             myFunPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
             myFunPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
+            myFunPictureBox.MouseHover += new System.EventHandler(this.pictureBox_Hover);
 
             myFunPictureBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.myFunPictureBox_KeyDown);
             myFunPictureBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.myFunPictureBox_KeyUp);
@@ -209,10 +215,11 @@ namespace Test
             myFunPictureBox.Focus();
         }
 
-        private void pictureBox_MouseLeave(object sender, System.EventArgs e)
-        {
-            // this.Focus();
-        }
+        //private void pictureBox_MouseLeave(object sender, System.EventArgs e)
+        //{
+        //    // this.Focus();
+        //    this.isHoverPic = false;
+        //}
 
         //指示是否正在进行图例拖动
         private bool isDragPic = false;
@@ -234,6 +241,12 @@ namespace Test
             //指示结束图例拖动
             if (e.Button == MouseButtons.Left)
                 this.isDragPic = false;
+        }
+
+        private void pictureBox_Hover(object sender, System.EventArgs e)
+        {
+            //this.isHoverPic = true;
+            this.toolTip2.ToolTipTitle = "haha";
         }
 
 
@@ -728,7 +741,8 @@ namespace Test
 
         private void pictureBox_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            // 处理图例拖动
+            if (this.isLogoOn && e.Button == MouseButtons.Left)
             {
                 MyPictureBox picture = sender as MyPictureBox;
                 Point mousePoint = new Point(e.X, e.Y);
@@ -745,6 +759,18 @@ namespace Test
                         picture.Width + e.X - picture.previousPos.X, picture.logoPos.Height + e.Y - picture.previousPos.Y));
                 }
             }
+            // 处理数据点显示
+            else
+            {
+                
+                Point cursorPosition = e.Location;
+                // 这里可以根据光标位置计算出需要显示的提示信息，这里只简单显示坐标信息
+                string tooltipText = $"X: {cursorPosition.X}, Y: {cursorPosition.Y}";
+                // 显示提示信息
+                this.toolTip2.SetToolTip(this.myFunPictureBox, tooltipText);
+            }
+            
+
         }
 
         private string WrapLogoString(string originalStr)
@@ -1218,6 +1244,24 @@ namespace Test
         {
             isPanelOn = !isPanelOn;
             this.panel1.Visible = isPanelOn;
+        }
+
+        private void 切换宽高比ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int tempWidth = myFunPictureBox.Width;
+            myFunPictureBox.Width = myFunPictureBox.Height;
+            myFunPictureBox.Height = tempWidth;
+
+            PageSettings pageSettings = myFunPictureBox.pageSettings;
+
+            // 根据新的宽高重新计算drawArea的边界坐标
+            int xDraw = (int)(pageSettings.Margins.Left / 254.0 * 96);
+            int yDraw = (int)(pageSettings.Margins.Top / 254.0 * 96);
+            int widthDraw = myFunPictureBox.Width - (int)((pageSettings.Margins.Left + pageSettings.Margins.Right) / 254.0 * 96);
+            int heightDraw = myFunPictureBox.Height - (int)((pageSettings.Margins.Top + pageSettings.Margins.Bottom) / 254.0 * 96);
+            myFunPictureBox.drawArea = new Rectangle(xDraw, yDraw, widthDraw, heightDraw);
+
+            this.myFunPictureBox.Invalidate();
         }
     }
 

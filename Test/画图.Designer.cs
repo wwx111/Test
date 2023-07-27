@@ -52,6 +52,7 @@ namespace Test
             this.DayLeft = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl1 = new DevComponents.DotNetBar.TabControl();
+            this.toolTip2 = new System.Windows.Forms.ToolTip(this.components);
             this.contextMenuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tabControl1)).BeginInit();
@@ -67,7 +68,7 @@ namespace Test
             this.切换宽高比ToolStripMenuItem,
             this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(269, 154);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(269, 187);
             // 
             // SavePicMenuItem
             // 
@@ -95,6 +96,7 @@ namespace Test
             this.切换宽高比ToolStripMenuItem.Name = "切换宽高比ToolStripMenuItem";
             this.切换宽高比ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
             this.切换宽高比ToolStripMenuItem.Text = "切换宽高比";
+            this.切换宽高比ToolStripMenuItem.Click += new System.EventHandler(this.切换宽高比ToolStripMenuItem_Click);
             // 
             // 按住Ctrl鼠标滚轮缩放ToolStripMenuItem
             // 
@@ -250,6 +252,11 @@ namespace Test
             this.tabControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.myFunPictureBox_KeyDown);
             this.tabControl1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.myFunPictureBox_KeyUp);
             // 
+            // toolTip2
+            // 
+            this.toolTip2.ShowAlways = true;
+            this.toolTip2.ToolTipTitle = "what";
+            // 
             // 画图
             // 
             this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
@@ -287,6 +294,7 @@ namespace Test
         private System.Windows.Forms.ToolStripMenuItem 隐藏显示控制板ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 切换宽高比ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 按住Ctrl鼠标滚轮缩放ToolStripMenuItem;
+        private System.Windows.Forms.ToolTip toolTip2;
         //private DevComponents.DotNetBar.TabControlPanel tabControlPanel1;
         //private DevComponents.DotNetBar.TabItem tabItem1;
     }
