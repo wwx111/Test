@@ -27,8 +27,10 @@ namespace Test
         private MyFunPictureBox myFunPictureBox = null;              //保存图片框控件
         private List<Dictionary<string, string>> STYLlist;
         private List<Dictionary<string, Dictionary<string, string>>> NORMlist;
-        private Dictionary<string, Dictionary<string, List<string>>> dictionary;
+        private Dictionary<string, Dictionary<string, List<string>>> MAPDictionary_Line;
+        private Dictionary<string, Dictionary<string, List<string>>> MAPDictionary_Day;
         private string title;
+        private int[] coordinateList;
         //private DrawHelper drawHelper;
         private Int32 currentDay;
         private Int32 currentMonth;
@@ -44,6 +46,7 @@ namespace Test
         //private Boolean isHoverPic = true;
         //private Boolean picLandScape = true;
         private Point panelPrePosition;
+        private Point start;
 
 
         public 画图()
@@ -62,8 +65,9 @@ namespace Test
 
             STYLlist = loadData.STYLTableToData(ds.Tables[0]);
             NORMlist = loadData.NORMTableToData(ds.Tables[1]);
-            dictionary = loadData.MAPsTableToData(ds.Tables[2]);
-            dictionary = (from d in dictionary orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
+            MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables[2]);
+            MAPDictionary_Line = (from d in MAPDictionary_Line orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
+            MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables[2]);
             title = STYLlist[2]["16"];
             dlgSavePic.FileName = title;
 
@@ -358,7 +362,7 @@ namespace Test
             int prehours = hourLeft / days;
             int hourWidth = width / hours;
 
-            int[] coordinateList = new int[hours + 1];
+            coordinateList = new int[hours + 1];
 
             coordinateList[0] = 0;
 
@@ -398,7 +402,7 @@ namespace Test
             Pen pen = new Pen(Brushes.Black);
             pen.Width = 1.8F;
             // 绘制X轴
-            Point start = new Point(leftBorderWidth, wholeHeight - bottomBorderWidth);
+            start = new Point(leftBorderWidth, wholeHeight - bottomBorderWidth);
             Point end = new Point(wholeWidth - rightBorderWidth, wholeHeight - bottomBorderWidth);
             g.DrawLine(pen, start, end);
             Point[] arrow = new Point[2];
@@ -429,10 +433,10 @@ namespace Test
 
             //int task = 0;
 
-            foreach (string key in this.dictionary.Keys)
+            foreach (string key in this.MAPDictionary_Line.Keys)
             {
                 string flag = key;
-                Dictionary<string, List<string>> dic1 = dictionary[key];
+                Dictionary<string, List<string>> dic1 = MAPDictionary_Line[key];
                 ArrayList array = new ArrayList();
                 for (int i = 0; i < days; i++)
                 {
@@ -762,11 +766,44 @@ namespace Test
             // 处理数据点显示
             else
             {
-                
+
                 Point cursorPosition = e.Location;
+                int day = dateToDay(currentYear, currentMonth, currentDay);
+                int hour = 0;
+                string tooltipText = "";
+                Dictionary<String, List<String>> data;
+                if (coordinateList == null)
+                {
+                    return;
+                }
+                else
+                {
+                    int toolPointX = cursorPosition.X - start.X;
+                    if(toolPointX > 0)
+                    {
+                        for (int i = 1; i < coordinateList.Length; i++)
+                        {
+                            if (toolPointX < coordinateList[i])
+                            {
+                                day += (i - 1) / 24;
+                                hour = (i - 1) % 24;
+                                data = MAPDictionary_Day[day.ToString()];
+                                foreach (var pair in data)
+                                {
+                                    tooltipText += NORMlist[0][pair.Key]["Item"];
+                                    tooltipText += ":";
+                                    tooltipText += pair.Value[hour];
+                                    tooltipText += "\n";
+                                }
+                                break;
+                            }
+                        }
+                    }                   
+                }
                 // 这里可以根据光标位置计算出需要显示的提示信息，这里只简单显示坐标信息
-                string tooltipText = $"X: {cursorPosition.X}, Y: {cursorPosition.Y}";
+                //string tooltipText = $"X: {cursorPosition.X}, Y: {cursorPosition.Y}";
                 // 显示提示信息
+                this.toolTip2.ToolTipTitle = "第" + day + "天" + "  " + (hour + 1) + "小时";
                 this.toolTip2.SetToolTip(this.myFunPictureBox, tooltipText);
             }
             
@@ -1420,6 +1457,7 @@ namespace Test
             {
                 Dictionary<string, string> dictionary = new Dictionary<string, string>();
                 dictionary.Add("Hatch", NORMDt.Rows[startRow]["Hatch"].ToString());
+                dictionary.Add("Item", NORMDt.Rows[startRow]["Item"].ToString());
                 dictionary.Add("ARGB", NORMDt.Rows[startRow]["ARGB"].ToString());
                 dictionary.Add("Mark", "1");
                 if (!(drawParameter.ContainsKey(NORMDt.Rows[startRow]["Flag"].ToString())))
@@ -1430,7 +1468,7 @@ namespace Test
             }
             return NORMData;
         }
-        public static Dictionary<string, Dictionary<string, List<string>>> MAPsTableToData(DataTable MAPsDt)
+        public static Dictionary<string, Dictionary<string, List<string>>> MAPsTableToData_Line(DataTable MAPsDt)
         {
             Dictionary<string, Dictionary<string, List<string>>> flagDictionary = new Dictionary<string, Dictionary<string, List<string>>>();
             int startRow = 0;
@@ -1455,6 +1493,33 @@ namespace Test
                 dateDictionary.Add(MAPsDt.Rows[startRow]["Date"].ToString(), data);
             }
             return flagDictionary;
+        }
+
+        public static Dictionary<string, Dictionary<string, List<string>>> MAPsTableToData_Day(DataTable MAPsDt)
+        {
+            Dictionary<string, Dictionary<string, List<string>>> dateDictionary = new Dictionary<string, Dictionary<string, List<string>>>();
+            int startRow = 0;
+            for (; startRow < MAPsDt.Rows.Count; startRow++)
+            {
+                string date = MAPsDt.Rows[startRow]["Date"].ToString();
+                Dictionary<string, List<string>> flagDictionary;
+                List<string> data = new List<string>();
+                if (!dateDictionary.ContainsKey(date))
+                {
+                    flagDictionary = new Dictionary<string, List<string>>();
+                    dateDictionary.Add(date, flagDictionary);
+                }
+                else
+                {
+                    dateDictionary.TryGetValue(date, out flagDictionary);
+                }
+                for (int startLine = 1; startLine <= 24; startLine++)
+                {
+                    data.Add(MAPsDt.Rows[startRow][startLine].ToString());
+                }
+                flagDictionary.Add(MAPsDt.Rows[startRow]["Flag"].ToString(), data);
+            }
+            return dateDictionary;
         }
     }
 
