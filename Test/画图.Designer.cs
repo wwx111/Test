@@ -38,6 +38,7 @@ namespace Test
             this.SavePicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.隐藏显示图例ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.隐藏显示控制板ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.隐藏显示数据点ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.切换宽高比ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dlgSavePic = new System.Windows.Forms.SaveFileDialog();
@@ -65,10 +66,11 @@ namespace Test
             this.SavePicMenuItem,
             this.隐藏显示图例ToolStripMenuItem,
             this.隐藏显示控制板ToolStripMenuItem,
+            this.隐藏显示数据点ToolStripMenuItem,
             this.切换宽高比ToolStripMenuItem,
             this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(269, 187);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(269, 184);
             // 
             // SavePicMenuItem
             // 
@@ -91,11 +93,18 @@ namespace Test
             this.隐藏显示控制板ToolStripMenuItem.Text = "隐藏/显示控制板";
             this.隐藏显示控制板ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示控制板ToolStripMenuItem_Click);
             // 
+            // 隐藏显示数据点ToolStripMenuItem
+            // 
+            this.隐藏显示数据点ToolStripMenuItem.Name = "隐藏显示数据点ToolStripMenuItem";
+            this.隐藏显示数据点ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
+            this.隐藏显示数据点ToolStripMenuItem.Text = "隐藏/显示数据点";
+            this.隐藏显示数据点ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示数据点ToolStripMenuItem_Click);
+            // 
             // 切换宽高比ToolStripMenuItem
             // 
             this.切换宽高比ToolStripMenuItem.Name = "切换宽高比ToolStripMenuItem";
             this.切换宽高比ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.切换宽高比ToolStripMenuItem.Text = "切换宽高比";
+            this.切换宽高比ToolStripMenuItem.Text = "页面横/纵向显示";
             this.切换宽高比ToolStripMenuItem.Click += new System.EventHandler(this.切换宽高比ToolStripMenuItem_Click);
             // 
             // 按住Ctrl鼠标滚轮缩放ToolStripMenuItem
@@ -254,6 +263,9 @@ namespace Test
             // 
             // toolTip2
             // 
+            this.toolTip2.AutoPopDelay = 5000;
+            this.toolTip2.InitialDelay = 500;
+            this.toolTip2.ReshowDelay = 100;
             this.toolTip2.ShowAlways = true;
             this.toolTip2.ToolTipTitle = "what";
             // 
@@ -295,6 +307,7 @@ namespace Test
         private System.Windows.Forms.ToolStripMenuItem 切换宽高比ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 按住Ctrl鼠标滚轮缩放ToolStripMenuItem;
         private System.Windows.Forms.ToolTip toolTip2;
+        private System.Windows.Forms.ToolStripMenuItem 隐藏显示数据点ToolStripMenuItem;
         //private DevComponents.DotNetBar.TabControlPanel tabControlPanel1;
         //private DevComponents.DotNetBar.TabItem tabItem1;
     }

@@ -14,6 +14,12 @@ namespace Test
         /// 应用程序的主入口点。
         /// </summary>
         [STAThread]
+
+        public static void EntryPoint()
+        {
+            Main(); // 调用原始的Main方法
+        }
+
         static void Main()
         {
             Application.EnableVisualStyles();

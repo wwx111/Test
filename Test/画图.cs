@@ -43,6 +43,11 @@ namespace Test
         //private Boolean isMouseMove = false;
         private Boolean isLogoOn = true;
         private Boolean isPanelOn = true;
+        private Boolean isTooltipOn = true;
+        private int tooltipDay = -1;
+        private int tooltipHour = -1;
+        private string tooltipText = "";
+
         //private Boolean isHoverPic = true;
         //private Boolean picLandScape = true;
         private Point panelPrePosition;
@@ -173,7 +178,7 @@ namespace Test
             myFunPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
             myFunPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
             myFunPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
-            myFunPictureBox.MouseHover += new System.EventHandler(this.pictureBox_Hover);
+            //myFunPictureBox.MouseHover += new System.EventHandler(this.pictureBox_Hover);
 
             myFunPictureBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.myFunPictureBox_KeyDown);
             myFunPictureBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.myFunPictureBox_KeyUp);
@@ -247,11 +252,11 @@ namespace Test
                 this.isDragPic = false;
         }
 
-        private void pictureBox_Hover(object sender, System.EventArgs e)
-        {
-            //this.isHoverPic = true;
-            this.toolTip2.ToolTipTitle = "haha";
-        }
+        //private void pictureBox_Hover(object sender, System.EventArgs e)
+        //{
+        //    //this.isHoverPic = true;
+        //    this.toolTip2.ToolTipTitle = "haha";
+        //}
 
 
         bool ctrl = false;
@@ -764,13 +769,12 @@ namespace Test
                 }
             }
             // 处理数据点显示
-            else
+            else if(this.isTooltipOn)
             {
-
                 Point cursorPosition = e.Location;
                 int day = dateToDay(currentYear, currentMonth, currentDay);
                 int hour = 0;
-                string tooltipText = "";
+                string text = "";
                 Dictionary<String, List<String>> data;
                 if (coordinateList == null)
                 {
@@ -787,13 +791,19 @@ namespace Test
                             {
                                 day += (i - 1) / 24;
                                 hour = (i - 1) % 24;
+                                if(day==tooltipDay && hour == tooltipHour)
+                                {
+                                    //数据点不变不处理
+                                    //toolTip2.Show(this.tooltipText, this, e.Location.X, e.Location.Y);
+                                    return;
+                                }
                                 data = MAPDictionary_Day[day.ToString()];
                                 foreach (var pair in data)
                                 {
-                                    tooltipText += NORMlist[0][pair.Key]["Item"];
-                                    tooltipText += ":";
-                                    tooltipText += pair.Value[hour];
-                                    tooltipText += "\n";
+                                    text += NORMlist[0][pair.Key]["Item"];
+                                    text += ":";
+                                    text += pair.Value[hour];
+                                    text += "\n";
                                 }
                                 break;
                             }
@@ -803,6 +813,9 @@ namespace Test
                 // 这里可以根据光标位置计算出需要显示的提示信息，这里只简单显示坐标信息
                 //string tooltipText = $"X: {cursorPosition.X}, Y: {cursorPosition.Y}";
                 // 显示提示信息
+                tooltipDay = day;
+                tooltipHour = hour;
+                this.tooltipText = text;
                 this.toolTip2.ToolTipTitle = "第" + day + "天" + "  " + (hour + 1) + "小时";
                 this.toolTip2.SetToolTip(this.myFunPictureBox, tooltipText);
             }
@@ -1299,6 +1312,12 @@ namespace Test
             myFunPictureBox.drawArea = new Rectangle(xDraw, yDraw, widthDraw, heightDraw);
 
             this.myFunPictureBox.Invalidate();
+        }
+
+        private void 隐藏显示数据点ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            isTooltipOn = !isTooltipOn;
+            this.toolTip2.Active = isTooltipOn;
         }
     }
 
