@@ -47,6 +47,8 @@ namespace Test
         private int tooltipDay = -1;
         private int tooltipHour = -1;
         private string tooltipText = "";
+        private System.Windows.Forms.Timer tooltipTimer;
+        //private Boolean tooltipHover = false;
 
         //private Boolean isHoverPic = true;
         //private Boolean picLandScape = true;
@@ -76,9 +78,10 @@ namespace Test
             title = STYLlist[2]["16"];
             dlgSavePic.FileName = title;
 
+            tooltipTimer = new System.Windows.Forms.Timer();
+            tooltipTimer.Interval = 500; // 设置定时器的间隔为0.5秒
+            tooltipTimer.Tick += TooltipTimer_Tick;
 
-
-            
             Dictionary<String, String> hatchDictionary = STYLlist[1];
 
             foreach (var pair in hatchDictionary)
@@ -173,7 +176,7 @@ namespace Test
             myFunPictureBox.ContextMenuStrip = contextMenuStrip1;
 
             myFunPictureBox.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseWheel);
-            //myFunPictureBox.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
+            myFunPictureBox.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
             myFunPictureBox.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
             myFunPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
             myFunPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
@@ -185,6 +188,7 @@ namespace Test
 
             myFunPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
             myFunPictureBox.Resize += new System.EventHandler(this.pictureBox_Resize);
+            //myFunPictureBox.LostFocus += new System.EventHandler(this.);
 
 
             this.tabControl1.Controls.Add(tcp);
@@ -222,13 +226,15 @@ namespace Test
             //((sender as PictureBox).Parent as Panel).Focus();
             //(sender as PictureBox).Focus();
             myFunPictureBox.Focus();
+            this.toolTip2.Active = true;
+            //this.隐藏显示数据点ToolStripMenuItem_Click(sender, e);
         }
 
-        //private void pictureBox_MouseLeave(object sender, System.EventArgs e)
-        //{
-        //    // this.Focus();
-        //    this.isHoverPic = false;
-        //}
+        private void pictureBox_MouseLeave(object sender, System.EventArgs e)
+        {
+            // this.Focus();
+            this.toolTip2.Active = false;
+        }
 
         //指示是否正在进行图例拖动
         private bool isDragPic = false;
@@ -774,8 +780,6 @@ namespace Test
                 Point cursorPosition = e.Location;
                 int day = dateToDay(currentYear, currentMonth, currentDay);
                 int hour = 0;
-                string text = "";
-                Dictionary<String, List<String>> data;
                 if (coordinateList == null)
                 {
                     return;
@@ -791,36 +795,52 @@ namespace Test
                             {
                                 day += (i - 1) / 24;
                                 hour = (i - 1) % 24;
+
                                 if(day==tooltipDay && hour == tooltipHour)
                                 {
-                                    //数据点不变不处理
-                                    //toolTip2.Show(this.tooltipText, this, e.Location.X, e.Location.Y);
+                                    //数据点不变，不处理
+
                                     return;
                                 }
-                                data = MAPDictionary_Day[day.ToString()];
-                                foreach (var pair in data)
+                                else
                                 {
-                                    text += NORMlist[0][pair.Key]["Item"];
-                                    text += ":";
-                                    text += pair.Value[hour];
-                                    text += "\n";
+                                    //数据点变化，重置计时器
+                                    tooltipDay = day;
+                                    tooltipHour = hour;
+                                    toolTip2.Active = false;
+                                    tooltipTimer.Stop();
+                                    tooltipTimer.Start();
+
                                 }
+
                                 break;
                             }
                         }
                     }                   
                 }
-                // 这里可以根据光标位置计算出需要显示的提示信息，这里只简单显示坐标信息
-                //string tooltipText = $"X: {cursorPosition.X}, Y: {cursorPosition.Y}";
-                // 显示提示信息
-                tooltipDay = day;
-                tooltipHour = hour;
-                this.tooltipText = text;
-                this.toolTip2.ToolTipTitle = "第" + day + "天" + "  " + (hour + 1) + "小时";
-                this.toolTip2.SetToolTip(this.myFunPictureBox, tooltipText);
             }
-            
+        }
+        private void TooltipTimer_Tick(object sender, EventArgs e)
+        {
+            tooltipTimer.Stop();
 
+            int day = tooltipDay;
+            int hour = tooltipHour;
+            string text = "";
+            Dictionary<String, List<String>> data;
+            data = MAPDictionary_Day[day.ToString()];
+            foreach (var pair in data)
+            {
+                text += "   ";
+                text += NORMlist[0][pair.Key]["Item"];
+                text += ":";
+                text += pair.Value[hour];
+                text += "   \n";
+            }
+            this.tooltipText = text;
+            this.toolTip2.ToolTipTitle = "   第" + day + "天" + "  " + (hour + 1) + "小时";
+            this.toolTip2.SetToolTip(this.myFunPictureBox, tooltipText);
+            this.toolTip2.Active = true;
         }
 
         private string WrapLogoString(string originalStr)
@@ -1247,7 +1267,12 @@ namespace Test
                 ////关闭进度条
                 //this.myprogress.isOver = true;
 
-                MessageBox.Show("保存图片成功！");
+                MessageBox.Show("保存图片成功！", "提示",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.DefaultDesktopOnly);
+
             }
         }
 

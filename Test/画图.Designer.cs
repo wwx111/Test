@@ -263,9 +263,10 @@ namespace Test
             // 
             // toolTip2
             // 
+            this.toolTip2.AutomaticDelay = 0;
             this.toolTip2.AutoPopDelay = 5000;
-            this.toolTip2.InitialDelay = 500;
-            this.toolTip2.ReshowDelay = 100;
+            this.toolTip2.InitialDelay = 1000;
+            this.toolTip2.ReshowDelay = 500;
             this.toolTip2.ShowAlways = true;
             this.toolTip2.ToolTipTitle = "what";
             // 
