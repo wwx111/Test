@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
-using DevComponents.DotNetBar;
-using System.Drawing.Printing;
-
-
+﻿using DevComponents.DotNetBar;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using System;
 using System.Collections;
-using System.Threading;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Printing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace Test
 {
@@ -59,8 +53,8 @@ namespace Test
         public 画图()
         {
             InitializeComponent();
-            //string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";
-            string path = "D:\\input_11_2022020000_70_0.xlsx";
+            string path = "D:\\GTDS_0001\\GTDS_Exam_2030_2_S0000.xlsx";
+            //string path = "D:\\input_11_2022020000_70_0.xlsx";
             DataSet ds = new DataSet();
             loadData LoadData = new loadData();
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
@@ -75,7 +69,7 @@ namespace Test
             MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables[2]);
             MAPDictionary_Line = (from d in MAPDictionary_Line orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
             MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables[2]);
-            title = STYLlist[2]["16"];
+            title = STYLlist[2]["5"];
             dlgSavePic.FileName = title;
 
             tooltipTimer = new System.Windows.Forms.Timer();
@@ -89,9 +83,9 @@ namespace Test
                 HatchStyle hatchStyle;
                 string key = pair.Key;
                 string value = pair.Value;
-                if(value == "")
+                if(value == "无填充")
                 {
-                    continue;
+                    break;
                 }
                 hatchStyle = (HatchStyle)Enum.Parse(typeof(HatchStyle), value);
                 hatchStyles.Add(key, hatchStyle);
@@ -119,7 +113,7 @@ namespace Test
 
         }
 
-        public void newTab(int startDay, int startMonth, int startYear)
+        public void newTab(int startYear)
         {
             TabItem tp = this.tabControl1.CreateTab("图1");
 
@@ -131,11 +125,10 @@ namespace Test
 
             tcp.Resize += new System.EventHandler(this.pictureBox_Resize);
 
-            //this.drawHelper = new DrawHelper(startYear, startMonth, startDay, 3);
-            currentDay = startDay;
-            currentMonth = startMonth;
             currentYear = startYear;
-            currentSpan = 4;
+            currentDay = int.Parse(STYLlist[2]["15"]);            
+            currentMonth = int.Parse(STYLlist[2]["14"]);        
+            currentSpan = int.Parse(STYLlist[2]["16"]);
 
             myFunPictureBox = new MyFunPictureBox();
 
@@ -320,17 +313,14 @@ namespace Test
 
                 //画图_Paint(picture, e);
 
-                paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan);
-
-                //myDrawHelper.drawAxes(picture, g);
+                paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan);                
 
                 if (isLogoOn == true)
                 {
                     DrawLogo(picture, g);
                 }
 
-                picture.drawed = true;
-                // picture.Image = memImage;
+                picture.drawed = true;              
             }
             catch (Exception ex)
             {
@@ -343,9 +333,7 @@ namespace Test
         // 开始绘图的年、月、日、绘图天数、一年最大值 
         private void paintDays(Graphics g, MyFunPictureBox picture, int year, int startMonth, int startDay, int days)
         {
-            //Point zeroPoint = new Point(picture.drawArea.Left + (int)(picture.drawArea.Width * 0.1), picture.drawArea.Top + (int)(picture.drawArea.Height * 0.9));
-            //setXYInterval(this.myFunPictureBox.drawArea.Width, this.myFunPictureBox.drawArea.Height);
-            //myDrawHelper.setZeroPoint(zeroPoint.X, zeroPoint.Y);
+            
             // 左右边界的宽度
             int leftBorderWidth = (int)(picture.drawArea.Width * 0.1);
             int rightBorderWidth = (int)(picture.drawArea.Width * 0.01);
@@ -358,7 +346,8 @@ namespace Test
 
             int width = wholeWidth - leftBorderWidth - rightBorderWidth - 10;
 
-            float fontSize = width / 70;//根据图片的绘制宽度调整字体的大小
+            //根据图片的绘制宽度调整字体的大小,并且保证字体的大小在一定范围内，例如7-14
+            float fontSize = width / 70;
             if (fontSize > 14)
             {
                 fontSize = 14;
@@ -368,7 +357,9 @@ namespace Test
                 fontSize = 7;
             }
             int hours = 24 * days;
-            int hourLeft = width % hours;//由于整数存在缩进，需要对不能进行整除的部分进行处理，选择的方式是将多余的部分平均分配到每一天的前i个小时中
+
+            //由于整数存在缩进，需要对不能进行整除的部分进行处理，选择的方式是将多余的部分平均分配到每一天的前i个小时中
+            int hourLeft = width % hours;
             int dayRemainder = hourLeft % days;
             int prehours = hourLeft / days;
             int hourWidth = width / hours;
@@ -397,16 +388,13 @@ namespace Test
             }
 
 
-
-
             // 首先解析excel文件，获取绘图的信息
 
 
 
-            // 获取最大纵坐标
+            // 从STYL表中获取最大纵坐标
             Dictionary<string, string> STYLinfo1 = STYLlist[2];
-            List<string> temp = new List<string>(STYLinfo1.Keys);
-            int maxVal = int.Parse(STYLinfo1[temp[6]]);
+            int maxVal = int.Parse(STYLinfo1["12"]);
 
 
             // 绘制坐标轴
@@ -440,12 +428,12 @@ namespace Test
             int startDays = dateToDay(year, startMonth, startDay);
             // 获取数据和颜色、样式来绘图
             // 原始负荷需要额外处理，最后绘制
-            Point[] originalLoadPoints = new Point[24 * days * 2];
-
-            //int task = 0;
+            Point[] originalLoadPoints = new Point[24 * days * 2];            
 
             foreach (string key in this.MAPDictionary_Line.Keys)
             {
+                //判断在绘图范围内是否存在该曲线，并根据该标志确定是否进行绘图
+                Boolean isExist = false;
                 string flag = key;
                 Dictionary<string, List<string>> dic1 = MAPDictionary_Line[key];
                 ArrayList array = new ArrayList();
@@ -454,6 +442,7 @@ namespace Test
                     string str = Convert.ToString(i + startDays);
                     if (dic1.ContainsKey(str))
                     {
+                        isExist = true;
                         List<string> list = dic1[str];
                         foreach (string val in list)
                         {
@@ -462,17 +451,13 @@ namespace Test
                     }
                     else
                     {
-                        if (array.Count != 0)
+                        for (int j = 0; j < 24; j++)
                         {
-                            for (int j = 0; j < 24; j++)
-                            {
-                                array.Add(0);
-                            }
+                            array.Add(0);
                         }
-
                     }
                 }
-                if (array.Count != 0)
+                if (isExist)
                 {
                     int[] data = (int[])array.ToArray(typeof(int));
                     // data-数据 end-绘图的左上角坐标 width-绘图的宽度 height-绘图的高度 maxVal-一年的最大值，用于固定Y轴
@@ -602,7 +587,7 @@ namespace Test
             interval = (start.Y - end2.Y - 5) / 10;
 
             //从数据表中读取量纲
-            float dimension = float.Parse(STYLinfo1[temp[5]]);
+            float dimension = float.Parse(STYLinfo1["11"]);
 
 
             for (int i = 0; i < 10; i++)
@@ -623,7 +608,7 @@ namespace Test
             //打印单位在图片上，打印的内容在STYL表中记录
             Rectangle unitSpace = new Rectangle(start.X - 30, end2.Y  - 20, 80, 20);
             StringFormat unitFormat = new StringFormat();
-            g.DrawString(STYLlist[2]["5"], new Font("黑体", fontSize + 3), Brushes.Black, unitSpace, unitFormat);
+            g.DrawString(STYLlist[2]["10"], new Font("黑体", fontSize + 3), Brushes.Black, unitSpace, unitFormat);
 
         }
 
@@ -780,6 +765,7 @@ namespace Test
                 Point cursorPosition = e.Location;
                 int day = dateToDay(currentYear, currentMonth, currentDay);
                 int hour = 0;
+
                 if (coordinateList == null)
                 {
                     return;
@@ -827,21 +813,127 @@ namespace Test
             int day = tooltipDay;
             int hour = tooltipHour;
             string text = "";
+            //吴老师需要将出力合计在一起
+            //公式为
+            //出力 = 基荷 + 腰荷 + 峰荷
+            //因此先统计包含哪些需要显示在tooltip中的数据，并获取名称保存在total的key中
+            //再依次将数据存储在total的value中
+            Dictionary<String, int> total = new Dictionary<string, int>();
             Dictionary<String, List<String>> data;
+
             data = MAPDictionary_Day[day.ToString()];
+            data = (from d in data orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
+
             foreach (var pair in data)
             {
+                string key = pair.Key;
+                int firstNum = int.Parse(key.Substring(0, 1));
+                int secondNum = int.Parse(key.Substring(1, 1));
+                int thirdNum = int.Parse(key.Substring(2, 1));
+                int fourthNum = int.Parse(key.Substring(3, 1));
+                string name = "";
+                if (firstNum <= 3)
+                {
+                    if (fourthNum == 0)
+                    {
+                        switch (secondNum)
+                        {
+                            case 0:
+                                name = "核电出力";
+                                break;
+                            case 1:
+                                name = "水电出力";
+                                break;
+                            case 2:
+                                name = "火电出力";
+                                break;
+                            case 3:
+                                name = "储能出力";
+                                break;
+                            default:
+                                Console.WriteLine("flag超出原定绘图参数");
+                                break;
+
+                        }
+                    }
+                    else
+                    {
+                        if (fourthNum > 5)
+                        {
+                            Console.WriteLine("电站超出5个");
+                        }
+                        else
+                        {
+                            name = STYLlist[3][fourthNum.ToString()].Split('*')[1];
+                            switch (secondNum)
+                            {
+                                case 0:
+                                    name += "核电出力";
+                                    break;
+                                case 1:
+                                    name += "水电出力";
+                                    break;
+                                case 2:
+                                    name += "火电出力";
+                                    break;
+                                case 3:
+                                    name += "储能出力";
+                                    break;
+                                default:
+                                    Console.WriteLine("flag超出原定绘图参数");
+                                    break;
+
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (fourthNum == 0)
+                    {
+                        name = NORMlist[0][key]["Item"];
+                    }
+                    else
+                    {
+                        if (fourthNum > 5)
+                        {
+                            Console.WriteLine("电站超出5个");
+                        }
+                        else
+                        {
+                            name = STYLlist[3][fourthNum.ToString()].Split('*')[1];
+                            name += NORMlist[0][key.Remove(3, 1) + "0"]["Item"];
+                        }
+                    }
+
+                }
+                if (total.ContainsKey(name))
+                {
+                    total[name] += int.Parse(pair.Value[hour]);
+
+                }
+                else
+                {
+                    total.Add(name, int.Parse(pair.Value[hour]));
+                }
+            }
+
+            foreach (var pair in total)
+
+            {
                 text += "   ";
-                text += NORMlist[0][pair.Key]["Item"];
+                text += pair.Key;
                 text += ":";
-                text += pair.Value[hour];
+                text += pair.Value;
                 text += "   \n";
             }
+
             this.tooltipText = text;
             this.toolTip2.ToolTipTitle = "   第" + day + "天" + "  " + (hour + 1) + "小时";
             this.toolTip2.SetToolTip(this.myFunPictureBox, tooltipText);
             this.toolTip2.Active = true;
-        }
+
+        }     
 
         private string WrapLogoString(string originalStr)
         {
@@ -949,10 +1041,7 @@ namespace Test
             //    string firstItem = Info["firstItem"];
             //    string secondItem = Info["secondItem"];
             //    int firstMark = int.Parse(Info["firstMark"]);
-            //    int secondMark = int.Parse(Info["secondMark"]);
-
-
-                
+            //    int secondMark = int.Parse(Info["secondMark"]); 
             //}
 
 
@@ -1435,10 +1524,12 @@ namespace Test
             Dictionary<string, string> colorDictionary = new Dictionary<string, string>();
             Dictionary<string, string> hatchDictionary = new Dictionary<string, string>();
             Dictionary<string, string> drawDictionary = new Dictionary<string, string>();
+            Dictionary<string, string> stationDictionary = new Dictionary<string, string>();
             STYLData.Add(colorDictionary);
             STYLData.Add(hatchDictionary);
             STYLData.Add(drawDictionary);
-            int startRow = 0;
+            STYLData.Add(stationDictionary);
+            int startRow = 1;
             string data = STYLDt.Rows[startRow][1].ToString();
             while (!(data.IndexOf("填充风格") > 0))
             {            
@@ -1453,12 +1544,27 @@ namespace Test
                 hatchDictionary.Add(STYLDt.Rows[startRow]["ID"].ToString(), data);
                 startRow++;
                 data = STYLDt.Rows[startRow]["Item"].ToString();
-            }
+            }            
+
             //drawId是绘图参数中据“绘图”一行的偏移量
-            for (int drawId = 1;startRow + drawId < STYLDt.Rows.Count; drawId++)
+            int drawId = 1;
+            data = STYLDt.Rows[startRow + drawId]["Item"].ToString();
+            while (!(data.IndexOf("指定电站") > 0))
             {
-                drawDictionary.Add(drawId.ToString(), STYLDt.Rows[startRow + drawId]["Item"].ToString());                
+                drawDictionary.Add(drawId.ToString(), data);
+                drawId++;
+                data = STYLDt.Rows[startRow + drawId]["Item"].ToString();
             }
+
+            startRow += drawId;            
+            //总共有五个电站,因此只需要读取五个电站的数据
+            for(int i = 1;i <= 5; i++)
+            {
+                //"*"用于将两个电站ID和电站名称分隔开
+                stationDictionary.Add(i.ToString(), STYLDt.Rows[startRow + i]["Item"].ToString() + "*"+ STYLDt.Rows[startRow + i]["备注"].ToString());
+
+            }
+            
             return STYLData;
         }
 

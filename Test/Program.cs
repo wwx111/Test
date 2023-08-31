@@ -25,7 +25,7 @@ namespace Test
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             画图 ht = new 画图();
-            ht.newTab(30, 8, 2020);
+            ht.newTab(2020);
             Application.Run(ht);
 
             /*loadData LoadData = new loadData();
