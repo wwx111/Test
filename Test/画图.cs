@@ -53,7 +53,7 @@ namespace Test
         public 画图()
         {
             InitializeComponent();
-            string path = "D:\\GTDS_0001\\GTDS_Exam_2030_2_S0000.xlsx";
+            string path = "D:\\GTDS_0001\\GTDS_Exam_2030_2_S0002.xlsx";
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
             DataSet ds = new DataSet();
             loadData LoadData = new loadData();
@@ -485,12 +485,15 @@ namespace Test
                         // 画图
                         g.FillPolygon(hBrush, points);
                         g.DrawPolygon(Pens.Black, points);
+                        hBrush.Dispose();
                     }
                 }
             }
-            Pen blackPen = new Pen(Color.Black, (float)0.5);
+            Pen blackPen = new Pen(Color.Black, (float)1.5);
             blackPen.DashPattern = new float[] { 5, 4 };
             g.DrawPolygon(blackPen, originalLoadPoints);
+
+            blackPen.Dispose();
 
 
             Point top;
@@ -538,16 +541,18 @@ namespace Test
                 Rectangle rect;
                 if (days % 2 == 0)
                 {
-                    rect = new Rectangle(downPoints[days / 2].X - 80, downPoints[days].Y + (int)(fontSize * 3.5), 160, 80);
+                    rect = new Rectangle(downPoints[days / 2].X - 360, downPoints[days].Y + (int)(fontSize * 3.5), 720, 240);
                 }
                 else
                 {
-                    rect = new Rectangle((downPoints[days / 2].X + downPoints[days / 2 + 1].X)/2 - 80, downPoints[days].Y + (int)(fontSize * 3.5), 160, 80);
+                    rect = new Rectangle((downPoints[days / 2].X + downPoints[days / 2 + 1].X)/2 - 360, downPoints[days].Y + (int)(fontSize * 3.5), 720, 240);
                 }
                 
                 var stringFormat = new StringFormat();
                 stringFormat.Alignment = StringAlignment.Center;
-                g.DrawString(title, new Font("黑体", fontSize + 5), Brushes.Black, rect, stringFormat);
+                g.DrawString(title, new Font("黑体", fontSize + 3), Brushes.Black, rect, stringFormat);
+
+                stringFormat.Dispose();
 
             }
             else
@@ -576,11 +581,13 @@ namespace Test
                 //在图中打印横坐标轴的单位
                 g.DrawString("时", new Font("黑体", fontSize + 3), Brushes.Black, downPoints[23].X + 20, downPoints[days].Y - 2);
                 //打印标题
-                Font titleFont = new Font("黑体", fontSize + 3);
-                Rectangle rect = new Rectangle(downPoints[11].X - 80, downPoints[days].Y + (int)(fontSize * 3.5), 160, 80);
+                Rectangle rect = new Rectangle(downPoints[11].X - 360, downPoints[days].Y + (int)(fontSize * 3.5), 720, 80);
                 var stringFormat = new StringFormat();
                 stringFormat.Alignment = StringAlignment.Center;
-                g.DrawString(title, new Font("黑体", fontSize + 5), Brushes.Black, rect, stringFormat);
+                g.DrawString(title, new Font("黑体", fontSize + 3), Brushes.Black, rect, stringFormat);
+
+                font.Dispose();
+                stringFormat.Dispose();
             }
 
             // 绘制Y轴的间隔
@@ -603,12 +610,16 @@ namespace Test
                 Font font = new Font("黑体", fontSize);
                 //根据量纲打印纵坐标轴的刻度
                 g.DrawString((int)(maxVal * dimension / 10 * (i + 1)) + "", font, Brushes.Black, space, format);
+                
             }
 
             //打印单位在图片上，打印的内容在STYL表中记录
             Rectangle unitSpace = new Rectangle(start.X - 30, end2.Y  - 20, 80, 20);
             StringFormat unitFormat = new StringFormat();
             g.DrawString(STYLlist[2]["10"], new Font("黑体", fontSize + 3), Brushes.Black, unitSpace, unitFormat);
+
+            dotted.Dispose();
+            
 
         }
 
@@ -763,7 +774,8 @@ namespace Test
             else if(this.isTooltipOn)
             {
                 Point cursorPosition = e.Location;
-                int day = dateToDay(currentYear, currentMonth, currentDay);
+
+                int day = 0;
                 int hour = 0;
 
                 if (coordinateList == null)
@@ -788,7 +800,7 @@ namespace Test
                         {
                             if (toolPointX < coordinateList[i])
                             {
-                                day += (i - 1) / 24;
+                                day = (i - 1) / 24;
                                 hour = (i - 1) % 24;
 
                                 if(day==tooltipDay && hour == tooltipHour)
@@ -818,8 +830,8 @@ namespace Test
         private void TooltipTimer_Tick(object sender, EventArgs e)
         {
             tooltipTimer.Stop();
-
-            int day = tooltipDay;
+            string[] dates = getDateString(currentDay, currentMonth, currentDay, currentSpan);
+            int day = dateToDay(currentYear, currentMonth, currentDay) + tooltipDay;
             int hour = tooltipHour;
             string text = "";
             //吴老师需要将出力合计在一起
@@ -833,6 +845,7 @@ namespace Test
             data = MAPDictionary_Day[day.ToString()];
             data = (from d in data orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
 
+            string prename = ""; 
             foreach (var pair in data)
             {
                 string key = pair.Key;
@@ -916,15 +929,20 @@ namespace Test
                     }
 
                 }
-                if (total.ContainsKey(name))
+                //需要用flag高一级的减去flag第一级的电量获得该flag对应的电量
+                if (prename != "原始负荷" && prename != "")
                 {
+                    total[prename] = total[prename] - int.Parse(pair.Value[hour]);
+                }
+                if (total.ContainsKey(name))
+                {                 
                     total[name] += int.Parse(pair.Value[hour]);
-
                 }
                 else
                 {
                     total.Add(name, int.Parse(pair.Value[hour]));
                 }
+                prename = name;
             }
 
             foreach (var pair in total)
@@ -938,7 +956,7 @@ namespace Test
             }
 
             this.tooltipText = text;
-            this.toolTip2.ToolTipTitle = "   第" + day + "天" + "  " + (hour + 1) + "小时";
+            this.toolTip2.ToolTipTitle = "   " + dates[tooltipDay] + "  " + (hour + 1) + "小时";
             this.toolTip2.SetToolTip(this.myFunPictureBox, tooltipText);
             this.toolTip2.Active = true;
 
@@ -946,17 +964,15 @@ namespace Test
 
         private string WrapLogoString(string originalStr)
         {
-            int j = 0;
             string result = "";
             for (int i = 0; i < originalStr.Length; i++)
-            {
-                result += originalStr[i];
-                j++;
-                if (j == 5)
+            {                
+                if (originalStr[i] == '\\')
                 {
                     result += "\n";
-                    j = 0;
+                    continue;
                 }
+                result += originalStr[i];
             }
             return result;
         }
@@ -1025,15 +1041,8 @@ namespace Test
                 }
                 else
                 {
-                    //保证图例解释文字能够正确显示，这里根据已有数据进行了简易的判定，当firstItem长度小于4时，需要加入空格，保证两个图例的解释文字分为两行
-                    if (firstItem.Length < 5)
-                    {
-                        newItem.description = firstItem + " " + secondItem;
-                    }
-                    else
-                    {
-                        newItem.description = firstItem + secondItem;
-                    }
+
+                    newItem.description = firstItem + "\\" + secondItem;
 
                 }
                 picture.LogoItems.Add(newItem);
