@@ -773,8 +773,17 @@ namespace Test
                 else
                 {
                     int toolPointX = cursorPosition.X - start.X;
-                    if(toolPointX > 0)
+                    int maxRangeX = coordinateList[coordinateList.Length - 1];
+                    if(0 > toolPointX || toolPointX > maxRangeX)
                     {
+                        tooltipDay = 0;
+                        tooltipHour = 0;
+                        tooltipTimer.Stop();
+                        toolTip2.Active = false;
+                    }
+                    else
+                    {
+                        toolTip2.Active = true;
                         for (int i = 1; i < coordinateList.Length; i++)
                         {
                             if (toolPointX < coordinateList[i])
