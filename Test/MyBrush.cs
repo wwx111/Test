@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 
-namespace Test
+namespace HUST_Maps
 {
     class MyBrush : IComparable<MyBrush>
     {
