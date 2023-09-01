@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 using System.Data;
 
-namespace HUST_Maps
+namespace HUST_Grph
 {
     static class Program
     {

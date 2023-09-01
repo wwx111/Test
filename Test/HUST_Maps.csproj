@@ -8,8 +8,8 @@
     <ProjectGuid>{9AA31D74-2768-4A90-9C99-7FC732A1B37F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HUST_Maps</RootNamespace>
-    <AssemblyName>HUST_Maps</AssemblyName>
+    <RootNamespace>HUST_Grph</RootNamespace>
+    <AssemblyName>HUST_Grph</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

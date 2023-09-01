@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace HUST_Maps
+namespace HUST_Grph
 {
     public partial class 画图 : Form
     {

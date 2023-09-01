@@ -1,5 +1,5 @@
 ﻿
-namespace HUST_Maps
+namespace HUST_Grph
 {
     partial class 画图
     {
@@ -137,7 +137,7 @@ namespace HUST_Maps
             // 
             // OutZoom
             // 
-            this.OutZoom.Image = global::HUST_Maps.Properties.Resources.缩小;
+            this.OutZoom.Image = global::HUST_Grph.Properties.Resources.缩小;
             this.OutZoom.Location = new System.Drawing.Point(54, 171);
             this.OutZoom.Name = "OutZoom";
             this.OutZoom.Size = new System.Drawing.Size(50, 50);
@@ -148,7 +148,7 @@ namespace HUST_Maps
             // 
             // InZoom
             // 
-            this.InZoom.Image = global::HUST_Maps.Properties.Resources.放大;
+            this.InZoom.Image = global::HUST_Grph.Properties.Resources.放大;
             this.InZoom.Location = new System.Drawing.Point(3, 171);
             this.InZoom.Name = "InZoom";
             this.InZoom.Size = new System.Drawing.Size(50, 50);
@@ -159,7 +159,7 @@ namespace HUST_Maps
             // 
             // RemoveDay
             // 
-            this.RemoveDay.Image = global::HUST_Maps.Properties.Resources.减少减去减号;
+            this.RemoveDay.Image = global::HUST_Grph.Properties.Resources.减少减去减号;
             this.RemoveDay.Location = new System.Drawing.Point(54, 115);
             this.RemoveDay.Name = "RemoveDay";
             this.RemoveDay.Size = new System.Drawing.Size(50, 50);
@@ -170,7 +170,7 @@ namespace HUST_Maps
             // 
             // AddDay
             // 
-            this.AddDay.Image = global::HUST_Maps.Properties.Resources.增加添加加号;
+            this.AddDay.Image = global::HUST_Grph.Properties.Resources.增加添加加号;
             this.AddDay.Location = new System.Drawing.Point(3, 115);
             this.AddDay.Name = "AddDay";
             this.AddDay.Size = new System.Drawing.Size(50, 50);
@@ -181,7 +181,7 @@ namespace HUST_Maps
             // 
             // MonthRight
             // 
-            this.MonthRight.Image = global::HUST_Maps.Properties.Resources.向右4;
+            this.MonthRight.Image = global::HUST_Grph.Properties.Resources.向右4;
             this.MonthRight.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.MonthRight.Location = new System.Drawing.Point(54, 59);
             this.MonthRight.Name = "MonthRight";
@@ -196,7 +196,7 @@ namespace HUST_Maps
             // 
             // MonthLeft
             // 
-            this.MonthLeft.Image = global::HUST_Maps.Properties.Resources.向左4;
+            this.MonthLeft.Image = global::HUST_Grph.Properties.Resources.向左4;
             this.MonthLeft.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.MonthLeft.Location = new System.Drawing.Point(3, 59);
             this.MonthLeft.Name = "MonthLeft";
@@ -211,7 +211,7 @@ namespace HUST_Maps
             // 
             // DayRight
             // 
-            this.DayRight.Image = global::HUST_Maps.Properties.Resources.Right向右;
+            this.DayRight.Image = global::HUST_Grph.Properties.Resources.Right向右;
             this.DayRight.Location = new System.Drawing.Point(54, 3);
             this.DayRight.Name = "DayRight";
             this.DayRight.Size = new System.Drawing.Size(50, 50);
@@ -226,7 +226,7 @@ namespace HUST_Maps
             // DayLeft
             // 
             this.DayLeft.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.DayLeft.Image = global::HUST_Maps.Properties.Resources.Left向左;
+            this.DayLeft.Image = global::HUST_Grph.Properties.Resources.Left向左;
             this.DayLeft.Location = new System.Drawing.Point(3, 3);
             this.DayLeft.Name = "DayLeft";
             this.DayLeft.Size = new System.Drawing.Size(50, 50);

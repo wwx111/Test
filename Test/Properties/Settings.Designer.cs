@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HUST_Maps.Properties {
+namespace HUST_Grph.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
