@@ -60,13 +60,17 @@ namespace Test
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
             DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
             DataTable Mapsdata = loadData.ExcelToDatatable(path, "MAPs");
+            STYLdata.TableName = "STYL";
+            NORMdata.TableName = "NORM";
+            Mapsdata.TableName = "MAPs";
+
             ds.Tables.Add(STYLdata);
             ds.Tables.Add(NORMdata);
             ds.Tables.Add(Mapsdata);
 
-            STYLlist = loadData.STYLTableToData(ds.Tables[0]);
-            NORMlist = loadData.NORMTableToData(ds.Tables[1]);
-            MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables[2]);
+            STYLlist = loadData.STYLTableToData(ds.Tables["STYL"]);
+            NORMlist = loadData.NORMTableToData(ds.Tables["NORM"]);
+            MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables["Maps"]);
             MAPDictionary_Line = (from d in MAPDictionary_Line orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
             MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables[2]);
             title = STYLlist[2]["5"];
@@ -952,7 +956,7 @@ namespace Test
                 text += pair.Key;
                 text += ":";
                 text += pair.Value;
-                text += "   \n";
+                text += "MW   \n";
             }
 
             this.tooltipText = text;
