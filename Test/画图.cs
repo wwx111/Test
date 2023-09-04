@@ -219,14 +219,14 @@ namespace Test
             //((sender as PictureBox).Parent as Panel).Focus();
             //(sender as PictureBox).Focus();
             myFunPictureBox.Focus();
-            this.toolTip2.Active = true;
-            //this.隐藏显示数据点ToolStripMenuItem_Click(sender, e);
+            //this.toolTip2.Active = true;
         }
 
         private void pictureBox_MouseLeave(object sender, System.EventArgs e)
         {
             // this.Focus();
             this.toolTip2.Active = false;
+            this.tooltipTimer.Stop();
         }
 
         //指示是否正在进行图例拖动
@@ -795,7 +795,7 @@ namespace Test
                     }
                     else
                     {
-                        toolTip2.Active = true;
+                        //toolTip2.Active = true;
                         for (int i = 1; i < coordinateList.Length; i++)
                         {
                             if (toolPointX < coordinateList[i])
@@ -803,7 +803,7 @@ namespace Test
                                 day = (i - 1) / 24;
                                 hour = (i - 1) % 24;
 
-                                if(day==tooltipDay && hour == tooltipHour)
+                                if(day == tooltipDay && hour == tooltipHour)
                                 {
                                     //数据点不变，不处理
 
@@ -812,9 +812,11 @@ namespace Test
                                 else
                                 {
                                     //数据点变化，重置计时器
+                                    toolTip2.Active = false;
+
                                     tooltipDay = day;
                                     tooltipHour = hour;
-                                    toolTip2.Active = false;
+
                                     tooltipTimer.Stop();
                                     tooltipTimer.Start();
 
@@ -829,6 +831,7 @@ namespace Test
         }
         private void TooltipTimer_Tick(object sender, EventArgs e)
         {
+            //并不停止计时器，以避免ToolTip悬停消失
             tooltipTimer.Stop();
             string[] dates = getDateString(currentDay, currentMonth, currentDay, currentSpan);
             int day = dateToDay(currentYear, currentMonth, currentDay) + tooltipDay;
@@ -1450,6 +1453,7 @@ namespace Test
         {
             isTooltipOn = !isTooltipOn;
             this.toolTip2.Active = isTooltipOn;
+            this.tooltipTimer.Stop();
         }
     }
 
