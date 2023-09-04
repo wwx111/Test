@@ -8,8 +8,8 @@
     <ProjectGuid>{9AA31D74-2768-4A90-9C99-7FC732A1B37F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Test</RootNamespace>
-    <AssemblyName>Test</AssemblyName>
+    <RootNamespace>HUST_Grph</RootNamespace>
+    <AssemblyName>HUST_Grph</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -142,6 +142,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="画图.resx">
       <DependentUpon>画图.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

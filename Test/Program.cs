@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 using System.Data;
 
-namespace Test
+namespace HUST_Grph
 {
     static class Program
     {
@@ -22,10 +22,26 @@ namespace Test
         [STAThread]
         static void Main()
         {
+            int year = 2020;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            画图 ht = new 画图();
-            ht.newTab(2020);
+            string path = "D:\\GTDS_0001\\GTDS_Exam_2030_2_S0002.xlsx";
+            //string path = "D:\\input_11_2022020000_70_0.xlsx";
+            DataSet ds = new DataSet();
+            DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
+            DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
+            DataTable Mapsdata = loadData.ExcelToDatatable(path, "MAPs");
+            STYLdata.TableName = "STYL";
+            NORMdata.TableName = "NORM";
+            Mapsdata.TableName = "MAPs";
+
+            ds.Tables.Add(STYLdata);
+            ds.Tables.Add(NORMdata);
+            ds.Tables.Add(Mapsdata);
+
+
+            画图 ht = new 画图(ds);
+            ht.newTab(year);
             Application.Run(ht);
 
             /*loadData LoadData = new loadData();

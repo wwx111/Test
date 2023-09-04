@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33529.622
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{9AA31D74-2768-4A90-9C99-7FC732A1B37F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HUST_Maps", "Test\HUST_Maps.csproj", "{9AA31D74-2768-4A90-9C99-7FC732A1B37F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +18,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7FD617D8-CACC-468B-BBF2-F39E10453FFA}
 	EndGlobalSection
 EndGlobal

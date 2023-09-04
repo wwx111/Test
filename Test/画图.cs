@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Test
+namespace HUST_Grph
 {
     public partial class 画图 : Form
     {
@@ -50,23 +50,11 @@ namespace Test
         private Point start;
 
 
-        public 画图()
+        public 画图(DataSet ds)
         {
             InitializeComponent();
-            string path = "D:\\GTDS_0001\\GTDS_Exam_2030_2_S0002.xlsx";
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
-            DataSet ds = new DataSet();
             loadData LoadData = new loadData();
-            DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
-            DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
-            DataTable Mapsdata = loadData.ExcelToDatatable(path, "MAPs");
-            STYLdata.TableName = "STYL";
-            NORMdata.TableName = "NORM";
-            Mapsdata.TableName = "MAPs";
-
-            ds.Tables.Add(STYLdata);
-            ds.Tables.Add(NORMdata);
-            ds.Tables.Add(Mapsdata);
 
             STYLlist = loadData.STYLTableToData(ds.Tables["STYL"]);
             NORMlist = loadData.NORMTableToData(ds.Tables["NORM"]);
@@ -129,7 +117,7 @@ namespace Test
 
             tcp.Resize += new System.EventHandler(this.pictureBox_Resize);
 
-            currentYear = startYear;
+            currentYear = int.Parse(STYLlist[2]["3"].Substring(0, 4));
             currentDay = int.Parse(STYLlist[2]["15"]);            
             currentMonth = int.Parse(STYLlist[2]["14"]);        
             currentSpan = int.Parse(STYLlist[2]["16"]);
