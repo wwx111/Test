@@ -117,7 +117,7 @@ namespace HUST_Grph
 
             tcp.Resize += new System.EventHandler(this.pictureBox_Resize);
 
-            currentYear = startYear;
+            currentYear = int.Parse(STYLlist[2]["3"].Substring(0, 4));
             currentDay = int.Parse(STYLlist[2]["15"]);            
             currentMonth = int.Parse(STYLlist[2]["14"]);        
             currentSpan = int.Parse(STYLlist[2]["16"]);
