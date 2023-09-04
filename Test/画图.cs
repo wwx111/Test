@@ -57,7 +57,7 @@ namespace HUST_Grph
             InitializeComponent();
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
             loadData LoadData = new loadData();
-
+            
             STYLlist = loadData.STYLTableToData(ds.Tables[0]);
             NORMlist = loadData.NORMTableToData(ds.Tables[1]);
             MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables[2]);
@@ -81,14 +81,14 @@ namespace HUST_Grph
                 HatchStyle hatchStyle;
                 string key = pair.Key;
                 string value = pair.Value;
-                if(value == "无填充")
+                if (value == "无填充")
                 {
                     break;
                 }
                 hatchStyle = (HatchStyle)Enum.Parse(typeof(HatchStyle), value);
                 hatchStyles.Add(key, hatchStyle);
             }
-            
+
 
         }
 
@@ -124,8 +124,8 @@ namespace HUST_Grph
             tcp.Resize += new System.EventHandler(this.pictureBox_Resize);
 
             currentYear = int.Parse(STYLlist[2]["3"].Substring(0, 4));
-            currentDay = int.Parse(STYLlist[2]["15"]);            
-            currentMonth = int.Parse(STYLlist[2]["14"]);        
+            currentDay = int.Parse(STYLlist[2]["15"]);
+            currentMonth = int.Parse(STYLlist[2]["14"]);
             currentSpan = int.Parse(STYLlist[2]["16"]);
 
             myFunPictureBox = new MyFunPictureBox();
@@ -311,14 +311,14 @@ namespace HUST_Grph
 
                 //画图_Paint(picture, e);
 
-                paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan);                
+                paintDays(g, picture, currentYear, currentMonth, currentDay, currentSpan);
 
                 if (isLogoOn == true)
                 {
                     DrawLogo(picture, g);
                 }
 
-                picture.drawed = true;              
+                picture.drawed = true;
             }
             catch (Exception ex)
             {
@@ -331,7 +331,7 @@ namespace HUST_Grph
         // 开始绘图的年、月、日、绘图天数、一年最大值 
         private void paintDays(Graphics g, MyFunPictureBox picture, int year, int startMonth, int startDay, int days)
         {
-            
+
             // 左右边界的宽度
             int leftBorderWidth = (int)(picture.drawArea.Width * 0.1);
             int rightBorderWidth = (int)(picture.drawArea.Width * 0.01);
@@ -345,14 +345,14 @@ namespace HUST_Grph
             int width = wholeWidth - leftBorderWidth - rightBorderWidth - 10;
 
             //根据图片的绘制宽度调整字体的大小,并且保证字体的大小在一定范围内，例如7-14
-            float fontSize = width / 70;
-            if (fontSize > 14)
+            float fontSize = width / 70 - 2;
+            if (fontSize > 12)
             {
-                fontSize = 14;
+                fontSize = 12;
             }
-            else if (fontSize < 7)
+            else if (fontSize < 6)
             {
-                fontSize = 7;
+                fontSize = 6;
             }
             int hours = 24 * days;
 
@@ -426,7 +426,7 @@ namespace HUST_Grph
             int startDays = dateToDay(year, startMonth, startDay);
             // 获取数据和颜色、样式来绘图
             // 原始负荷需要额外处理，最后绘制
-            Point[] originalLoadPoints = new Point[24 * days * 2];            
+            Point[] originalLoadPoints = new Point[24 * days * 2];
 
             foreach (string key in this.MAPDictionary_Line.Keys)
             {
@@ -475,7 +475,7 @@ namespace HUST_Grph
                     string[] ARGBS = color.Split(' ');
                     if (key.Equals("9950"))
                     {
-                        originalLoadPoints = points;
+                        Array.Copy(points, originalLoadPoints, originalLoadPoints.Length); 
                     }
                     else
                     {
@@ -487,11 +487,16 @@ namespace HUST_Grph
                     }
                 }
             }
-            Pen blackPen = new Pen(Color.Black, (float)1.5);
-            blackPen.DashPattern = new float[] { 5, 4 };
-            g.DrawPolygon(blackPen, originalLoadPoints);
+            string originalColor = STYLlist[0]["12"];
+            string[] orginalARGBS = originalColor.Split(' ');
+            //string = STYLlist[0][];
+            Pen dashPen = new Pen(Color.FromArgb(int.Parse(orginalARGBS[0]), int.Parse(orginalARGBS[1]), int.Parse(orginalARGBS[2]), int.Parse(orginalARGBS[3])), 2.0f);
+            dashPen.DashStyle = DashStyle.Dash;
+            //Pen blackPen = new Pen(Color.Black, (float)1.5);
+            //blackPen.DashPattern = new float[] { 2, 1 };
+            g.DrawLines(dashPen, originalLoadPoints);
 
-            blackPen.Dispose();
+            dashPen.Dispose();
 
 
             Point top;
@@ -517,7 +522,7 @@ namespace HUST_Grph
                     downPoints[i] = new Point(start.X + coordinateList[i * 24], start.Y);
                     upPoints[i] = new Point(start.X + coordinateList[i * 24], start.Y - 5);
                     top = new Point(start.X + coordinateList[i * 24], end2.Y + 8);
-                    
+
                     if (i % span == 0)
                     {
                         //绘制坐标轴刻度
@@ -525,7 +530,7 @@ namespace HUST_Grph
                         //绘制参考虚线
                         g.DrawLine(dotted, downPoints[i], top);
                         //坐标轴刻度大小
-                        g.DrawString(dates[i], new Font("黑体", fontSize), Brushes.Black, new Point(downPoints[i].X - 10, downPoints[i].Y + 5));
+                        g.DrawString(dates[i], new Font("黑体", fontSize - 1), Brushes.Black, new Point(downPoints[i].X - 10, downPoints[i].Y + 5));
                     }
 
                 }
@@ -534,7 +539,7 @@ namespace HUST_Grph
                 g.DrawLine(dotted, downPoints[days], top);
 
                 //在图中打印横坐标轴的单位
-                g.DrawString("日", new Font("黑体", fontSize + 3), Brushes.Black, downPoints[days].X + 15, downPoints[days].Y);
+                g.DrawString("T", new Font("黑体", fontSize + 1), Brushes.Black, downPoints[days].X + 15, downPoints[days].Y);
                 //打印标题
                 Rectangle rect;
                 if (days % 2 == 0)
@@ -543,12 +548,12 @@ namespace HUST_Grph
                 }
                 else
                 {
-                    rect = new Rectangle((downPoints[days / 2].X + downPoints[days / 2 + 1].X)/2 - 360, downPoints[days].Y + (int)(fontSize * 3.5), 720, 240);
+                    rect = new Rectangle((downPoints[days / 2].X + downPoints[days / 2 + 1].X) / 2 - 360, downPoints[days].Y + (int)(fontSize * 3.5), 720, 240);
                 }
-                
+
                 var stringFormat = new StringFormat();
                 stringFormat.Alignment = StringAlignment.Center;
-                g.DrawString(title, new Font("黑体", fontSize + 3), Brushes.Black, rect, stringFormat);
+                g.DrawString(title, new Font("黑体", fontSize + 2), Brushes.Black, rect, stringFormat);
 
                 stringFormat.Dispose();
 
@@ -556,7 +561,7 @@ namespace HUST_Grph
             else
             {
                 String[] dates = getDateString(year, startMonth, startDay, days);
-                Font font = new Font("黑体", fontSize);
+                Font font = new Font("黑体", fontSize - 1);
                 g.DrawString(dates[0], font, Brushes.Black, new Point(start.X - 28, start.Y + 5));
                 //interval = (end.X - start.X - 5) / 24;
                 Point[] downPoints = new Point[24];
@@ -567,22 +572,22 @@ namespace HUST_Grph
                     downPoints[i] = new Point(start.X + coordinateList[i + 1], start.Y);
                     upPoints[i] = new Point(start.X + coordinateList[i + 1], start.Y - 5);
                     top = new Point(start.X + coordinateList[i + 1], end2.Y + 8);
-                    
-                    if(i % 4 == 3)
+
+                    if (i % 4 == 3)
                     {
                         g.DrawLine(dotted, downPoints[i], top);
                         g.DrawLine(Pens.Black, downPoints[i], upPoints[i]);
-                        g.DrawString((i + 1) + "时", font, Brushes.Black, new Point(downPoints[i].X - 10, downPoints[i].Y + 5));
+                        g.DrawString((i + 1) + "时", font , Brushes.Black, new Point(downPoints[i].X - 10, downPoints[i].Y + 5));
                     }
                 }
 
                 //在图中打印横坐标轴的单位
-                g.DrawString("时", new Font("黑体", fontSize + 3), Brushes.Black, downPoints[23].X + 20, downPoints[days].Y - 2);
+                g.DrawString("T", new Font("黑体", fontSize + 1), Brushes.Black, downPoints[23].X + 20, downPoints[days].Y - 2);
                 //打印标题
                 Rectangle rect = new Rectangle(downPoints[11].X - 360, downPoints[days].Y + (int)(fontSize * 3.5), 720, 80);
                 var stringFormat = new StringFormat();
                 stringFormat.Alignment = StringAlignment.Center;
-                g.DrawString(title, new Font("黑体", fontSize + 3), Brushes.Black, rect, stringFormat);
+                g.DrawString(title, new Font("黑体", fontSize + 2), Brushes.Black, rect, stringFormat);
 
                 font.Dispose();
                 stringFormat.Dispose();
@@ -605,19 +610,21 @@ namespace HUST_Grph
                 top = new Point(end.X - 10, start.Y - interval * (i + 1));
                 g.DrawLine(Pens.Black, leftPoint, rightPoint);
                 g.DrawLine(dotted, leftPoint, top);
-                Font font = new Font("黑体", fontSize);
+                Font font = new Font("黑体", fontSize - 1);
                 //根据量纲打印纵坐标轴的刻度
                 g.DrawString((int)(maxVal * dimension / 10 * (i + 1)) + "", font, Brushes.Black, space, format);
-                
+                font.Dispose();
+                format.Dispose();
+
             }
 
             //打印单位在图片上，打印的内容在STYL表中记录
-            Rectangle unitSpace = new Rectangle(start.X - 30, end2.Y  - 20, 80, 20);
+            Rectangle unitSpace = new Rectangle(start.X - 35, end2.Y - 25, 80, 20);
             StringFormat unitFormat = new StringFormat();
-            g.DrawString(STYLlist[2]["10"], new Font("黑体", fontSize + 3), Brushes.Black, unitSpace, unitFormat);
+            g.DrawString("P/" + STYLlist[2]["10"], new Font("黑体", fontSize + 1), Brushes.Black, unitSpace, unitFormat);
 
             dotted.Dispose();
-            
+
 
         }
 
@@ -694,7 +701,7 @@ namespace HUST_Grph
                     month += 1;
                     day = 1;
                 }
-                
+
                 date[i] = month + "月" + day + "日";
                 if (month > 12 || month < 1)
                 {
@@ -769,7 +776,7 @@ namespace HUST_Grph
                 }
             }
             // 处理数据点显示
-            else if(this.isTooltipOn)
+            else if (this.isTooltipOn)
             {
                 Point cursorPosition = e.Location;
 
@@ -784,7 +791,7 @@ namespace HUST_Grph
                 {
                     int toolPointX = cursorPosition.X - start.X;
                     int maxRangeX = coordinateList[coordinateList.Length - 1];
-                    if(0 > toolPointX || toolPointX > maxRangeX)
+                    if (0 > toolPointX || toolPointX > maxRangeX)
                     {
                         tooltipDay = 0;
                         tooltipHour = 0;
@@ -801,7 +808,7 @@ namespace HUST_Grph
                                 day = (i - 1) / 24;
                                 hour = (i - 1) % 24;
 
-                                if(day == tooltipDay && hour == tooltipHour)
+                                if (day == tooltipDay && hour == tooltipHour)
                                 {
                                     //数据点不变，不处理
 
@@ -825,7 +832,7 @@ namespace HUST_Grph
                                 break;
                             }
                         }
-                    }                   
+                    }
                 }
             }
         }
@@ -850,7 +857,7 @@ namespace HUST_Grph
             data = MAPDictionary_Day[day.ToString()];
             data = (from d in data orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
 
-            string prename = ""; 
+            string prename = "";
             foreach (var pair in data)
             {
                 string key = pair.Key;
@@ -895,16 +902,19 @@ namespace HUST_Grph
                             switch (secondNum)
                             {
                                 case 0:
-                                    name += "核电出力";
-                                    break;
+                                //吴老师要求将“核力出力”等改成“发”，缩短宽度
+                                //name += "核电出力";
+                                //break;
                                 case 1:
-                                    name += "水电出力";
-                                    break;
+                                //name += "水电出力";
+                                //break;
                                 case 2:
-                                    name += "火电出力";
-                                    break;
+                                //name += "火电出力";
+                                //break;
                                 case 3:
-                                    name += "储能出力";
+                                    //name += "储能出力";
+                                    //break;
+                                    name += "发";
                                     break;
                                 default:
                                     Console.WriteLine("flag超出原定绘图参数");
@@ -929,7 +939,13 @@ namespace HUST_Grph
                         else
                         {
                             name = STYLlist[3][fourthNum.ToString()].Split('*')[1];
-                            name += NORMlist[0][key.Remove(3, 1) + "0"]["Item"];
+                            //name += NORMlist[0][key.Remove(3, 1) + "0"]["Item"];
+                            Dictionary<int, String> namePairs = new Dictionary<int, string>{
+                                { 4, "储" },
+                                { 5, "发" },
+                                { 7, "弃" }
+                            };
+                            name += namePairs[firstNum];
                         }
                     }
 
@@ -940,7 +956,7 @@ namespace HUST_Grph
                     total[prename] = total[prename] - int.Parse(pair.Value[hour]);
                 }
                 if (total.ContainsKey(name))
-                {                 
+                {
                     total[name] += int.Parse(pair.Value[hour]);
                 }
                 else
@@ -955,15 +971,15 @@ namespace HUST_Grph
             {
                 text += "   ";
                 text += pair.Key;
-                text += ":";
+                text += "： ";
                 text += pair.Value;
                 text += "   \n";
             }
 
             this.tooltipText = text;
-            this.toolTip2.ToolTipTitle = "   " + dates[tooltipDay] + "  " + (hour + 1) + "小时";
+            this.toolTip2.ToolTipTitle = "   " + dates[tooltipDay] + "  " + (hour + 1) + "时/MW";
             this.toolTip2.SetToolTip(this.myFunPictureBox, this.tooltipText);
-            this.toolTip2.Active = true;
+            this.toolTip2.Active = true;            
 
         }
 
@@ -978,7 +994,7 @@ namespace HUST_Grph
         {
             string result = "";
             for (int i = 0; i < originalStr.Length; i++)
-            {                
+            {
                 if (originalStr[i] == '\\')
                 {
                     result += "\n";
@@ -1080,8 +1096,13 @@ namespace HUST_Grph
 
             SolidBrush drawBrush = new SolidBrush(Color.Black);
             Pen framePen = new Pen(Color.Black, 1.0f);
-            Pen dashPen = new Pen(Color.Black, 1.0f);
+            string originalColor = STYLlist[0]["12"];
+            string[] orginalARGBS = originalColor.Split(' ');
+            //string = STYLlist[0][];
+            Pen dashPen = new Pen(Color.FromArgb(int.Parse(orginalARGBS[0]), int.Parse(orginalARGBS[1]), int.Parse(orginalARGBS[2]), int.Parse(orginalARGBS[3])), 2.0f);
             dashPen.DashStyle = DashStyle.Dash;
+            //Pen dashPen = new Pen(Color.Black, 1.0f);
+            //dashPen.DashStyle = DashStyle.Dash;
 
             int vacant = 10;
             Font titleFont = new Font("宋体", picture.largeFontSize, FontStyle.Bold);
@@ -1111,26 +1132,26 @@ namespace HUST_Grph
                     startPoint.Y + (i / 2) * (drawFont.Height * 2 + vacant) + vacant);
                 if (i == 0)
                 {
-                    g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y + drawFont.Height, 40, drawFont.Height);
-                    g.DrawLine(framePen, point.X, point.Y + drawFont.Height, point.X + 40, point.Y + drawFont.Height);
+                    g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y + drawFont.Height, 30, drawFont.Height);
+                    g.DrawLine(framePen, point.X, point.Y + drawFont.Height, point.X + 30, point.Y + drawFont.Height);
 
                     PointF[] points = new PointF[]
                     {
                                 new PointF(point.X, point.Y + (float)drawFont.Height*3.0f/2),
-                                new PointF(point.X + 20, point.Y + (float)drawFont.Height*3.0f/2),
-                                new PointF(point.X + 20, point.Y+(float)drawFont.Height/2.0f),
-                                new PointF(point.X + 40, point.Y+(float)drawFont.Height/2.0f)
+                                new PointF(point.X + 15, point.Y + (float)drawFont.Height*3.0f/2),
+                                new PointF(point.X + 15, point.Y+(float)drawFont.Height/2.0f),
+                                new PointF(point.X + 30, point.Y+(float)drawFont.Height/2.0f)
                         };
                     g.DrawLines(dashPen, points);
-                    g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
+                    g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 35, point.Y);
                 }
                 else
                 {
-                    g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y, 40, drawFont.Height);
-                    g.FillRectangle(picture.LogoItems[i].secondBrush, point.X, point.Y + drawFont.Height, 40, drawFont.Height);
-                    g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 45, point.Y);
+                    g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y, 30, drawFont.Height);
+                    g.FillRectangle(picture.LogoItems[i].secondBrush, point.X, point.Y + drawFont.Height, 30, drawFont.Height);
+                    g.DrawString(WrapLogoString(picture.LogoItems[i].description), drawFont, drawBrush, point.X + 35, point.Y);
                 }
-                g.DrawRectangle(framePen, point.X, point.Y, 40, drawFont.Height * 2);
+                g.DrawRectangle(framePen, point.X, point.Y, 30, drawFont.Height * 2);
             }
 
             stringFormat.Dispose();
@@ -1140,16 +1161,16 @@ namespace HUST_Grph
             titleFont.Dispose();
             drawFont.Dispose();
         }
-        
+
         //通过NORM表格中的color和hatch的编码，在Style表格中获取对应的填充风格和颜色类型，并生成对应的笔刷
         private Brush infoToBrush(string colorID, string hatchID)
         {
             Dictionary<string, string> STYLinfo = STYLlist[0];
 
-            
+
             //当hatchID=39，也就是超出了hatchStyles的列表范围时，代表的是无填充风格，因此生成只包含颜色的SolidBrush笔刷，否则生成带有填充风格的HatchBrush笔刷
             if (hatchStyles.ContainsKey(hatchID))
-            {          
+            {
                 string color = STYLinfo[colorID];
                 string[] ARGBS = color.Split(' ');
                 HatchBrush hBrush = new HatchBrush(hatchStyles[hatchID], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
@@ -1242,7 +1263,7 @@ namespace HUST_Grph
         {
             Boolean flag = true;
             currentSpan++;
-            
+
             if (flag)
                 this.myFunPictureBox.Invalidate();
         }
@@ -1494,7 +1515,7 @@ namespace HUST_Grph
                 {
                     workbook = new HSSFWorkbook(fs);
                 }
-                if(sheetName != null)
+                if (sheetName != null)
                 {
                     sheet = workbook.GetSheet(sheetName);
                 }
@@ -1502,16 +1523,18 @@ namespace HUST_Grph
                 {
                     Console.WriteLine("SheetName is null");
                 }
-                if(sheet != null)
+                if (sheet != null)
                 {
                     IRow firstRow = sheet.GetRow(0);
                     if (sheetName.Equals("STYL"))
                     {
                         cellCount = 3;
-                    }else if (sheetName.Equals("NORM"))
+                    }
+                    else if (sheetName.Equals("NORM"))
                     {
                         cellCount = 6;
-                    }else if (sheetName.Equals("MAPs"))
+                    }
+                    else if (sheetName.Equals("MAPs"))
                     {
                         cellCount = 26;
                     }
@@ -1530,7 +1553,7 @@ namespace HUST_Grph
                 {
                     IRow row = sheet.GetRow(i);//第几行
                     int j = row.FirstCellNum;
-                    if(j < 0)
+                    if (j < 0)
                     {
                         break;
                     }
@@ -1554,9 +1577,9 @@ namespace HUST_Grph
             }
         }
 
-        public static List<Dictionary<string,string>> STYLTableToData(DataTable STYLDt)
+        public static List<Dictionary<string, string>> STYLTableToData(DataTable STYLDt)
         {
-            List <Dictionary<string, string>> STYLData = new List<Dictionary<string, string>>();
+            List<Dictionary<string, string>> STYLData = new List<Dictionary<string, string>>();
             Dictionary<string, string> colorDictionary = new Dictionary<string, string>();
             Dictionary<string, string> hatchDictionary = new Dictionary<string, string>();
             Dictionary<string, string> drawDictionary = new Dictionary<string, string>();
@@ -1568,10 +1591,10 @@ namespace HUST_Grph
             int startRow = 1;
             string data = STYLDt.Rows[startRow][1].ToString();
             while (!(data.IndexOf("填充风格") > 0))
-            {            
+            {
                 colorDictionary.Add(STYLDt.Rows[startRow]["ID"].ToString(), data);
                 startRow++;
-                data = STYLDt.Rows[startRow]["Item"].ToString(); 
+                data = STYLDt.Rows[startRow]["Item"].ToString();
             }
             startRow++;
             data = STYLDt.Rows[startRow]["Item"].ToString();
@@ -1580,7 +1603,7 @@ namespace HUST_Grph
                 hatchDictionary.Add(STYLDt.Rows[startRow]["ID"].ToString(), data);
                 startRow++;
                 data = STYLDt.Rows[startRow]["Item"].ToString();
-            }            
+            }
 
             //drawId是绘图参数中据“绘图”一行的偏移量
             int drawId = 1;
@@ -1592,22 +1615,22 @@ namespace HUST_Grph
                 data = STYLDt.Rows[startRow + drawId]["Item"].ToString();
             }
 
-            startRow += drawId;            
+            startRow += drawId;
             //总共有五个电站,因此只需要读取五个电站的数据
-            for(int i = 1;i <= 5; i++)
+            for (int i = 1; i <= 5; i++)
             {
                 //"*"用于将两个电站ID和电站名称分隔开
-                stationDictionary.Add(i.ToString(), STYLDt.Rows[startRow + i]["Item"].ToString() + "*"+ STYLDt.Rows[startRow + i]["备注"].ToString());
+                stationDictionary.Add(i.ToString(), STYLDt.Rows[startRow + i]["Item"].ToString() + "*" + STYLDt.Rows[startRow + i]["备注"].ToString());
 
             }
-            
+
             return STYLData;
         }
 
         public static List<Dictionary<string, Dictionary<string, string>>> NORMTableToData(DataTable NORMDt)
         {
             List<Dictionary<string, Dictionary<string, string>>> NORMData = new List<Dictionary<string, Dictionary<string, string>>>();
-            Dictionary<string, Dictionary<string, string>> drawParameter= new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, Dictionary<string, string>> drawParameter = new Dictionary<string, Dictionary<string, string>>();
             Dictionary<string, Dictionary<string, string>> LogoParameter = new Dictionary<string, Dictionary<string, string>>();
             NORMData.Add(drawParameter);
             NORMData.Add(LogoParameter);
@@ -1650,7 +1673,7 @@ namespace HUST_Grph
                 {
                     drawParameter.Add(NORMDt.Rows[startRow]["Flag"].ToString(), dictionary);
                 }
-                
+
             }
             return NORMData;
         }
@@ -1658,7 +1681,7 @@ namespace HUST_Grph
         {
             Dictionary<string, Dictionary<string, List<string>>> flagDictionary = new Dictionary<string, Dictionary<string, List<string>>>();
             int startRow = 0;
-            for(;startRow < MAPsDt.Rows.Count; startRow++)
+            for (; startRow < MAPsDt.Rows.Count; startRow++)
             {
                 string flag = MAPsDt.Rows[startRow]["Flag"].ToString();
                 Dictionary<string, List<string>> dateDictionary;
@@ -1672,7 +1695,7 @@ namespace HUST_Grph
                 {
                     flagDictionary.TryGetValue(flag, out dateDictionary);
                 }
-                for(int startLine = 1; startLine <= 24; startLine++)
+                for (int startLine = 1; startLine <= 24; startLine++)
                 {
                     data.Add(MAPsDt.Rows[startRow][startLine].ToString());
                 }
@@ -1730,10 +1753,10 @@ namespace HUST_Grph
         public List<LogoItem> LogoItems = new List<LogoItem>();
         public Point previousPos { get; set; }
         public float largeFontSize = 12;
-        public float smallFontSize = 10.5F;
+        public float smallFontSize = 8.5F;
         public System.Drawing.Printing.PageSettings pageSettings { get; set; }
         public Rectangle drawArea { get; set; }
-        public int logoWidth = 300;
+        public int logoWidth = 250;
         public bool drawed = false;
         public int maxRectangleY = 10000;
     }
