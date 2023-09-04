@@ -83,28 +83,28 @@ namespace HUST_Grph
             // 
             this.隐藏显示图例ToolStripMenuItem.Name = "隐藏显示图例ToolStripMenuItem";
             this.隐藏显示图例ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.隐藏显示图例ToolStripMenuItem.Text = "隐藏/显示图例";
+            this.隐藏显示图例ToolStripMenuItem.Text = "隐藏图例";
             this.隐藏显示图例ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示图例ToolStripMenuItem_Click);
             // 
             // 隐藏显示控制板ToolStripMenuItem
             // 
             this.隐藏显示控制板ToolStripMenuItem.Name = "隐藏显示控制板ToolStripMenuItem";
             this.隐藏显示控制板ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.隐藏显示控制板ToolStripMenuItem.Text = "隐藏/显示控制板";
+            this.隐藏显示控制板ToolStripMenuItem.Text = "隐藏控制板";
             this.隐藏显示控制板ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示控制板ToolStripMenuItem_Click);
             // 
             // 隐藏显示数据点ToolStripMenuItem
             // 
             this.隐藏显示数据点ToolStripMenuItem.Name = "隐藏显示数据点ToolStripMenuItem";
             this.隐藏显示数据点ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.隐藏显示数据点ToolStripMenuItem.Text = "隐藏/显示数据点";
+            this.隐藏显示数据点ToolStripMenuItem.Text = "隐藏数据点";
             this.隐藏显示数据点ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示数据点ToolStripMenuItem_Click);
             // 
             // 切换宽高比ToolStripMenuItem
             // 
             this.切换宽高比ToolStripMenuItem.Name = "切换宽高比ToolStripMenuItem";
             this.切换宽高比ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.切换宽高比ToolStripMenuItem.Text = "页面横/纵向显示";
+            this.切换宽高比ToolStripMenuItem.Text = "切换页面纵向显示";
             this.切换宽高比ToolStripMenuItem.Click += new System.EventHandler(this.切换宽高比ToolStripMenuItem_Click);
             // 
             // 按住Ctrl鼠标滚轮缩放ToolStripMenuItem
@@ -115,7 +115,7 @@ namespace HUST_Grph
             // 
             // dlgSavePic
             // 
-            this.dlgSavePic.Filter = "*.bmp|*.bmp|*.png|*.png|*.jpg|*.jpg|*.gif|*.gif";
+            this.dlgSavePic.Filter = "*.jpg|*.jpg|*.bmp|*.bmp|*.png|*.png|*.gif|*.gif";
             // 
             // panel1
             // 

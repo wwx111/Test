@@ -37,11 +37,13 @@ namespace HUST_Grph
         //private Boolean isMouseMove = false;
         private Boolean isLogoOn = true;
         private Boolean isPanelOn = true;
+        private Boolean isHorizontal = true;
         private Boolean isTooltipOn = true;
         private int tooltipDay = -1;
         private int tooltipHour = -1;
         private string tooltipText = "";
         private System.Windows.Forms.Timer tooltipTimer;
+        private System.Windows.Forms.Timer hoverRefreshTimer;
         //private Boolean tooltipHover = false;
 
         //private Boolean isHoverPic = true;
@@ -56,9 +58,9 @@ namespace HUST_Grph
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
             loadData LoadData = new loadData();
 
-            STYLlist = loadData.STYLTableToData(ds.Tables["STYL"]);
-            NORMlist = loadData.NORMTableToData(ds.Tables["NORM"]);
-            MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables["Maps"]);
+            STYLlist = loadData.STYLTableToData(ds.Tables[0]);
+            NORMlist = loadData.NORMTableToData(ds.Tables[1]);
+            MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables[2]);
             MAPDictionary_Line = (from d in MAPDictionary_Line orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
             MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables[2]);
             title = STYLlist[2]["5"];
@@ -67,6 +69,10 @@ namespace HUST_Grph
             tooltipTimer = new System.Windows.Forms.Timer();
             tooltipTimer.Interval = 500; // 设置定时器的间隔为0.5秒
             tooltipTimer.Tick += TooltipTimer_Tick;
+
+            hoverRefreshTimer = new System.Windows.Forms.Timer();
+            hoverRefreshTimer.Interval = 30000; // 设置定时器的间隔为30秒
+            hoverRefreshTimer.Tick += hoverRefreshTimer_Tick;
 
             Dictionary<String, String> hatchDictionary = STYLlist[1];
 
@@ -803,14 +809,16 @@ namespace HUST_Grph
                                 }
                                 else
                                 {
-                                    //数据点变化，重置计时器
+
                                     toolTip2.Active = false;
 
                                     tooltipDay = day;
                                     tooltipHour = hour;
 
+                                    //数据点变化，重置显示计时器，关闭刷新计时器
                                     tooltipTimer.Stop();
                                     tooltipTimer.Start();
+                                    hoverRefreshTimer.Stop();
 
                                 }
 
@@ -823,8 +831,10 @@ namespace HUST_Grph
         }
         private void TooltipTimer_Tick(object sender, EventArgs e)
         {
-            //并不停止计时器，以避免ToolTip悬停消失
             tooltipTimer.Stop();
+            //计时10秒后刷新，避免ToolTip关闭
+            hoverRefreshTimer.Start();
+
             string[] dates = getDateString(currentDay, currentMonth, currentDay, currentSpan);
             int day = dateToDay(currentYear, currentMonth, currentDay) + tooltipDay;
             int hour = tooltipHour;
@@ -947,15 +957,22 @@ namespace HUST_Grph
                 text += pair.Key;
                 text += ":";
                 text += pair.Value;
-                text += "MW   \n";
+                text += "   \n";
             }
 
             this.tooltipText = text;
             this.toolTip2.ToolTipTitle = "   " + dates[tooltipDay] + "  " + (hour + 1) + "小时";
-            this.toolTip2.SetToolTip(this.myFunPictureBox, tooltipText);
+            this.toolTip2.SetToolTip(this.myFunPictureBox, this.tooltipText);
             this.toolTip2.Active = true;
 
-        }     
+        }
+
+        private void hoverRefreshTimer_Tick(object sender, EventArgs e)
+        {
+            //并不关闭，反复刷新
+            //hoverRefreshTimer.Stop();
+            this.toolTip2.SetToolTip(this.myFunPictureBox, this.tooltipText);
+        }
 
         private string WrapLogoString(string originalStr)
         {
@@ -971,26 +988,26 @@ namespace HUST_Grph
             }
             return result;
         }
-        private void SortLogo(MyPictureBox picture)
-        {
-            for (int i = 0; i < picture.LogoItems.Count; i++)
-            {
-                int minPriority = 10000;
-                int index = -1;
-                for (int j = i; j < picture.LogoItems.Count; j++)
-                    if (picture.LogoItems[j].priority < minPriority)
-                    {
-                        minPriority = picture.LogoItems[j].priority;
-                        index = j;
-                    }
-                LogoItem item = new LogoItem();
-                item.brush = picture.LogoItems[index].brush;
-                item.description = picture.LogoItems[index].description;
-                item.priority = picture.LogoItems[index].priority;
-                picture.LogoItems.RemoveAt(index);
-                picture.LogoItems.Insert(i, item); ;
-            }
-        }
+        //private void SortLogo(MyPictureBox picture)
+        //{
+        //    for (int i = 0; i < picture.LogoItems.Count; i++)
+        //    {
+        //        int minPriority = 10000;
+        //        int index = -1;
+        //        for (int j = i; j < picture.LogoItems.Count; j++)
+        //            if (picture.LogoItems[j].priority < minPriority)
+        //            {
+        //                minPriority = picture.LogoItems[j].priority;
+        //                index = j;
+        //            }
+        //        LogoItem item = new LogoItem();
+        //        item.brush = picture.LogoItems[index].brush;
+        //        item.description = picture.LogoItems[index].description;
+        //        item.priority = picture.LogoItems[index].priority;
+        //        picture.LogoItems.RemoveAt(index);
+        //        picture.LogoItems.Insert(i, item); ;
+        //    }
+        //}
         private void DrawLogo(MyPictureBox picture, Graphics g)
         {
             LogoItem newItem = new LogoItem();
@@ -1403,7 +1420,7 @@ namespace HUST_Grph
 
             String picPath = "";
             if (filename == "")
-                picPath = Application.StartupPath + "\\ListView.bmp";
+                picPath = Application.StartupPath + "\\ListView.jpg";
 
             memImage.Save(filename);
 
@@ -1414,12 +1431,14 @@ namespace HUST_Grph
         private void 隐藏显示图例ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             isLogoOn = !isLogoOn;
+            隐藏显示图例ToolStripMenuItem.Text = isLogoOn ? "隐藏图例" : "显示图例";
             this.myFunPictureBox.Invalidate();
         }
 
         private void 隐藏显示控制板ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             isPanelOn = !isPanelOn;
+            隐藏显示控制板ToolStripMenuItem.Text = isPanelOn ? "隐藏控制板" : "显示控制板";
             this.panel1.Visible = isPanelOn;
         }
 
@@ -1438,12 +1457,15 @@ namespace HUST_Grph
             int heightDraw = myFunPictureBox.Height - (int)((pageSettings.Margins.Top + pageSettings.Margins.Bottom) / 254.0 * 96);
             myFunPictureBox.drawArea = new Rectangle(xDraw, yDraw, widthDraw, heightDraw);
 
+            isHorizontal = !isHorizontal;
+            切换宽高比ToolStripMenuItem.Text = isHorizontal ? "切换页面纵向显示" : "切换页面横向显示";
             this.myFunPictureBox.Invalidate();
         }
 
         private void 隐藏显示数据点ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             isTooltipOn = !isTooltipOn;
+            隐藏显示数据点ToolStripMenuItem.Text = isTooltipOn ? "隐藏数据点" : "显示数据点";
             this.toolTip2.Active = isTooltipOn;
             this.tooltipTimer.Stop();
         }
