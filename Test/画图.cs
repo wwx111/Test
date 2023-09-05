@@ -757,23 +757,35 @@ namespace HUST_Grph
 
         private void pictureBox_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
+            MyPictureBox picture = sender as MyPictureBox;
             // 处理图例拖动
             if (this.isLogoOn && e.Button == MouseButtons.Left)
             {
-                MyPictureBox picture = sender as MyPictureBox;
-                Point mousePoint = new Point(e.X, e.Y);
+                int width = picture.Bounds.Width - 100;
+                int height = picture.Bounds.Height - 100;
+                int PX = e.X < 0 ? 0 : e.X;
+                PX = PX > width  ? width : PX;
+                int PY = e.Y < 0 ? 0 : e.Y;
+                PY = PY > height ? height : PY;
+
+                Point mousePoint = new Point(PX, PY);
                 if (isDragPic == true) //2013-9-22 刘水兵：当鼠标拖离图例的时候，应该也是要进行移动的.所以 用一个变量指示 是否正在拖动
-                {//if(picture.logoPos.Countains(mousePoint))
-                    Point topleft = new Point(picture.logoPos.Left, picture.logoPos.Top);
+                {
+                    Point preZero = new Point(picture.logoPos.Left, picture.logoPos.Top);
                     picture.logoPos = new Rectangle(
-                        picture.logoPos.Left + e.X - picture.previousPos.X,
-                        picture.logoPos.Top + e.Y - picture.previousPos.Y,
+                        picture.logoPos.Left + PX - picture.previousPos.X,
+                        picture.logoPos.Top + PY - picture.previousPos.Y,
                         picture.logoPos.Width,
                         picture.logoPos.Height);
+                    Point newZero = new Point(picture.logoPos.Left, picture.logoPos.Top);
+
+                    int redrawX = newZero.X > preZero.X ? preZero.X : newZero.X;
+                    int redrawY = newZero.Y > preZero.Y ? preZero.Y : newZero.Y;
+
+                    picture.Invalidate(new Rectangle(redrawX, redrawY, picture.Width, picture.Height));
                     picture.previousPos = mousePoint;
-                    picture.Invalidate(new Rectangle(topleft.X, topleft.Y,
-                        picture.Width + e.X - picture.previousPos.X, picture.logoPos.Height + e.Y - picture.previousPos.Y));
                 }
+                return;
             }
             // 处理数据点显示
             else if (this.isTooltipOn)
@@ -1479,14 +1491,14 @@ namespace HUST_Grph
             myFunPictureBox.drawArea = new Rectangle(xDraw, yDraw, widthDraw, heightDraw);
 
             isHorizontal = !isHorizontal;
-            切换宽高比ToolStripMenuItem.Text = isHorizontal ? "切换页面纵向显示" : "切换页面横向显示";
+            切换宽高比ToolStripMenuItem.Text = isHorizontal ? "纵向显示" : "横向显示";
             this.myFunPictureBox.Invalidate();
         }
 
         private void 隐藏显示数据点ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             isTooltipOn = !isTooltipOn;
-            隐藏显示数据点ToolStripMenuItem.Text = isTooltipOn ? "隐藏数据点" : "显示数据点";
+            隐藏显示数据点ToolStripMenuItem.Text = isTooltipOn ? "隐藏数值" : "显示数值";
             this.toolTip2.Active = isTooltipOn;
             this.tooltipTimer.Stop();
         }

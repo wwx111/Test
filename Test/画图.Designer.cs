@@ -54,6 +54,8 @@ namespace HUST_Grph
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl1 = new DevComponents.DotNetBar.TabControl();
             this.toolTip2 = new System.Windows.Forms.ToolTip(this.components);
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.contextMenuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tabControl1)).BeginInit();
@@ -64,13 +66,15 @@ namespace HUST_Grph
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SavePicMenuItem,
+            this.toolStripSeparator1,
             this.隐藏显示图例ToolStripMenuItem,
             this.隐藏显示控制板ToolStripMenuItem,
             this.隐藏显示数据点ToolStripMenuItem,
             this.切换宽高比ToolStripMenuItem,
+            this.toolStripSeparator2,
             this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(269, 184);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(269, 229);
             // 
             // SavePicMenuItem
             // 
@@ -97,14 +101,14 @@ namespace HUST_Grph
             // 
             this.隐藏显示数据点ToolStripMenuItem.Name = "隐藏显示数据点ToolStripMenuItem";
             this.隐藏显示数据点ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.隐藏显示数据点ToolStripMenuItem.Text = "隐藏数据点";
+            this.隐藏显示数据点ToolStripMenuItem.Text = "隐藏数值";
             this.隐藏显示数据点ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示数据点ToolStripMenuItem_Click);
             // 
             // 切换宽高比ToolStripMenuItem
             // 
             this.切换宽高比ToolStripMenuItem.Name = "切换宽高比ToolStripMenuItem";
             this.切换宽高比ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.切换宽高比ToolStripMenuItem.Text = "切换页面纵向显示";
+            this.切换宽高比ToolStripMenuItem.Text = "纵向显示";
             this.切换宽高比ToolStripMenuItem.Click += new System.EventHandler(this.切换宽高比ToolStripMenuItem_Click);
             // 
             // 按住Ctrl鼠标滚轮缩放ToolStripMenuItem
@@ -270,6 +274,16 @@ namespace HUST_Grph
             this.toolTip2.ShowAlways = true;
             this.toolTip2.ToolTipTitle = "what";
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(265, 6);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(265, 6);
+            // 
             // 画图
             // 
             this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
@@ -309,6 +323,8 @@ namespace HUST_Grph
         private System.Windows.Forms.ToolStripMenuItem 按住Ctrl鼠标滚轮缩放ToolStripMenuItem;
         private System.Windows.Forms.ToolTip toolTip2;
         private System.Windows.Forms.ToolStripMenuItem 隐藏显示数据点ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         //private DevComponents.DotNetBar.TabControlPanel tabControlPanel1;
         //private DevComponents.DotNetBar.TabItem tabItem1;
     }
