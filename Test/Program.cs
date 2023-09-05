@@ -22,7 +22,7 @@ namespace HUST_Grph
         [STAThread]
         static void Main()
         {
-            int year = 2020;
+            //int year = 2020;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             string path = "D:\\GTDS_0001\\GTDS_Exam_2030_2_S0002.xlsx";
@@ -41,7 +41,7 @@ namespace HUST_Grph
 
 
             画图 ht = new 画图(ds);
-            ht.newTab(year);
+            ht.newTab();
             Application.Run(ht);
 
             /*loadData LoadData = new loadData();
