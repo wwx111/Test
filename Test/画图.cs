@@ -1109,7 +1109,7 @@ namespace HUST_Grph
 
             SolidBrush drawBrush = new SolidBrush(Color.Black);
             Pen framePen = new Pen(Color.Black, 1.0f);
-            string originalColor = STYLlist[0]["12"];
+            string originalColor = STYLlist[0][NORMlist[0]["9950"]["ARGB"]]; ;
             string[] orginalARGBS = originalColor.Split(' ');
             //string = STYLlist[0][];
             Pen dashPen = new Pen(Color.FromArgb(int.Parse(orginalARGBS[0]), int.Parse(orginalARGBS[1]), int.Parse(orginalARGBS[2]), int.Parse(orginalARGBS[3])), 1.0f);
