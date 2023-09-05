@@ -83,7 +83,7 @@ namespace HUST_Grph
                 string value = pair.Value;
                 if (value == "无填充")
                 {
-                    break;
+                    continue;
                 }
                 hatchStyle = (HatchStyle)Enum.Parse(typeof(HatchStyle), value);
                 hatchStyles.Add(key, hatchStyle);
@@ -470,16 +470,17 @@ namespace HUST_Grph
                     Dictionary<string, string> NORMinfo = NORMdic[key];
                     string hatchID = NORMinfo["Hatch"];
                     string color = NORMinfo["ARGB"];
-                    Dictionary<string, string> STYLinfo = STYLlist[0];
-                    color = STYLinfo[color];
-                    string[] ARGBS = color.Split(' ');
+                    //Dictionary<string, string> STYLinfo = STYLlist[0];
+                    //string color2 = STYLinfo[color];
+                    //string[] ARGBS = color2.Split(' ');
                     if (key.Equals("9950"))
                     {
                         Array.Copy(points, originalLoadPoints, originalLoadPoints.Length); 
                     }
                     else
                     {
-                        HatchBrush hBrush = new HatchBrush(hatchStyles[hatchID], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
+                        //HatchBrush htBrush = new HatchBrush(hatchStyles[hatchID], Color.Black, Color.FromArgb(int.Parse(ARGBS[0]), int.Parse(ARGBS[1]), int.Parse(ARGBS[2]), int.Parse(ARGBS[3])));
+                        Brush hBrush = infoToBrush(color, hatchID);
                         // 画图
                         g.FillPolygon(hBrush, points);
                         g.DrawPolygon(Pens.Black, points);
@@ -487,10 +488,10 @@ namespace HUST_Grph
                     }
                 }
             }
-            string originalColor = STYLlist[0]["12"];
+            string originalColor = STYLlist[0][NORMlist[0]["9950"]["ARGB"]];
             string[] orginalARGBS = originalColor.Split(' ');
             //string = STYLlist[0][];
-            Pen dashPen = new Pen(Color.FromArgb(int.Parse(orginalARGBS[0]), int.Parse(orginalARGBS[1]), int.Parse(orginalARGBS[2]), int.Parse(orginalARGBS[3])), 2.0f);
+            Pen dashPen = new Pen(Color.FromArgb(int.Parse(orginalARGBS[0]), int.Parse(orginalARGBS[1]), int.Parse(orginalARGBS[2]), int.Parse(orginalARGBS[3])), 1.0f);
             dashPen.DashStyle = DashStyle.Dash;
             //Pen blackPen = new Pen(Color.Black, (float)1.5);
             //blackPen.DashPattern = new float[] { 2, 1 };
@@ -1111,7 +1112,7 @@ namespace HUST_Grph
             string originalColor = STYLlist[0]["12"];
             string[] orginalARGBS = originalColor.Split(' ');
             //string = STYLlist[0][];
-            Pen dashPen = new Pen(Color.FromArgb(int.Parse(orginalARGBS[0]), int.Parse(orginalARGBS[1]), int.Parse(orginalARGBS[2]), int.Parse(orginalARGBS[3])), 2.0f);
+            Pen dashPen = new Pen(Color.FromArgb(int.Parse(orginalARGBS[0]), int.Parse(orginalARGBS[1]), int.Parse(orginalARGBS[2]), int.Parse(orginalARGBS[3])), 1.0f);
             dashPen.DashStyle = DashStyle.Dash;
             //Pen dashPen = new Pen(Color.Black, 1.0f);
             //dashPen.DashStyle = DashStyle.Dash;

@@ -27,6 +27,7 @@ namespace HUST_Grph
             Application.SetCompatibleTextRenderingDefault(false);
             string path = "D:\\GTDS_0001\\GTDS_Exam_2030_2_S0002.xlsx";
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
+            //string path = "C:\\Users\\11852\\Desktop\\GTDS_Exam_2030_2_S0000.xlsx";
             DataSet ds = new DataSet();
             DataTable STYLdata = loadData.ExcelToDatatable(path, "STYL");
             DataTable NORMdata = loadData.ExcelToDatatable(path, "NORM");
