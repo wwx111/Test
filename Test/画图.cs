@@ -58,9 +58,9 @@ namespace HUST_Grph
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
             loadData LoadData = new loadData();
             
-            STYLlist = loadData.STYLTableToData(ds.Tables[0]);
-            NORMlist = loadData.NORMTableToData(ds.Tables[1]);
-            MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables[2]);
+            STYLlist = loadData.STYLTableToData(ds.Tables["STYL"]);
+            NORMlist = loadData.NORMTableToData(ds.Tables["NORM"]);
+            MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables["Maps"]);
             MAPDictionary_Line = (from d in MAPDictionary_Line orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
             MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables[2]);
             title = STYLlist[2]["5"];
@@ -111,7 +111,7 @@ namespace HUST_Grph
 
         }
 
-        public void newTab(int startYear)
+        public void newTab()
         {
             TabItem tp = this.tabControl1.CreateTab("图1");
 
