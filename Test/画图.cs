@@ -760,33 +760,41 @@ namespace HUST_Grph
         {
             MyPictureBox picture = sender as MyPictureBox;
             // 处理图例拖动
-            if (this.isLogoOn && e.Button == MouseButtons.Left)
+            if (this.isLogoOn && isDragPic == true)
             {
+                //关闭ToolTip计时器
+                tooltipTimer.Stop();
+                toolTip2.Active = false;
+
                 int width = picture.Bounds.Width - 100;
                 int height = picture.Bounds.Height - 100;
                 int PX = e.X < 0 ? 0 : e.X;
-                PX = PX > width  ? width : PX;
+                PX = PX > width ? width : PX;
                 int PY = e.Y < 0 ? 0 : e.Y;
                 PY = PY > height ? height : PY;
 
                 Point mousePoint = new Point(PX, PY);
-                if (isDragPic == true) //2013-9-22 刘水兵：当鼠标拖离图例的时候，应该也是要进行移动的.所以 用一个变量指示 是否正在拖动
-                {
-                    Point preZero = new Point(picture.logoPos.Left, picture.logoPos.Top);
-                    picture.logoPos = new Rectangle(
-                        picture.logoPos.Left + PX - picture.previousPos.X,
-                        picture.logoPos.Top + PY - picture.previousPos.Y,
-                        picture.logoPos.Width,
-                        picture.logoPos.Height);
-                    Point newZero = new Point(picture.logoPos.Left, picture.logoPos.Top);
 
-                    int redrawX = newZero.X > preZero.X ? preZero.X : newZero.X;
-                    int redrawY = newZero.Y > preZero.Y ? preZero.Y : newZero.Y;
+                Point preZero = new Point(picture.logoPos.Left, picture.logoPos.Top);
+                picture.logoPos = new Rectangle(
+                    picture.logoPos.Left + PX - picture.previousPos.X,
+                    picture.logoPos.Top + PY - picture.previousPos.Y,
+                    picture.logoPos.Width,
+                    picture.logoPos.Height);
+                Point newZero = new Point(picture.logoPos.Left, picture.logoPos.Top);
 
-                    picture.Invalidate(new Rectangle(redrawX, redrawY, picture.Width, picture.Height));
-                    picture.previousPos = mousePoint;
-                }
+                int redrawX = newZero.X > preZero.X ? preZero.X : newZero.X;
+                int redrawY = newZero.Y > preZero.Y ? preZero.Y : newZero.Y;
+
+                picture.Invalidate(new Rectangle(redrawX, redrawY, picture.Width, picture.Height));
+                picture.previousPos = mousePoint;
+
                 return;
+            }
+            // 鼠标悬停于图例内不按下
+            else if (picture.logoPos.Contains(new Point(e.X, e.Y)))
+            {
+                tooltipTimer.Stop();
             }
             // 处理数据点显示
             else if (this.isTooltipOn)
