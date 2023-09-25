@@ -52,6 +52,7 @@ namespace HUST_Grph
         //private Boolean picLandScape = true;
         private Point panelPrePosition;
         private Point start;
+        private int[] baseLoad = new int[366];
 
         private Boolean isDirectSave = false;
 
@@ -67,13 +68,21 @@ namespace HUST_Grph
         {
             InitializeComponent();
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
+
             loadData LoadData = new loadData();
             
             STYLlist = loadData.STYLTableToData(ds.Tables["STYL"]);
-            NORMlist = loadData.NORMTableToData(ds.Tables["NORM"]);
+            NORMlist = loadData.NORMTableToData(ds.Tables["NORM"], baseLoad);
             MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables["Maps"]);
             MAPDictionary_Line = (from d in MAPDictionary_Line orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
-            MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables[2]);
+            MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables["Maps"]);
+            //DataColumn[] datacolumn = {
+            //    ds.Tables["NORM"].Columns["基荷A"],
+            //    ds.Tables["NORM"].Columns["基荷B"],
+            //};
+            int[] baseline = new int[366];
+
+
             title = STYLlist[2]["5"];
             dlgSavePic.FileName = title;
 
@@ -477,6 +486,7 @@ namespace HUST_Grph
             g.DrawLine(pen, arrow[1], end);
 
             // 绘制Y轴
+            //y轴的顶点（最上方点）是end2
             Point end2 = new Point(leftBorderWidth, topBorderWidth);
             g.DrawLine(pen, start, end2);
             arrow[0] = new Point(end2.X - 3, end2.Y + 5);
@@ -495,6 +505,7 @@ namespace HUST_Grph
             // 获取数据和颜色、样式来绘图
             // 原始负荷需要额外处理，最后绘制
             Point[] originalLoadPoints = new Point[24 * days * 2];
+            Point[] baseLoadPoints = new Point[24 * days * 2];
 
             foreach (string key in this.MAPDictionary_Line.Keys)
             {
@@ -529,10 +540,10 @@ namespace HUST_Grph
                     // data-数据 end-绘图的左上角坐标 width-绘图的宽度 height-绘图的高度 maxVal-一年的最大值，用于固定Y轴
                     //Console.WriteLine(days + ":" + (wholeWidth - leftBorderWidth - rightBorderWidth - 5));
 
-                    int height = wholeHeight - topBorderWidth - bottomBorderWidth - 5;
+                    int height = start.Y - end2.Y - 5;
 
 
-                    Point[] points = dataToPoint(data, end2, coordinateList, height, maxVal);
+                    Point[] points = dataToPoint(data, start, coordinateList, height, maxVal);
                     // 笔刷中颜色、填充样式应该解析文件得到
                     Dictionary<string, Dictionary<string, string>> NORMdic = NORMlist[0];
                     Dictionary<string, string> NORMinfo = NORMdic[key];
@@ -556,16 +567,31 @@ namespace HUST_Grph
                     }
                 }
             }
+            startDays = dateToDay(year, startMonth, startDay);
+            int[] baseLoaddata = new int[24 * days];
+            for(int i = 0; i < days; i++)
+            {
+                for(int j = 0; j < 24; j++) {
+                    int pointIndex = i * 24 + j;
+                    baseLoaddata[pointIndex] = baseLoad[i + startDays];
+                }
+            }
+            int _height = start.Y - end2.Y - 5; ;
+            Array.Copy(dataToPoint(baseLoaddata, start, coordinateList, _height, maxVal), baseLoadPoints, baseLoadPoints.Length);
+            //baseLoadPoints = dataToPoint(baseLoaddata, end2, coordinateList, _height, maxVal);
             string originalColor = STYLlist[0][NORMlist[0]["9950"]["ARGB"]];
             string[] orginalARGBS = originalColor.Split(' ');
             //string = STYLlist[0][];
             Pen dashPen = new Pen(Color.FromArgb(int.Parse(orginalARGBS[0]), int.Parse(orginalARGBS[1]), int.Parse(orginalARGBS[2]), int.Parse(orginalARGBS[3])), 1.0f);
+            Pen LinePen = new Pen(Color.FromArgb(int.Parse(orginalARGBS[0]), int.Parse(orginalARGBS[1]), int.Parse(orginalARGBS[2]), int.Parse(orginalARGBS[3])), 1.0f);
             dashPen.DashStyle = DashStyle.Dash;
             //Pen blackPen = new Pen(Color.Black, (float)1.5);
             //blackPen.DashPattern = new float[] { 2, 1 };
             g.DrawLines(dashPen, originalLoadPoints);
+            g.DrawLines(LinePen, baseLoadPoints);
 
             dashPen.Dispose();
+            LinePen.Dispose();
 
 
             Point top;
@@ -575,7 +601,6 @@ namespace HUST_Grph
 
             // 绘制完图片部分，再去画坐标轴的间隔
             // 根据天数为1天还是多天，决定X轴分为24小时还是若干天
-            int interval;
             if (days > 1)
             {
                 //interval = (wholeWidth - leftBorderWidth - rightBorderWidth - 5) / (days*24) * 24;
@@ -663,7 +688,8 @@ namespace HUST_Grph
             }
 
             // 绘制Y轴的间隔
-            interval = (start.Y - end2.Y - 5) / 10;
+            double intervalY = ((double)start.Y - end2.Y - 5) / 10;
+            //wholeHeight - topBorderWidth - bottomBorderWidth - 5
 
             //从数据表中读取量纲
             float dimension = float.Parse(STYLinfo1["11"]);
@@ -673,10 +699,10 @@ namespace HUST_Grph
             {
                 StringFormat format = new StringFormat();
                 format.Alignment = StringAlignment.Far; //靠右对齐
-                Rectangle space = new Rectangle(start.X - 70, (start.Y - interval * (i + 1)), 70, 20);
-                Point leftPoint = new Point(start.X, start.Y - interval * (i + 1));
-                Point rightPoint = new Point(start.X + 5, start.Y - interval * (i + 1));
-                top = new Point(end.X - 10, start.Y - interval * (i + 1));
+                Rectangle space = new Rectangle(start.X - 70, (start.Y - (int)(intervalY * (i + 1))), 70, 20);
+                Point leftPoint = new Point(start.X, start.Y - (int)(intervalY * (i + 1)));
+                Point rightPoint = new Point(start.X + 5, start.Y - (int)(intervalY * (i + 1)));
+                top = new Point(end.X - 10, start.Y - (int)(intervalY * (i + 1)));
                 g.DrawLine(Pens.Black, leftPoint, rightPoint);
                 g.DrawLine(dotted, leftPoint, top);
                 Font font = new Font("黑体", fontSize - 1);
@@ -705,6 +731,7 @@ namespace HUST_Grph
             int days = data.Length / 24;
 
             int X = start.X;
+            int Y = start.Y;
             double oneHeight = (float)height / maxVal;//每1单位对应的纵坐标长度
             int pointIndex = 0;
             for (int i = 0; i < days; i++)
@@ -712,16 +739,16 @@ namespace HUST_Grph
                 for (int j = 0; j < 24; j++)//按照每天24小时进行作图
                 {
                     int hours = i * 24 + j;//当前坐标点所表示的总小时位置
-                    points[pointIndex] = new Point(X + coordinateList[hours], (int)(start.Y + height - data[hours] * oneHeight));
+                    points[pointIndex] = new Point(X + coordinateList[hours], (int)(Y - data[hours] * (double)height / maxVal));
                     pointIndex++;
-                    points[pointIndex] = new Point(X + coordinateList[hours + 1], (int)(start.Y + height - data[hours] * oneHeight));
+                    points[pointIndex] = new Point(X + coordinateList[hours + 1], (int)(Y - data[hours] * (double)height / maxVal ));
                     pointIndex++;
                 }
 
             }
 
-            points[points.Length - 2] = new Point(points[points.Length - 3].X, start.Y + height);
-            points[points.Length - 1] = new Point(points[0].X, start.Y + height);
+            points[points.Length - 2] = new Point(points[points.Length - 3].X, Y );
+            points[points.Length - 1] = new Point(points[0].X, Y);
             return points;
         }
 
@@ -994,6 +1021,11 @@ namespace HUST_Grph
             Dictionary<String, int> total = new Dictionary<string, int>();
             Dictionary<String, List<String>> data;
 
+            if (!MAPDictionary_Day.ContainsKey(day.ToString()))
+            {
+
+                return;
+            }
             data = MAPDictionary_Day[day.ToString()];
             data = (from d in data orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
 
@@ -1016,10 +1048,10 @@ namespace HUST_Grph
                                 name = "核电出力";
                                 break;
                             case 1:
-                                name = "水电出力";
+                                name = "火电出力";
                                 break;
                             case 2:
-                                name = "火电出力";
+                                name = "水电出力";
                                 break;
                             case 3:
                                 name = "储能出力";
@@ -1115,6 +1147,7 @@ namespace HUST_Grph
                 text += pair.Value;
                 text += "   \n";
             }
+            text += " （上述电源出力不含被\n    储能负荷覆盖的部分）";
 
             this.tooltipText = text;
             this.toolTip2.ToolTipTitle = "   " + dates[tooltipDay] + "  " + (hour + 1) + "时/MW";
@@ -1359,20 +1392,23 @@ namespace HUST_Grph
 
         private void DayRight_Click(object sender, EventArgs e)
         {
-            Boolean flag = true;
-            Int32 maxDay = getMaxDay(currentYear, currentMonth);
-            if (currentDay < maxDay)
-                currentDay++;
-            else if (currentMonth < 12)
+            if (dateToDay(currentYear, currentMonth, currentDay) + currentSpan < getMaxDay(currentYear, 2) + 337)
             {
-                currentDay = 1;
-                currentMonth++;
-            }
-            else
-                flag = false;
+                Boolean flag = true;
+                Int32 maxDay = getMaxDay(currentYear, currentMonth);
+                if (currentDay < maxDay)
+                    currentDay++;
+                else if (currentMonth < 12)
+                {
+                    currentDay = 1;
+                    currentMonth++;
+                }
+                else
+                    flag = false;
 
-            if (flag)
-                this.myFunPictureBox.Invalidate();
+                if (flag)
+                    this.myFunPictureBox.Invalidate();
+            }
         }
 
         private void MonthLeft_Click(object sender, EventArgs e)
@@ -1389,23 +1425,41 @@ namespace HUST_Grph
 
         private void MonthRight_Click(object sender, EventArgs e)
         {
-            Boolean flag = true;
-            if (currentMonth < 12)
+            Boolean flag = false;
+            if (dateToDay(currentYear, currentMonth + 1, currentDay) + currentSpan < getMaxDay(currentYear, 2) + 337)
+            {
+                flag = true;
                 currentMonth++;
+                //if (currentMonth < 12)
+                //    currentMonth++;
+                //else
+                //    flag = false;
+            }
             else
-                flag = false;
-
+            {
+                currentMonth = 12;
+                currentDay = 31 - currentSpan + 1;
+                flag = true;
+  
+            }
             if (flag)
                 this.myFunPictureBox.Invalidate();
+
         }
 
         private void AddDay_Click(object sender, EventArgs e)
         {
-            Boolean flag = true;
-            currentSpan++;
+            
+            if (dateToDay(currentYear, currentMonth, currentDay) + currentSpan< getMaxDay(currentYear , 2) + 337)
+            {
+                Boolean flag = true;
 
-            if (flag)
-                this.myFunPictureBox.Invalidate();
+                currentSpan++;
+
+                if (flag)
+                    this.myFunPictureBox.Invalidate();
+            }
+            
         }
 
         private void RemoveDay_Click(object sender, EventArgs e)
@@ -1743,7 +1797,7 @@ namespace HUST_Grph
                     }
                     else if (sheetName.Equals("NORM"))
                     {
-                        cellCount = 6;
+                        cellCount = 9;
                     }
                     else if (sheetName.Equals("MAPs"))
                     {
@@ -1838,7 +1892,7 @@ namespace HUST_Grph
             return STYLData;
         }
 
-        public static List<Dictionary<string, Dictionary<string, string>>> NORMTableToData(DataTable NORMDt)
+        public static List<Dictionary<string, Dictionary<string, string>>> NORMTableToData(DataTable NORMDt, int[] baseLoad)
         {
             List<Dictionary<string, Dictionary<string, string>>> NORMData = new List<Dictionary<string, Dictionary<string, string>>>();
             Dictionary<string, Dictionary<string, string>> drawParameter = new Dictionary<string, Dictionary<string, string>>();
@@ -1885,6 +1939,17 @@ namespace HUST_Grph
                     drawParameter.Add(NORMDt.Rows[startRow]["Flag"].ToString(), dictionary);
                 }
 
+            }
+            for (int i = 0; i < 366; i++)
+            {
+                if (i < 183)
+                {
+                    baseLoad[i] = int.Parse(NORMDt.Rows[i]["基荷A"].ToString());
+                }
+                else
+                {
+                    baseLoad[i] = int.Parse(NORMDt.Rows[i - 183]["基荷B"].ToString());
+                }
             }
             return NORMData;
         }

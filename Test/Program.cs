@@ -26,6 +26,7 @@ namespace HUST_Grph
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             string path = "D:\\picture_data23.09.06\\GTDS_Exam_2030_2_S0004.xlsx";
+            //string path = "D:\\GTDS_0001\\GTDS_Exam_2030_2_S0000_new.xlsx";
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
             //string path = "C:\\Users\\11852\\Desktop\\GTDS_Exam_2030_2_S0000.xlsx";
             DataSet ds = new DataSet();
@@ -43,6 +44,8 @@ namespace HUST_Grph
 
             画图 ht = new 画图(ds);
             ht.newTab();
+
+            ht.Show();
             Application.Run(ht);
 
             //Boolean tf0 = false;
