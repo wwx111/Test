@@ -25,7 +25,7 @@ namespace HUST_Grph
             //int year = 2020;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            string path = "D:\\GTDS_0001\\GTDS_Exam_2030_2_S0002.xlsx";
+            string path = "D:\\picture_data23.09.06\\GTDS_Exam_2030_2_S0004.xlsx";
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
             //string path = "C:\\Users\\11852\\Desktop\\GTDS_Exam_2030_2_S0000.xlsx";
             DataSet ds = new DataSet();
@@ -44,6 +44,12 @@ namespace HUST_Grph
             画图 ht = new 画图(ds);
             ht.newTab();
             Application.Run(ht);
+
+            //Boolean tf0 = false;
+
+            //画图 directDraw;
+            //bool tf = (directDraw = new 画图(ds, tf0)) != null;
+
 
             /*loadData LoadData = new loadData();
             //string path = "C:\\Users\\11852\\Documents\\WeChat Files\\wxid_wk1qwav6tqmv12\\FileStorage\\File\\2023-06\\input_11_2022020000_70_0.xlsx";

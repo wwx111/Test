@@ -24,6 +24,7 @@ namespace HUST_Grph
         private Dictionary<string, Dictionary<string, List<string>>> MAPDictionary_Line;
         private Dictionary<string, Dictionary<string, List<string>>> MAPDictionary_Day;
         private string title;
+        private string defaultPath = @"D:\HUST_Grph\";
         private int[] coordinateList;
         //private DrawHelper drawHelper;
         private Int32 currentDay;
@@ -50,6 +51,8 @@ namespace HUST_Grph
         //private Boolean picLandScape = true;
         private Point panelPrePosition;
         private Point start;
+
+        private Boolean isDirectSave = false;
 
 
         public 画图(DataSet ds)
@@ -91,6 +94,51 @@ namespace HUST_Grph
 
 
         }
+        public 画图(DataSet ds, Boolean tf0)
+        {
+            InitializeComponent();
+            //string path = "D:\\input_11_2022020000_70_0.xlsx";
+            loadData LoadData = new loadData();
+
+            STYLlist = loadData.STYLTableToData(ds.Tables["STYL"]);
+            NORMlist = loadData.NORMTableToData(ds.Tables["NORM"]);
+            MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables["Maps"]);
+            MAPDictionary_Line = (from d in MAPDictionary_Line orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
+            MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables[2]);
+            title = STYLlist[2]["5"];
+            dlgSavePic.FileName = title;
+
+            // 无需显示数据点
+            //tooltipTimer = new System.Windows.Forms.Timer();
+            //tooltipTimer.Interval = 500; // 设置定时器的间隔为0.5秒
+            //tooltipTimer.Tick += TooltipTimer_Tick;
+
+            //hoverRefreshTimer = new System.Windows.Forms.Timer();
+            //hoverRefreshTimer.Interval = 30000; // 设置定时器的间隔为30秒
+            //hoverRefreshTimer.Tick += hoverRefreshTimer_Tick;
+
+            Dictionary<String, String> hatchDictionary = STYLlist[1];
+
+            foreach (var pair in hatchDictionary)
+            {
+                HatchStyle hatchStyle;
+                string key = pair.Key;
+                string value = pair.Value;
+                if (value == "无填充")
+                {
+                    continue;
+                }
+                hatchStyle = (HatchStyle)Enum.Parse(typeof(HatchStyle), value);
+                hatchStyles.Add(key, hatchStyle);
+            }
+
+            // 设置图例显示
+            this.isDirectSave = true;
+            this.isLogoOn = tf0;
+            this.newTab();
+            this.SavePicMenuItem.PerformClick();
+        }
+
 
         private void 画图_Load(object sender, EventArgs e)
         {
@@ -1415,19 +1463,32 @@ namespace HUST_Grph
 
         private void SavePicMenuItem_Click(object sender, EventArgs e)
         {
-            if (dlgSavePic.ShowDialog() == DialogResult.OK)
+
+            if (isDirectSave)
             {
+                MyFunPictureBox picture = this.myFunPictureBox;
+                if (SavePicture(picture, dlgSavePic.FileName) == true)
+                {
+                    MessageBox.Show("保存图片成功！", "提示",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button1,
+                        MessageBoxOptions.DefaultDesktopOnly);
+                }
+            }
+            else if (dlgSavePic.ShowDialog() == DialogResult.OK)
+            {
+
                 ////开启进度条
                 //Thread thdSub = new Thread(new ThreadStart(this.progressB));
                 //thdSub.Start();
                 //Thread.Sleep(100);
-
                 MyFunPictureBox picture = ((sender as ToolStripMenuItem).Owner as ContextMenuStrip).SourceControl as MyFunPictureBox;
-                SavePicture(picture, dlgSavePic.FileName);
 
                 ////关闭进度条
                 //this.myprogress.isOver = true;
 
+                SavePicture(picture, dlgSavePic.FileName);
                 MessageBox.Show("保存图片成功！", "提示",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information,
@@ -1437,7 +1498,7 @@ namespace HUST_Grph
             }
         }
 
-        private void SavePicture(MyFunPictureBox picture, string filename)
+        private Boolean SavePicture(MyFunPictureBox picture, string filename)
         {
 
             MyFunPictureBox picBox = tabControl1.SelectedPanel.Controls[0] as MyFunPictureBox;
@@ -1460,14 +1521,41 @@ namespace HUST_Grph
                 DrawLogo(picture, g);
             }
 
-            String picPath = "";
-            if (filename == "")
-                picPath = Application.StartupPath + "\\ListView.jpg";
+            filename = filename == "" ? @"ListView.jpg" : filename;
+            String picPath = this.defaultPath + filename + @".jpg";
 
-            memImage.Save(filename);
+            DialogResult result = DialogResult.Cancel;
 
-            g.Dispose();
-            memImage.Dispose();
+            if (File.Exists(picPath))
+            {
+                result = MessageBox.Show("已有同名文件，是否覆盖？", "保存图片", MessageBoxButtons.OKCancel);
+            }
+
+            if (result == DialogResult.Cancel)
+            {
+                return false;
+            }
+            else if (result == DialogResult.OK)
+            {
+                try
+                {
+                    if (!Directory.Exists(this.defaultPath))
+                    {
+                        Directory.CreateDirectory(this.defaultPath);
+                    }
+                    memImage.Save(picPath);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"保存失败：{ex.Message}");
+                    throw;
+                }
+                g.Dispose();
+                memImage.Dispose();
+
+                return true;
+            }
+            return false;
         }
 
         private void 隐藏显示图例ToolStripMenuItem_Click(object sender, EventArgs e)

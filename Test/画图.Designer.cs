@@ -34,13 +34,6 @@ namespace HUST_Grph
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.SavePicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.隐藏显示图例ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.隐藏显示控制板ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.隐藏显示数据点ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.切换宽高比ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dlgSavePic = new System.Windows.Forms.SaveFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
             this.OutZoom = new System.Windows.Forms.Button();
@@ -54,68 +47,17 @@ namespace HUST_Grph
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl1 = new DevComponents.DotNetBar.TabControl();
             this.toolTip2 = new System.Windows.Forms.ToolTip(this.components);
+            this.SavePicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.contextMenuStrip1.SuspendLayout();
+            this.隐藏显示图例ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.隐藏显示控制板ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.隐藏显示数据点ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.切换宽高比ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tabControl1)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.SavePicMenuItem,
-            this.toolStripSeparator1,
-            this.隐藏显示图例ToolStripMenuItem,
-            this.隐藏显示控制板ToolStripMenuItem,
-            this.隐藏显示数据点ToolStripMenuItem,
-            this.切换宽高比ToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(269, 229);
-            // 
-            // SavePicMenuItem
-            // 
-            this.SavePicMenuItem.Name = "SavePicMenuItem";
-            this.SavePicMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.SavePicMenuItem.Text = "保存图片";
-            this.SavePicMenuItem.Click += new System.EventHandler(this.SavePicMenuItem_Click);
-            // 
-            // 隐藏显示图例ToolStripMenuItem
-            // 
-            this.隐藏显示图例ToolStripMenuItem.Name = "隐藏显示图例ToolStripMenuItem";
-            this.隐藏显示图例ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.隐藏显示图例ToolStripMenuItem.Text = "隐藏图例";
-            this.隐藏显示图例ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示图例ToolStripMenuItem_Click);
-            // 
-            // 隐藏显示控制板ToolStripMenuItem
-            // 
-            this.隐藏显示控制板ToolStripMenuItem.Name = "隐藏显示控制板ToolStripMenuItem";
-            this.隐藏显示控制板ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.隐藏显示控制板ToolStripMenuItem.Text = "隐藏控制板";
-            this.隐藏显示控制板ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示控制板ToolStripMenuItem_Click);
-            // 
-            // 隐藏显示数据点ToolStripMenuItem
-            // 
-            this.隐藏显示数据点ToolStripMenuItem.Name = "隐藏显示数据点ToolStripMenuItem";
-            this.隐藏显示数据点ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.隐藏显示数据点ToolStripMenuItem.Text = "隐藏数值";
-            this.隐藏显示数据点ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示数据点ToolStripMenuItem_Click);
-            // 
-            // 切换宽高比ToolStripMenuItem
-            // 
-            this.切换宽高比ToolStripMenuItem.Name = "切换宽高比ToolStripMenuItem";
-            this.切换宽高比ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.切换宽高比ToolStripMenuItem.Text = "纵向显示";
-            this.切换宽高比ToolStripMenuItem.Click += new System.EventHandler(this.切换宽高比ToolStripMenuItem_Click);
-            // 
-            // 按住Ctrl鼠标滚轮缩放ToolStripMenuItem
-            // 
-            this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem.Name = "按住Ctrl鼠标滚轮缩放ToolStripMenuItem";
-            this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem.Size = new System.Drawing.Size(268, 30);
-            this.按住Ctrl鼠标滚轮缩放ToolStripMenuItem.Text = "按住Ctrl+鼠标滚轮缩放";
             // 
             // dlgSavePic
             // 
@@ -274,15 +216,58 @@ namespace HUST_Grph
             this.toolTip2.ShowAlways = true;
             this.toolTip2.ToolTipTitle = "what";
             // 
+            // SavePicMenuItem
+            // 
+            this.SavePicMenuItem.Name = "SavePicMenuItem";
+            this.SavePicMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.SavePicMenuItem.Text = "保存图片";
+            this.SavePicMenuItem.Click += new System.EventHandler(this.SavePicMenuItem_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(265, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(237, 6);
             // 
-            // toolStripSeparator2
+            // 隐藏显示图例ToolStripMenuItem
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(265, 6);
+            this.隐藏显示图例ToolStripMenuItem.Name = "隐藏显示图例ToolStripMenuItem";
+            this.隐藏显示图例ToolStripMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.隐藏显示图例ToolStripMenuItem.Text = "隐藏图例";
+            this.隐藏显示图例ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示图例ToolStripMenuItem_Click);
+            // 
+            // 隐藏显示控制板ToolStripMenuItem
+            // 
+            this.隐藏显示控制板ToolStripMenuItem.Name = "隐藏显示控制板ToolStripMenuItem";
+            this.隐藏显示控制板ToolStripMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.隐藏显示控制板ToolStripMenuItem.Text = "隐藏控制板";
+            this.隐藏显示控制板ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示控制板ToolStripMenuItem_Click);
+            // 
+            // 隐藏显示数据点ToolStripMenuItem
+            // 
+            this.隐藏显示数据点ToolStripMenuItem.Name = "隐藏显示数据点ToolStripMenuItem";
+            this.隐藏显示数据点ToolStripMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.隐藏显示数据点ToolStripMenuItem.Text = "隐藏数值";
+            this.隐藏显示数据点ToolStripMenuItem.Click += new System.EventHandler(this.隐藏显示数据点ToolStripMenuItem_Click);
+            // 
+            // 切换宽高比ToolStripMenuItem
+            // 
+            this.切换宽高比ToolStripMenuItem.Name = "切换宽高比ToolStripMenuItem";
+            this.切换宽高比ToolStripMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.切换宽高比ToolStripMenuItem.Text = "纵向显示";
+            this.切换宽高比ToolStripMenuItem.Click += new System.EventHandler(this.切换宽高比ToolStripMenuItem_Click);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.SavePicMenuItem,
+            this.toolStripSeparator1,
+            this.隐藏显示图例ToolStripMenuItem,
+            this.隐藏显示控制板ToolStripMenuItem,
+            this.隐藏显示数据点ToolStripMenuItem,
+            this.切换宽高比ToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(241, 193);
             // 
             // 画图
             // 
@@ -296,15 +281,12 @@ namespace HUST_Grph
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.画图_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.画图_Paint);
-            this.contextMenuStrip1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tabControl1)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
-
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem SavePicMenuItem;
         private System.Windows.Forms.SaveFileDialog dlgSavePic;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button OutZoom;
@@ -317,14 +299,14 @@ namespace HUST_Grph
         private DevComponents.DotNetBar.TabControl tabControl1;
         private System.Windows.Forms.Button DayRight;
         private System.Windows.Forms.Button DayLeft;
+        private System.Windows.Forms.ToolTip toolTip2;
+        private System.Windows.Forms.ToolStripMenuItem SavePicMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem 隐藏显示图例ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 隐藏显示控制板ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 切换宽高比ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 按住Ctrl鼠标滚轮缩放ToolStripMenuItem;
-        private System.Windows.Forms.ToolTip toolTip2;
         private System.Windows.Forms.ToolStripMenuItem 隐藏显示数据点ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem 切换宽高比ToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         //private DevComponents.DotNetBar.TabControlPanel tabControlPanel1;
         //private DevComponents.DotNetBar.TabItem tabItem1;
     }
