@@ -331,6 +331,7 @@ namespace HUST_Grph
                 {
                     InZoomPic(picture, panel);
                 }
+                panel.AutoScroll = true;
             }
             else
             {
@@ -339,7 +340,7 @@ namespace HUST_Grph
                 mousePoint.Offset(this.Location.X, this.Location.Y);
                 if (panel.RectangleToScreen(panel.DisplayRectangle).Contains(mousePoint))
                 {
-                    panel.AutoScrollPosition = new Point(0, panel.VerticalScroll.Value - e.Delta);
+                    panel.AutoScrollPosition = new Point(panel.HorizontalScroll.Value, panel.VerticalScroll.Value - e.Delta);
                 }
             }
         }
@@ -1382,7 +1383,7 @@ namespace HUST_Grph
         // 23.6.15 cjy
         private static void InZoomPic(MyPictureBox picture, Panel panel)
         {
-            if (picture.Width * 1.1 <= 1400 && picture.Height * 1.1 <= 2400)
+            if (picture.Width * 1.1 <= 2400 && picture.Height * 1.1 <= 3400)
             {
                 picture.Size = new Size((int)(picture.Width * 1.1), (int)(picture.Height * 1.1));
                 panel.AutoScroll = true;
@@ -1392,12 +1393,11 @@ namespace HUST_Grph
                 picture.logoPos = new Rectangle((int)(picture.logoPos.Left * 1.1)
                     , (int)(picture.logoPos.Top * 1.1)
                     , picture.logoPos.Width
-                    , picture.logoPos.Height); ;
+                    , picture.logoPos.Height);
                 picture.drawArea = new Rectangle((int)(picture.drawArea.Left * 1.1),
                       (int)(picture.drawArea.Top * 1.1),
                       (int)(picture.drawArea.Width * 1.1),
-                      (int)(picture.drawArea.Height * 1.1
-                      ));
+                      (int)(picture.drawArea.Height * 1.1));
                 picture.Invalidate();
             }
         }
@@ -1524,7 +1524,7 @@ namespace HUST_Grph
             filename = filename == "" ? @"ListView.jpg" : filename;
             String picPath = this.defaultPath + filename + @".jpg";
 
-            DialogResult result = DialogResult.Cancel;
+            DialogResult result = DialogResult.OK;
 
             if (File.Exists(picPath))
             {

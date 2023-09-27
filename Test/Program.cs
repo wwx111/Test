@@ -41,14 +41,14 @@ namespace HUST_Grph
             ds.Tables.Add(Mapsdata);
 
 
-            画图 ht = new 画图(ds);
-            ht.newTab();
-            Application.Run(ht);
+            //画图 ht = new 画图(ds);
+            //ht.newTab();
+            //Application.Run(ht);
 
-            //Boolean tf0 = false;
+            Boolean tf0 = false;
 
-            //画图 directDraw;
-            //bool tf = (directDraw = new 画图(ds, tf0)) != null;
+            画图 directDraw;
+            bool tf = (directDraw = new 画图(ds, tf0)) != null;
 
 
             /*loadData LoadData = new loadData();
