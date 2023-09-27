@@ -54,6 +54,8 @@ namespace HUST_Grph
 
         private Boolean isDirectSave = false;
 
+        private Point preLeftTop;
+        private DateTime lastMouseMove;
 
         public 画图(DataSet ds)
         {
@@ -276,33 +278,39 @@ namespace HUST_Grph
         }
 
         //指示是否正在进行图例拖动
-        private bool isDragPic = false;
+        private bool isLogoDrag = false;
+        //指示是否正在进行图像推动
+        private bool isPicDrag = false;
 
         private void pictureBox_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             MyPictureBox picture = sender as MyPictureBox;
             picture.previousPos = new Point(e.X, e.Y);
 
-            //指示开始图例拖动
-            if (e.Button == MouseButtons.Left && picture.logoPos.Contains(new Point(e.X, e.Y)))
-                this.isDragPic = true;
+            if (e.Button == MouseButtons.Left)
+            {
+                //指示开始图例拖动
+                if (this.isLogoOn && picture.logoPos.Contains(picture.previousPos))
+                    this.isLogoDrag = true;
+                //指示开始图像拖动
+                else if (picture.DisplayRectangle.Contains(picture.previousPos))
+                {
+                    this.isPicDrag = true;
+                }
+
+            }
         }
 
         private void pictureBox_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            MyPictureBox picture = sender as MyPictureBox;
 
-            //指示结束图例拖动
+            //指示结束图例/图像拖动
             if (e.Button == MouseButtons.Left)
-                this.isDragPic = false;
+            {
+                this.isLogoDrag = false;
+                this.isPicDrag = false;
+            }
         }
-
-        //private void pictureBox_Hover(object sender, System.EventArgs e)
-        //{
-        //    //this.isHoverPic = true;
-        //    this.toolTip2.ToolTipTitle = "haha";
-        //}
-
 
         bool ctrl = false;
         private void myFunPictureBox_KeyDown(object sender, KeyEventArgs e)
@@ -809,7 +817,7 @@ namespace HUST_Grph
         {
             MyPictureBox picture = sender as MyPictureBox;
             // 处理图例拖动
-            if (this.isLogoOn && isDragPic == true)
+            if (isLogoDrag == true)
             {
                 //关闭ToolTip计时器
                 tooltipTimer.Stop();
@@ -839,6 +847,24 @@ namespace HUST_Grph
                 picture.previousPos = mousePoint;
 
                 return;
+            }
+            // 处理图像拖动
+            else if (isPicDrag)
+            {
+                //关闭ToolTip计时器
+                tooltipTimer.Stop();
+                toolTip2.Active = false;
+
+                Point mousePoint = new Point(e.X, e.Y);
+                picture.Bounds = RectangleToClient(new Rectangle(
+                    preLeftTop.X + mousePoint.X - picture.previousPos.X,
+                    preLeftTop.Y + mousePoint.Y - picture.previousPos.Y,
+                    picture.Bounds.Width,
+                    picture.Bounds.Height));
+
+                preLeftTop = new Point(picture.Bounds.Left, picture.Bounds.Top);
+                picture.Invalidate();
+
             }
             // 鼠标悬停于图例内不按下
             else if (picture.logoPos.Contains(new Point(e.X, e.Y)))
@@ -1381,7 +1407,7 @@ namespace HUST_Grph
         }
 
         // 23.6.15 cjy
-        private static void InZoomPic(MyPictureBox picture, Panel panel)
+        private void InZoomPic(MyPictureBox picture, Panel panel)
         {
             if (picture.Width * 1.1 <= 2400 && picture.Height * 1.1 <= 3400)
             {
@@ -1398,11 +1424,14 @@ namespace HUST_Grph
                       (int)(picture.drawArea.Top * 1.1),
                       (int)(picture.drawArea.Width * 1.1),
                       (int)(picture.drawArea.Height * 1.1));
+                picture.Bounds = new Rectangle(
+                    preLeftTop.X, preLeftTop.Y,
+                    picture.Width, picture.Height);
                 picture.Invalidate();
             }
         }
 
-        private static void OutZoomPic(MyPictureBox picture, Panel panel)
+        private void OutZoomPic(MyPictureBox picture, Panel panel)
         {
             if (picture.Width * 0.9 > 300 && picture.Height * 0.9 > 500)
             {
@@ -1419,6 +1448,9 @@ namespace HUST_Grph
                     (int)(picture.drawArea.Top * 0.9),
                     (int)(picture.drawArea.Width * 0.9),
                     (int)(picture.drawArea.Height * 0.9));
+                picture.Bounds = new Rectangle(
+                    preLeftTop.X, preLeftTop.Y,
+                    picture.Width, picture.Height);
                 picture.Invalidate();
             }
         }
