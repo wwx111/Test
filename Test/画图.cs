@@ -11,6 +11,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace HUST_Grph
@@ -57,6 +58,11 @@ namespace HUST_Grph
         private Point preLeftTop;
         private DateTime lastMouseMove;
 
+
+        [DllImport("user32")]
+        private static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, IntPtr lParam);
+        private const int WM_SETREDRAW = 0xB;
+
         public 画图(DataSet ds)
         {
             InitializeComponent();
@@ -99,6 +105,8 @@ namespace HUST_Grph
         public 画图(DataSet ds, Boolean tf0)
         {
             InitializeComponent();
+            //this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
+
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
             loadData LoadData = new loadData();
 
@@ -235,6 +243,7 @@ namespace HUST_Grph
             this.tabControl1.Controls.Add(tcp);
             tp.AttachedControl = tcp;
 
+            preLeftTop = new Point(myFunPictureBox.Bounds.X, myFunPictureBox.Bounds.Y);
 
 
         }
@@ -855,16 +864,42 @@ namespace HUST_Grph
                 tooltipTimer.Stop();
                 toolTip2.Active = false;
 
-                Point mousePoint = new Point(e.X, e.Y);
-                picture.Bounds = RectangleToClient(new Rectangle(
-                    preLeftTop.X + mousePoint.X - picture.previousPos.X,
-                    preLeftTop.Y + mousePoint.Y - picture.previousPos.Y,
+                DateTime now = DateTime.Now;
+                if ((now - lastMouseMove) < TimeSpan.FromMilliseconds(10))
+                {
+                    return; // 跳过处理
+                }
+
+                Panel panel = picture.Parent as Panel;
+                int rangeX = picture.Width - panel.ClientRectangle.Width;
+                int rangeY = picture.Height - panel.ClientRectangle.Height;
+
+                int postX = preLeftTop.X + e.X - picture.previousPos.X;
+                int postY = preLeftTop.Y + e.Y - picture.previousPos.Y;
+
+                if ((e.X + rangeX) * (postX + rangeX) <= 0 || (e.Y + rangeY) * (postY + rangeY) <= 0)
+                {
+                    //禁止重绘
+                    //SendMessage(panel.Handle, WM_SETREDRAW, 0, IntPtr.Zero);
+                    panel.SuspendLayout();
+                }
+                else
+                {
+                    //SendMessage(panel.Handle, WM_SETREDRAW, 1, IntPtr.Zero);
+                    panel.ResumeLayout();
+                }
+
+                picture.Bounds = new Rectangle(
+                    preLeftTop.X + e.X - picture.previousPos.X,
+                    preLeftTop.Y + e.Y - picture.previousPos.Y,
                     picture.Bounds.Width,
-                    picture.Bounds.Height));
+                    picture.Bounds.Height);
 
-                preLeftTop = new Point(picture.Bounds.Left, picture.Bounds.Top);
+
+                preLeftTop = new Point(picture.Bounds.X, picture.Bounds.Y);
+                lastMouseMove = now; // 更新上次处理事件的时间
+
                 picture.Invalidate();
-
             }
             // 鼠标悬停于图例内不按下
             else if (picture.logoPos.Contains(new Point(e.X, e.Y)))
