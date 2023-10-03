@@ -102,7 +102,7 @@ namespace HUST_Grph
 
 
         }
-        public 画图(DataSet ds, Boolean tf0)
+        public 画图(DataSet ds, Boolean tf0, String filePath)
         {
             InitializeComponent();
             //this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
@@ -116,7 +116,7 @@ namespace HUST_Grph
             MAPDictionary_Line = (from d in MAPDictionary_Line orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
             MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables[2]);
             title = STYLlist[2]["5"];
-            dlgSavePic.FileName = title;
+            dlgSavePic.FileName = filePath;
 
             // 无需显示数据点
             //tooltipTimer = new System.Windows.Forms.Timer();
@@ -1536,11 +1536,13 @@ namespace HUST_Grph
                 MyFunPictureBox picture = this.myFunPictureBox;
                 if (SavePicture(picture, dlgSavePic.FileName) == true)
                 {
-                    MessageBox.Show("保存图片成功！", "提示",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information,
-                        MessageBoxDefaultButton.Button1,
-                        MessageBoxOptions.DefaultDesktopOnly);
+                    Console.WriteLine("SheetName is null");
+                    // 直接保存时不弹窗
+                    //MessageBox.Show("保存图片成功！", "提示",
+                    //    MessageBoxButtons.OK,
+                    //    MessageBoxIcon.Information,
+                    //    MessageBoxDefaultButton.Button1,
+                    //    MessageBoxOptions.DefaultDesktopOnly);
                 }
             }
             else if (dlgSavePic.ShowDialog() == DialogResult.OK)
@@ -1588,41 +1590,44 @@ namespace HUST_Grph
                 DrawLogo(picture, g);
             }
 
-            filename = filename == "" ? @"ListView.jpg" : filename;
-            String picPath = this.defaultPath + filename + @".jpg";
+            //filename由调用参数给出
+            //String picPath = this.defaultPath + filename + @".jpg";
+            String picPath = filename == title? defaultPath + filename + @".jpg": filename;
+
 
             DialogResult result = DialogResult.OK;
 
-            if (File.Exists(picPath))
+            // 直接保存时不询问
+            if (isDirectSave == false)
             {
-                result = MessageBox.Show("已有同名文件，是否覆盖？", "保存图片", MessageBoxButtons.OKCancel);
+                if (File.Exists(picPath))
+                {
+                    result = MessageBox.Show("已有同名文件，是否覆盖？", "保存图片", MessageBoxButtons.OKCancel);
+                }
+
+                if (result == DialogResult.Cancel)
+                {
+                    return false;
+                }
             }
 
-            if (result == DialogResult.Cancel)
+            try
             {
-                return false;
+                if (!Directory.Exists(this.defaultPath))
+                {
+                    Directory.CreateDirectory(this.defaultPath);
+                }
+                memImage.Save(picPath);
             }
-            else if (result == DialogResult.OK)
+            catch (Exception ex)
             {
-                try
-                {
-                    if (!Directory.Exists(this.defaultPath))
-                    {
-                        Directory.CreateDirectory(this.defaultPath);
-                    }
-                    memImage.Save(picPath);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"保存失败：{ex.Message}");
-                    throw;
-                }
-                g.Dispose();
-                memImage.Dispose();
+                Console.WriteLine($"保存失败：{ex.Message}");
+                throw;
+            }
+            g.Dispose();
+            memImage.Dispose();
 
-                return true;
-            }
-            return false;
+            return true;
         }
 
         private void 隐藏显示图例ToolStripMenuItem_Click(object sender, EventArgs e)
