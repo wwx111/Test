@@ -243,7 +243,6 @@ namespace HUST_Grph
             this.tabControl1.Controls.Add(tcp);
             tp.AttachedControl = tcp;
 
-            preLeftTop = new Point(myFunPictureBox.Bounds.X, myFunPictureBox.Bounds.Y);
 
 
         }
@@ -385,6 +384,9 @@ namespace HUST_Grph
                 }
 
                 picture.drawed = true;
+
+
+                preLeftTop = new Point(myFunPictureBox.Bounds.X, myFunPictureBox.Bounds.Y);
             }
             catch (Exception ex)
             {
@@ -871,13 +873,19 @@ namespace HUST_Grph
                 }
 
                 Panel panel = picture.Parent as Panel;
+
+                int limitX = picture.previousPos.X - preLeftTop.X - picture.Width + 100;
+                int limitY = picture.previousPos.Y - preLeftTop.Y - picture.Height + 100;
+                int PX = e.X < limitX ? limitX : e.X;
+                int PY = e.Y < limitY ? limitY : e.Y;
+
                 int rangeX = picture.Width - panel.ClientRectangle.Width;
                 int rangeY = picture.Height - panel.ClientRectangle.Height;
 
-                int postX = preLeftTop.X + e.X - picture.previousPos.X;
-                int postY = preLeftTop.Y + e.Y - picture.previousPos.Y;
+                int postX = preLeftTop.X + PX - picture.previousPos.X;
+                int postY = preLeftTop.Y + PY - picture.previousPos.Y;
 
-                if ((e.X + rangeX) * (postX + rangeX) <= 0 || (e.Y + rangeY) * (postY + rangeY) <= 0)
+                if ((PX + rangeX) * (postX + rangeX) <= 0 || (PY + rangeY) * (postY + rangeY) <= 0)
                 {
                     //禁止重绘
                     //SendMessage(panel.Handle, WM_SETREDRAW, 0, IntPtr.Zero);
@@ -890,13 +898,14 @@ namespace HUST_Grph
                 }
 
                 picture.Bounds = new Rectangle(
-                    preLeftTop.X + e.X - picture.previousPos.X,
-                    preLeftTop.Y + e.Y - picture.previousPos.Y,
+                    preLeftTop.X + PX - picture.previousPos.X,
+                    preLeftTop.Y + PY - picture.previousPos.Y,
                     picture.Bounds.Width,
                     picture.Bounds.Height);
 
 
                 preLeftTop = new Point(picture.Bounds.X, picture.Bounds.Y);
+                //picture.previousPos = new Point(PX, PY);
                 lastMouseMove = now; // 更新上次处理事件的时间
 
                 picture.Invalidate();
@@ -1468,7 +1477,9 @@ namespace HUST_Grph
 
         private void OutZoomPic(MyPictureBox picture, Panel panel)
         {
-            if (picture.Width * 0.9 > 300 && picture.Height * 0.9 > 500)
+            double newWidth = picture.Width * 0.9;
+            double newHeight = picture.Height * 0.9;
+            if (newWidth > 300 && newHeight > 500 && preLeftTop.X + newWidth > 100 && preLeftTop.Y + newHeight > 100)
             {
                 picture.Size = new Size((int)(picture.Width * 0.9), (int)(picture.Height * 0.9));
                 panel.AutoScroll = true;
@@ -1530,6 +1541,23 @@ namespace HUST_Grph
 
         private void SavePicMenuItem_Click(object sender, EventArgs e)
         {
+            string parentDirPath = "";
+            string filename = dlgSavePic.FileName;  
+            String picPath = !isDirectSave ? defaultPath + filename + @".jpg" : filename;
+
+            try
+            {
+                FileInfo fileInfo = new FileInfo(picPath);
+                parentDirPath = fileInfo.DirectoryName;
+                if (Directory.Exists(parentDirPath) == false) // 如果父亲文件夹不存在则创建
+                {
+                    Directory.CreateDirectory(parentDirPath);
+                }
+            }
+            catch
+            {
+                Console.WriteLine("创建父目录失败");
+            }
 
             if (isDirectSave)
             {
@@ -1545,26 +1573,32 @@ namespace HUST_Grph
                     //    MessageBoxOptions.DefaultDesktopOnly);
                 }
             }
-            else if (dlgSavePic.ShowDialog() == DialogResult.OK)
+            else
             {
+                dlgSavePic.InitialDirectory = parentDirPath;
+                if (dlgSavePic.ShowDialog() == DialogResult.OK)
+                {
 
-                ////开启进度条
-                //Thread thdSub = new Thread(new ThreadStart(this.progressB));
-                //thdSub.Start();
-                //Thread.Sleep(100);
-                MyFunPictureBox picture = ((sender as ToolStripMenuItem).Owner as ContextMenuStrip).SourceControl as MyFunPictureBox;
+                    ////开启进度条
+                    //Thread thdSub = new Thread(new ThreadStart(this.progressB));
+                    //thdSub.Start();
+                    //Thread.Sleep(100);
+                    MyFunPictureBox picture = ((sender as ToolStripMenuItem).Owner as ContextMenuStrip).SourceControl as MyFunPictureBox;
 
-                ////关闭进度条
-                //this.myprogress.isOver = true;
+                    ////关闭进度条
+                    //this.myprogress.isOver = true;
 
-                SavePicture(picture, dlgSavePic.FileName);
-                MessageBox.Show("保存图片成功！", "提示",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information,
-                    MessageBoxDefaultButton.Button1,
-                    MessageBoxOptions.DefaultDesktopOnly);
+                    SavePicture(picture, dlgSavePic.FileName);
+                    MessageBox.Show("保存图片成功！", "提示",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button1,
+                        MessageBoxOptions.DefaultDesktopOnly);
 
+                }
+                dlgSavePic.FileName = title;
             }
+
         }
 
         private Boolean SavePicture(MyFunPictureBox picture, string filename)
@@ -1592,38 +1626,34 @@ namespace HUST_Grph
 
             //filename由调用参数给出
             //String picPath = this.defaultPath + filename + @".jpg";
-            String picPath = filename == title? defaultPath + filename + @".jpg": filename;
+            String picPath = filename == title ? defaultPath + filename + @".jpg" : filename;
 
-
-            DialogResult result = DialogResult.OK;
-
+            //DialogResult result = DialogResult.OK;
             // 直接保存时不询问
-            if (isDirectSave == false)
-            {
-                if (File.Exists(picPath))
-                {
-                    result = MessageBox.Show("已有同名文件，是否覆盖？", "保存图片", MessageBoxButtons.OKCancel);
-                }
+            //if (isDirectSave == false)
+            //{
+            //    if (File.Exists(picPath))
+            //    {
+            //        result = MessageBox.Show("已有同名文件，是否覆盖？", "保存图片", MessageBoxButtons.OKCancel);
+            //    }
 
-                if (result == DialogResult.Cancel)
-                {
-                    return false;
-                }
-            }
+            //    if (result == DialogResult.Cancel)
+            //    {
+            //        return false;
+            //    }
+            //}
 
             try
             {
-                if (!Directory.Exists(this.defaultPath))
-                {
-                    Directory.CreateDirectory(this.defaultPath);
-                }
                 memImage.Save(picPath);
             }
+
             catch (Exception ex)
             {
                 Console.WriteLine($"保存失败：{ex.Message}");
                 throw;
             }
+
             g.Dispose();
             memImage.Dispose();
 
