@@ -120,7 +120,7 @@ namespace HUST_Grph
             loadData LoadData = new loadData();
 
             STYLlist = loadData.STYLTableToData(ds.Tables["STYL"]);
-            NORMlist = loadData.NORMTableToData(ds.Tables["NORM"]);
+            NORMlist = loadData.NORMTableToData(ds.Tables["NORM"], baseLoad);
             MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables["Maps"]);
             MAPDictionary_Line = (from d in MAPDictionary_Line orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
             MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables[2]);
