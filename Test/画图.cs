@@ -1601,12 +1601,12 @@ namespace HUST_Grph
             {
                 FileInfo fileInfo = new FileInfo(picPath);
                 parentDirPath = fileInfo.DirectoryName;
-                dlgSavePic.FileName = fileInfo.Name;
 
                 if (Directory.Exists(parentDirPath) == false) // 如果父亲文件夹不存在则创建
                 {
                     Directory.CreateDirectory(parentDirPath);
                 }
+                dlgSavePic.FileName = fileInfo.Name;
             }
             catch
             {
