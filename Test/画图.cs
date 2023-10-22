@@ -86,7 +86,7 @@ namespace HUST_Grph
 
             title = STYLlist[2]["5"];
             path = STYLlist[2]["9"];
-            dlgSavePic.FileName = title;
+            dlgSavePic.FileName = path;
 
             tooltipTimer = new System.Windows.Forms.Timer();
             tooltipTimer.Interval = 500; // 设置定时器的间隔为0.5秒
@@ -129,7 +129,7 @@ namespace HUST_Grph
 
             title = STYLlist[2]["5"];
             path = STYLlist[2]["9"];
-            dlgSavePic.FileName = filePath;
+            dlgSavePic.FileName = path;
 
             // 无需显示数据点
             //tooltipTimer = new System.Windows.Forms.Timer();
@@ -1593,13 +1593,16 @@ namespace HUST_Grph
         private void SavePicMenuItem_Click(object sender, EventArgs e)
         {
             string parentDirPath = "";
-            string filename = dlgSavePic.FileName;  
-            String picPath = !isDirectSave ? defaultPath + filename + @".jpg" : filename;
+            string filename = dlgSavePic.FileName;
+            //String picPath = !isDirectSave ? defaultPath + filename + @".jpg" : filename;
+            string picPath = filename + @"_" + currentMonth + currentDay + @"_" + currentSpan + @".jpg";
 
             try
             {
                 FileInfo fileInfo = new FileInfo(picPath);
                 parentDirPath = fileInfo.DirectoryName;
+                dlgSavePic.FileName = fileInfo.Name;
+
                 if (Directory.Exists(parentDirPath) == false) // 如果父亲文件夹不存在则创建
                 {
                     Directory.CreateDirectory(parentDirPath);
@@ -1675,9 +1678,9 @@ namespace HUST_Grph
                 DrawLogo(picture, g);
             }
 
-            //filename由调用参数给出
-            //String picPath = this.defaultPath + filename + @".jpg";
-            String picPath = filename == title ? defaultPath + filename + @".jpg" : filename;
+
+            // filename已在外部处理
+            //String picPath = filename == title ? defaultPath + filename + @".jpg" : filename;
 
             //DialogResult result = DialogResult.OK;
             // 直接保存时不询问
@@ -1696,7 +1699,7 @@ namespace HUST_Grph
 
             try
             {
-                memImage.Save(picPath);
+                memImage.Save(filename);
             }
 
             catch (Exception ex)
