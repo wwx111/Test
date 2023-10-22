@@ -58,6 +58,7 @@ namespace HUST_Grph
 
         private Point preLeftTop;
         private DateTime lastMouseMove;
+        private String path = null;
 
 
         [DllImport("user32")]
@@ -84,6 +85,7 @@ namespace HUST_Grph
 
 
             title = STYLlist[2]["5"];
+            path = STYLlist[2]["9"];
             dlgSavePic.FileName = title;
 
             tooltipTimer = new System.Windows.Forms.Timer();
@@ -470,6 +472,7 @@ namespace HUST_Grph
             // 从STYL表中获取最大纵坐标
             Dictionary<string, string> STYLinfo1 = STYLlist[2];
             int maxVal = int.Parse(STYLinfo1["12"]);
+            int minVal = int.Parse(STYLinfo1["17"]);
 
 
             // 绘制坐标轴
@@ -1250,20 +1253,6 @@ namespace HUST_Grph
             }
 
 
-            //for (int i = 4; i <= 20; i++)
-            //{
-            //    Dictionary<String, String> Info = LogoParameter[i.ToString()];
-            //    int firstHatchID = int.Parse(Info["firstHatch"]);
-            //    int secondHatchID = int.Parse(Info["secondHatch"]);
-            //    string firstColor = Info["firstARGB"];
-            //    string secondColor = Info["secondARGB"];
-            //    string firstItem = Info["firstItem"];
-            //    string secondItem = Info["secondItem"];
-            //    int firstMark = int.Parse(Info["firstMark"]);
-            //    int secondMark = int.Parse(Info["secondMark"]); 
-            //}
-
-
             SolidBrush backBrush = new SolidBrush(Color.White);
             Font drawFont = new Font("宋体", picture.smallFontSize);
 
@@ -1277,32 +1266,38 @@ namespace HUST_Grph
             //Pen dashPen = new Pen(Color.Black, 1.0f);
             //dashPen.DashStyle = DashStyle.Dash;
 
-            int vacant = 10;
+            int vacant = 5;
             Font titleFont = new Font("宋体", picture.largeFontSize, FontStyle.Bold);
 
+
+            //picture.logoPos = new Rectangle(picture.logoPos.Left
+            //    , picture.logoPos.Top
+            //    , picture.logoWidth
+            //    , (picture.LogoItems.Count + 1) / 2 * (drawFont.Height * 2 + vacant) +
+            //    vacant + titleFont.Height + vacant + 3);
 
             picture.logoPos = new Rectangle(picture.logoPos.Left
                 , picture.logoPos.Top
                 , picture.logoWidth
-                , (picture.LogoItems.Count + 1) / 2 * (drawFont.Height * 2 + vacant) +
-                vacant + titleFont.Height + vacant + 3);
+                , (picture.LogoItems.Count + 2) / 3 * (drawFont.Height * 2 + vacant) +
+                vacant + 3);
 
             g.FillRectangle(backBrush, picture.logoPos);
             StringFormat stringFormat = new StringFormat();
             stringFormat.Alignment = StringAlignment.Center;
 
-            int itemWidth = picture.logoPos.Width / 2;
+            int itemWidth = picture.logoPos.Width / 3;
 
-            g.DrawString("图例", titleFont, drawBrush, picture.logoPos.Left + picture.logoPos.Width / 2, picture.logoPos.Top + vacant, stringFormat);
+            //g.DrawString("图例", titleFont, drawBrush, picture.logoPos.Left + picture.logoPos.Width / 2, picture.logoPos.Top + vacant, stringFormat);
             Pen pen = new Pen(Color.Black);
-            g.DrawLine(pen, picture.logoPos.Left, picture.logoPos.Top + vacant + titleFont.Height + 3,
-                    picture.logoPos.Right, picture.logoPos.Top + vacant + titleFont.Height + 3);
-            Point startPoint = new Point(picture.logoPos.Left, picture.logoPos.Top + vacant + titleFont.Height + 3);
+            //g.DrawLine(pen, picture.logoPos.Left, picture.logoPos.Top + vacant + titleFont.Height + 3,
+            //        picture.logoPos.Right, picture.logoPos.Top + vacant + titleFont.Height + 3);
+            Point startPoint = new Point(picture.logoPos.Left, picture.logoPos.Top + 3);
 
             for (int i = 0; i < picture.LogoItems.Count; i++)
             {
-                Point point = new Point(startPoint.X + 5 + (i % 2) * itemWidth,
-                    startPoint.Y + (i / 2) * (drawFont.Height * 2 + vacant) + vacant);
+                Point point = new Point(startPoint.X + 5 + (i % 3) * itemWidth,
+                    startPoint.Y + (i / 3) * (drawFont.Height * 2 + vacant) + vacant);
                 if (i == 0)
                 {
                     g.FillRectangle(picture.LogoItems[i].brush, point.X, point.Y + drawFont.Height, 30, drawFont.Height);
@@ -1878,6 +1873,11 @@ namespace HUST_Grph
                 drawDictionary.Add(drawId.ToString(), data);
                 drawId++;
                 data = STYLDt.Rows[startRow + drawId]["Item"].ToString();
+                //吴老师在第九行的备注里加了要用的东西，虽然我记得说过备注里的东西用不上，只能打个补丁
+                if (drawId == 9)
+                {
+                    data = STYLDt.Rows[startRow + drawId]["备注"].ToString();
+                }
             }
 
             startRow += drawId;
@@ -2032,7 +2032,7 @@ namespace HUST_Grph
         public float smallFontSize = 8.5F;
         public System.Drawing.Printing.PageSettings pageSettings { get; set; }
         public Rectangle drawArea { get; set; }
-        public int logoWidth = 250;
+        public int logoWidth = 300;
         public bool drawed = false;
         public int maxRectangleY = 10000;
     }

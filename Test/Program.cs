@@ -25,7 +25,7 @@ namespace HUST_Grph
             //int year = 2020;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            string path = "D:\\picture_data23.09.06\\GTDS_Exam_2030_2_S0004.xlsx";
+            string path = "D:\\wu_picture_data\\picture_data23.10.20\\gdfq_2030_2030_2_S0002.xlsx";
             //string path = "D:\\GTDS_0001\\GTDS_Exam_2030_2_S0000_new.xlsx";
             //string path = "D:\\input_11_2022020000_70_0.xlsx";
             //string path = "C:\\Users\\11852\\Desktop\\GTDS_Exam_2030_2_S0000.xlsx";
