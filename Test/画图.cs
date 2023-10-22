@@ -126,7 +126,9 @@ namespace HUST_Grph
             MAPDictionary_Line = loadData.MAPsTableToData_Line(ds.Tables["Maps"]);
             MAPDictionary_Line = (from d in MAPDictionary_Line orderby d.Key descending select d).ToDictionary(k => k.Key, v => v.Value);
             MAPDictionary_Day = loadData.MAPsTableToData_Day(ds.Tables[2]);
+
             title = STYLlist[2]["5"];
+            path = STYLlist[2]["9"];
             dlgSavePic.FileName = filePath;
 
             // 无需显示数据点
