@@ -42,13 +42,12 @@ namespace HUST_Grph
             ds.Tables.Add(Mapsdata);
 
 
-            //画图 ht = new 画图(ds);
-            //ht.newTab();
+            画图 ht = new 画图(ds);
+            ht.newTab();
 
-            //ht.Show();
-            //Application.Run(ht);
+            ht.Show();
+            Application.Run(ht);
 
-            Boolean tf0 = true;
 
             //Boolean tf0 = false;
             //String filePath = @"D:\HUST_Grph\what.jpg";
