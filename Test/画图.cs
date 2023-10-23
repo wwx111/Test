@@ -1616,7 +1616,7 @@ namespace HUST_Grph
             if (isDirectSave)
             {
                 MyFunPictureBox picture = this.myFunPictureBox;
-                if (SavePicture(picture, dlgSavePic.FileName) == true)
+                if (SavePicture(picture, picPath) == true)
                 {
                     Console.WriteLine("SheetName is null");
                     // 直接保存时不弹窗
@@ -1650,7 +1650,7 @@ namespace HUST_Grph
                         MessageBoxOptions.DefaultDesktopOnly);
 
                 }
-                dlgSavePic.FileName = title;
+                dlgSavePic.FileName = path;
             }
 
         }
