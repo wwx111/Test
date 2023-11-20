@@ -1434,8 +1434,24 @@ namespace HUST_Grph
             }
             else
             {
-                currentMonth = 12;
-                currentDay = 31 - currentSpan + 1;
+                // 右移超过了年末，跳到最后span天
+                // span可能大于1个月
+                //currentMonth = 12;
+                int restday = currentSpan;
+                for (int i = 12; i >=1 && restday >=0 ; i--)
+                {
+                    int maxDay = getMaxDay(currentYear, i);
+                    if (restday <= maxDay)
+                    {
+                        currentMonth = i;
+                        currentDay = maxDay - restday + 1;
+                        break;
+                    }
+                    else
+                    {
+                        restday -= maxDay;
+                    }
+                }
                 flag = true;
   
             }
@@ -1630,7 +1646,19 @@ namespace HUST_Grph
             else
             {
                 dlgSavePic.InitialDirectory = parentDirPath;
-                if (dlgSavePic.ShowDialog() == DialogResult.OK)
+
+                DialogResult result = DialogResult.Cancel;
+                System.Threading.Thread t = new System.Threading.Thread((System.Threading.ThreadStart)(() =>
+                {
+                    // 将出现这个异常的语句放到这里面
+
+                    result = dlgSavePic.ShowDialog();
+                }));
+                t.SetApartmentState(System.Threading.ApartmentState.STA);
+                t.Start();
+                t.Join();
+
+                if (result == DialogResult.OK)
                 {
 
                     ////开启进度条
