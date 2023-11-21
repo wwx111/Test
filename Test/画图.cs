@@ -1611,7 +1611,19 @@ namespace HUST_Grph
             string parentDirPath = "";
             string filename = dlgSavePic.FileName;
             //String picPath = !isDirectSave ? defaultPath + filename + @".jpg" : filename;
-            string picPath = filename + @"_" + currentMonth + currentDay + @"_" + currentSpan + @".jpg";
+            string picPath = filename + @"_";
+            if(currentMonth < 10)
+            {
+                picPath += "0";
+            }
+            picPath += currentMonth;
+            if (currentDay < 10)
+            {
+                picPath += "0";
+            }
+            picPath += currentDay;
+
+            picPath += @"_" + currentSpan + @".jpg";
 
             try
             {

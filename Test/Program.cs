@@ -43,16 +43,16 @@ namespace HUST_Grph
 
 
             画图 ht = new 画图(ds);
-            ht.newTab();
+            //ht.newTab();
 
-            ht.Show();
-            Application.Run(ht);
+            //ht.Show();
+            //Application.Run(ht);
 
 
-            //Boolean tf0 = false;
-            //String filePath = @"D:\HUST_Grph\what.jpg";
-            //画图 directDraw;
-            //bool tf = (directDraw = new 画图(ds, tf0, filePath)) != null;
+            Boolean tf0 = false;
+            String filePath = @"D:\HUST_Grph\what.jpg";
+            画图 directDraw;
+            bool tf = (directDraw = new 画图(ds, tf0, filePath)) != null;
 
 
             /*loadData LoadData = new loadData();
