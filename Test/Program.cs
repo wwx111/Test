@@ -43,10 +43,10 @@ namespace HUST_Grph
 
 
             画图 ht = new 画图(ds);
-            //ht.newTab();
+            ht.newTab();
 
-            //ht.Show();
-            //Application.Run(ht);
+            ht.Show();
+            Application.Run(ht);
 
 
             Boolean tf0 = false;

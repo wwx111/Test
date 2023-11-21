@@ -528,7 +528,18 @@ namespace HUST_Grph
                         List<string> list = dic1[str];
                         foreach (string val in list)
                         {
-                            array.Add(int.Parse(val));
+                            if (int.TryParse(val, out int i_result))
+                            {
+                                array.Add(int.Parse(val));
+                            }else if(float.TryParse(val, out float f_result))
+                            {
+                                array.Add((int)float.Parse(val));
+                            }
+                            else
+                            {
+                                array.Add(0);
+                            }
+
                         }
                     }
                     else
@@ -620,7 +631,7 @@ namespace HUST_Grph
                 {
                     downPoints[i] = new Point(start.X + coordinateList[i * 24], start.Y);
                     upPoints[i] = new Point(start.X + coordinateList[i * 24], start.Y - 5);
-                    top = new Point(start.X + coordinateList[i * 24], end2.Y + 8);
+                    top = new Point(start.X + coordinateList[i * 24], end2.Y + 5);
 
                     if (i % span == 0)
                     {
@@ -634,7 +645,7 @@ namespace HUST_Grph
 
                 }
                 downPoints[days] = new Point(start.X + coordinateList[days * 24], start.Y);
-                top = new Point(start.X + coordinateList[days * 24], end2.Y + 8);
+                top = new Point(start.X + coordinateList[days * 24], end2.Y + 5);
                 g.DrawLine(dotted, downPoints[days], top);
 
                 //在图中打印横坐标轴的单位
@@ -670,7 +681,7 @@ namespace HUST_Grph
 
                     downPoints[i] = new Point(start.X + coordinateList[i + 1], start.Y);
                     upPoints[i] = new Point(start.X + coordinateList[i + 1], start.Y - 5);
-                    top = new Point(start.X + coordinateList[i + 1], end2.Y + 8);
+                    top = new Point(start.X + coordinateList[i + 1], end2.Y + 5);
 
                     if (i % 4 == 3)
                     {
