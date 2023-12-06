@@ -473,8 +473,8 @@ namespace HUST_Grph
 
             // 从STYL表中获取最大纵坐标
             Dictionary<string, string> STYLinfo1 = STYLlist[2];
-            int maxVal = int.Parse(STYLinfo1["12"]);
-            int minVal = int.Parse(STYLinfo1["17"]);
+            int maxVal = intConversion(STYLinfo1["12"]);
+            int minVal = intConversion(STYLinfo1["17"]);
 
 
             // 绘制坐标轴
@@ -528,18 +528,7 @@ namespace HUST_Grph
                         List<string> list = dic1[str];
                         foreach (string val in list)
                         {
-                            if (int.TryParse(val, out int i_result))
-                            {
-                                array.Add(int.Parse(val));
-                            }else if(float.TryParse(val, out float f_result))
-                            {
-                                array.Add((int)float.Parse(val));
-                            }
-                            else
-                            {
-                                array.Add(0);
-                            }
-
+                            array.Add(intConversion(val));
                         }
                     }
                     else
@@ -867,6 +856,22 @@ namespace HUST_Grph
             return (days + day);
         }
 
+        public static int intConversion(string str)
+        {
+            if (int.TryParse(str, out int i_result))
+            {
+                return int.Parse(str);
+            }
+            else if (float.TryParse(str, out float f_result))
+            {
+                return (int)float.Parse(str);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         private void pictureBox_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             MyPictureBox picture = sender as MyPictureBox;
@@ -1141,15 +1146,15 @@ namespace HUST_Grph
                 //需要用flag高一级的减去flag第一级的电量获得该flag对应的电量
                 if (prename != "原始负荷" && prename != "")
                 {
-                    total[prename] = total[prename] - int.Parse(pair.Value[hour]);
+                    total[prename] = total[prename] - intConversion(pair.Value[hour]);
                 }
                 if (total.ContainsKey(name))
                 {
-                    total[name] += int.Parse(pair.Value[hour]);
+                    total[name] += intConversion(pair.Value[hour]);
                 }
                 else
                 {
-                    total.Add(name, int.Parse(pair.Value[hour]));
+                    total.Add(name, intConversion(pair.Value[hour]));
                 }
                 prename = name;
             }
@@ -2000,11 +2005,11 @@ namespace HUST_Grph
             {
                 if (i < 183)
                 {
-                    baseLoad[i] = int.Parse(NORMDt.Rows[i]["基荷A"].ToString());
+                    baseLoad[i] = 画图.intConversion(NORMDt.Rows[i]["基荷A"].ToString());
                 }
                 else
                 {
-                    baseLoad[i] = int.Parse(NORMDt.Rows[i - 183]["基荷B"].ToString());
+                    baseLoad[i] = 画图.intConversion(NORMDt.Rows[i - 183]["基荷B"].ToString());
                 }
             }
             return NORMData;
